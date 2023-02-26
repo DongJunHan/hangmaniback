@@ -18,6 +18,6 @@ public class WinHistoryService {
     }
 
     public List<WinHistory> getData(String sido, String sigugun){
-        return winHistoryRepository.findByArea(sido, sigugun);
+        return winHistoryRepository.findWinHistoryByArea(sido, sigugun);
     }
 }

@@ -19,7 +19,7 @@ public class WinHistoryRepository {
         this.template = new JdbcTemplate(dataSource);
     }
 
-    public List<WinHistory> findByArea(String sido, String sigugun) {
+    public List<WinHistory> findWinHistoryByArea(String sido, String sigugun) {
         List<WinHistory> list = template.query(findByAreaSql,new Object[]{sido, sigugun}, winHistoryRowMapper());
         return list;
     }
