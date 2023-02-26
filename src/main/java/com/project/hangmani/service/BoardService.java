@@ -1,10 +1,11 @@
 package com.project.hangmani.service;
 
 import com.project.hangmani.model.management.BoardRepository;
-//import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
+@Service
 public class BoardService {
     private final BoardRepository boardRepository;
 
