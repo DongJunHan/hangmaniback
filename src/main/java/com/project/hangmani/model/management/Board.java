@@ -12,18 +12,18 @@ import java.sql.Date;
 @Getter
 @ToString
 @EqualsAndHashCode
-public class Content {
+public class Board {
     private int boardNo;
     private String title;
     private String content;
     private String boardWriter;
     private Date createDate;
 
-    public Content() {
+    public Board() {
     }
 
-    public Content(int boardNo, String title, String content,
-                   String boardWriter, Date createDate) {
+    public Board(int boardNo, String title, String content,
+                 String boardWriter, Date createDate) {
         this.boardNo = boardNo;
         this.title = title;
         this.content = content;
