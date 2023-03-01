@@ -1,10 +1,9 @@
 package com.project.hangmani.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.hangmani.dto.DataResponseDTO;
 import com.project.hangmani.model.store.Store;
-import com.project.hangmani.model.store.StoreRepository;
 import com.project.hangmani.service.StoreService;
+import com.project.hangmani.util.ConvertData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,20 +14,16 @@ import java.util.List;
 @Slf4j
 public class StoreController {
     private final StoreService storeService;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ConvertData convertData;
     public StoreController(StoreService storeService) {
         this.storeService = storeService;
+        this.convertData = new ConvertData();
     }
     @GetMapping("/storeinfo-sido")
     @ResponseBody
-    public String helloString(@RequestParam("sido") String sido, @RequestParam("sigugun") String sigugun){
+    public DataResponseDTO<Object> helloString(@RequestParam("sido") String sido, @RequestParam("sigugun") String sigugun){
         List<Store> storeInfo = storeService.getStoreInfo(sido, sigugun);
-        try {
-            String result = objectMapper.writeValueAsString(storeInfo);
-            return result;
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        log.info("result={}", DataResponseDTO.of(storeInfo).getData());
+        return DataResponseDTO.of(storeInfo);
     }
-
 }

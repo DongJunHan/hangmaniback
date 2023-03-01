@@ -1,32 +1,29 @@
 package com.project.hangmani.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.hangmani.dto.DataResponseDTO;
 import com.project.hangmani.model.management.Board;
 import com.project.hangmani.service.BoardService;
+import com.project.hangmani.util.ConvertData;
+import com.project.hangmani.dto.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("/board")
 @Slf4j
 public class BoardController {
     private final BoardService boardService;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ConvertData convertData;
     public BoardController(BoardService boardService) {
         this.boardService = boardService;
+        this.convertData = new ConvertData();
     }
     @PostMapping("/board-insert")
     @ResponseBody
-    public String createBoard(@ModelAttribute Board board) {
+    public DataResponseDTO<Object> createBoard(@RequestBody Board board) {
         Board insertResult = boardService.createBoard(board);
-        try {
-
-            String result = objectMapper.writeValueAsString(insertResult);
-            return result;
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        log.info("board={}",DataResponseDTO.of(insertResult,"success").getData());
+        return DataResponseDTO.of(insertResult,"success");
     }
 }

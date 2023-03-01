@@ -17,17 +17,19 @@ public class Board {
     private String title;
     private String content;
     private String boardWriter;
-    private Date createDate;
+    private Date createAt;
+    private Date updateAt;
 
     public Board() {
     }
 
     public Board(int boardNo, String title, String content,
-                 String boardWriter, Date createDate) {
+                 String boardWriter, Date createAt, Date updateAt) {
         this.boardNo = boardNo;
         this.title = title;
         this.content = content;
         this.boardWriter = boardWriter;
-        this.createDate = createDate;
+        this.createAt = createAt;
+        this.updateAt = updateAt;
     }
 }
