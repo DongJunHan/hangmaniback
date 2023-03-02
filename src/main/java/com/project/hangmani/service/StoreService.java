@@ -1,13 +1,13 @@
 package com.project.hangmani.service;
 
-import com.project.hangmani.model.store.Store;
-import com.project.hangmani.model.store.StoreRepository;
+import com.project.hangmani.domain.Store;
+import com.project.hangmani.repository.StoreRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Transactional
+//@Transactional
 @Service
 public class StoreService {
     private final StoreRepository storeRepository;

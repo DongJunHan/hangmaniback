@@ -1,12 +1,10 @@
 package com.project.hangmani.controller;
 
 import com.project.hangmani.dto.DataResponseDTO;
-import com.project.hangmani.model.management.Board;
+import com.project.hangmani.domain.Board;
 import com.project.hangmani.service.BoardService;
 import com.project.hangmani.util.ConvertData;
-import com.project.hangmani.dto.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

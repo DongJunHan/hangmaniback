@@ -1,7 +1,7 @@
 package com.project.hangmani.service;
 
-import com.project.hangmani.model.winhistory.WinHistory;
-import com.project.hangmani.model.winhistory.WinHistoryRepository;
+import com.project.hangmani.domain.WinHistory;
+import com.project.hangmani.repository.WinHistoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

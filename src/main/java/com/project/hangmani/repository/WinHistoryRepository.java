@@ -1,8 +1,8 @@
-package com.project.hangmani.model.winhistory;
+package com.project.hangmani.repository;
 
+import com.project.hangmani.domain.WinHistory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;

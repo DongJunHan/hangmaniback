@@ -1,4 +1,4 @@
-package com.project.hangmani.model.store;
+package com.project.hangmani.repository;
 
 import org.springframework.stereotype.Repository;
 

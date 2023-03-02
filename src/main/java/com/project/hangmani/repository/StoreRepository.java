@@ -1,6 +1,6 @@
-package com.project.hangmani.model.store;
+package com.project.hangmani.repository;
 
-import com.project.hangmani.model.winhistory.WinHistory;
+import com.project.hangmani.domain.Store;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;

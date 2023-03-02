@@ -1,6 +1,6 @@
 package com.project.hangmani.service;
 
-import com.project.hangmani.model.store.MapRepository;
+import com.project.hangmani.repository.MapRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

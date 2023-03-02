@@ -1,10 +1,9 @@
 package com.project.hangmani.service;
 
-import com.project.hangmani.model.winhistory.WinHistory;
-import com.project.hangmani.model.winhistory.WinHistoryRepository;
+import com.project.hangmani.domain.WinHistory;
+import com.project.hangmani.repository.WinHistoryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import javax.sql.DataSource;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @SpringBootTest
 class WinHistoryServiceTest {

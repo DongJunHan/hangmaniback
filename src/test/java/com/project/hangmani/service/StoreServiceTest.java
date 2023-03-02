@@ -1,7 +1,7 @@
 package com.project.hangmani.service;
 
-import com.project.hangmani.model.store.Store;
-import com.project.hangmani.model.store.StoreRepository;
+import com.project.hangmani.domain.Store;
+import com.project.hangmani.repository.StoreRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Bean;
 import javax.sql.DataSource;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @SpringBootTest
 class StoreServiceTest {

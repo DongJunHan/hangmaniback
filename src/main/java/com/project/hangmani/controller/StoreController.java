@@ -1,7 +1,7 @@
 package com.project.hangmani.controller;
 
 import com.project.hangmani.dto.DataResponseDTO;
-import com.project.hangmani.model.store.Store;
+import com.project.hangmani.domain.Store;
 import com.project.hangmani.service.StoreService;
 import com.project.hangmani.util.ConvertData;
 import lombok.extern.slf4j.Slf4j;

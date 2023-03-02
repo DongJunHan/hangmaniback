@@ -1,4 +1,4 @@
-package com.project.hangmani.model.winhistory;
+package com.project.hangmani.domain;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

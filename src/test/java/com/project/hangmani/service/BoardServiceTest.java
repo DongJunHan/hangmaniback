@@ -1,9 +1,7 @@
 package com.project.hangmani.service;
 
-import com.project.hangmani.model.management.Board;
-import com.project.hangmani.model.management.BoardRepository;
-import com.project.hangmani.model.store.Store;
-import com.project.hangmani.model.store.StoreRepository;
+import com.project.hangmani.domain.Board;
+import com.project.hangmani.repository.BoardRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,10 +11,9 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import javax.sql.DataSource;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+
 @Slf4j
 @SpringBootTest
 class BoardServiceTest {
