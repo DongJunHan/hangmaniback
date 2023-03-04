@@ -2,7 +2,6 @@ package com.project.hangmani.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.hangmani.exception.GeneralException;
 
 import java.util.Date;
 
@@ -13,7 +12,7 @@ public class ConvertData {
             String result = objectMapper.writeValueAsString(dto);
             return result;
         } catch (JsonProcessingException e) {
-            throw new GeneralException(e);
+            throw new RuntimeException(e);
         }
     }
     public java.sql.Date getSqlDate() {
@@ -21,4 +20,6 @@ public class ConvertData {
         long time = date.getTime();
         return new java.sql.Date(time);
     }
+
+
 }

@@ -1,6 +1,9 @@
 package com.project.hangmani.service;
 
 import com.project.hangmani.domain.Store;
+import com.project.hangmani.dto.StoreDTO;
+import com.project.hangmani.dto.StoreDTO.RequestStoreDTO;
+import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
 import com.project.hangmani.repository.StoreRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
@@ -41,8 +44,9 @@ class StoreServiceTest {
     @Test
     @DisplayName("H2 데이터베이스 상점 데이터 확인")
     void StoreInfoTest(){
-        List<Store> data = storeService.getStoreInfo(sido, sigugun);
+        RequestStoreDTO requestStoreDTO = new RequestStoreDTO(sido, sigugun);
+        ResponseStoreDTO data = storeService.getStoreInfo(requestStoreDTO);
         log.info("result={}",data);
-        Assertions.assertThat(data.size()).isEqualTo(171);
+        Assertions.assertThat(data.getStoreList().size()).isEqualTo(171);
     }
 }
