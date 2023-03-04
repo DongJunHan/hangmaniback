@@ -37,9 +37,8 @@ public class BoardService {
     public ResponseBoardDTO createBoard(BoardDTO.RequestBoardDTO boardDTO) {
         //check id
         if (userRepository.findById(boardDTO.getBoardWriter()).isEmpty()){
-            String message = "존재하지 않는 사용자 입니다.";
+            String message = "존재하지 않는 사용자입니다.";
             throw new NotFoundUser(message);
-//            return new ResponseBoardDTO(null, HttpStatusCode.valueOf(404), message);
         }
 
         Board board = requestConvert.boardInsertDTOToBoard(boardDTO);
