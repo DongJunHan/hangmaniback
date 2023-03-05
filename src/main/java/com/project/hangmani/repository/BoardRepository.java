@@ -34,14 +34,12 @@ public class BoardRepository {
     }
 
     public int insertBoard(Board board) {
-        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(template);
         Date createAt = convertData.getSqlDate();
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("boardwriter", board.getBoardWriter())
-                .addValue("content", board.getContent())
-                .addValue("title", board.getTitle())
+                .addValue("boardcontent", board.getBoardContent())
+                .addValue("boardtitle", board.getBoardTitle())
                 .addValue("createat", createAt)
                 .addValue("updateat", createAt);
 
@@ -57,8 +55,8 @@ public class BoardRepository {
         return (rs, rowNum) -> {
             Board board = new Board();
             board.setBoardNo(rs.getInt("boardno"));
-            board.setContent(rs.getString("content"));
-            board.setTitle(rs.getString("title"));
+            board.setBoardContent(rs.getString("boardcontent"));
+            board.setBoardTitle(rs.getString("boardtitle"));
             board.setUpdateAt(rs.getDate("updateat"));
             board.setCreateAt(rs.getDate("createat"));
             board.setBoardWriter(rs.getString("boardwriter"));

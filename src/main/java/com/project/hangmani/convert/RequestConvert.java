@@ -10,14 +10,15 @@ public class RequestConvert {
      * @param boardDTO
      * @return
      */
-    public Board boardInsertDTOToBoard(BoardDTO.RequestBoardDTO boardDTO) {
+    public Board convertEntity(BoardDTO.RequestBoardDTO boardDTO) {
         String boardWriter = boardDTO.getBoardWriter();
-        String content = boardDTO.getContent();
-        String title = boardDTO.getTitle();
+        String content = boardDTO.getBoardContent();
+        String title = boardDTO.getBoardTitle();
+
         Board board = new Board();
         board.setBoardWriter(boardWriter);
-        board.setContent(content);
-        board.setTitle(title);
+        board.setBoardContent(content);
+        board.setBoardTitle(title);
         return board;
     }
 }

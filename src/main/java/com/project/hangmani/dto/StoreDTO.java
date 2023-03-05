@@ -3,39 +3,45 @@ package com.project.hangmani.dto;
 import com.project.hangmani.domain.Store;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.List;
 
 public class StoreDTO {
     @Getter
+    @Setter
+    @ToString
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class RequestStoreDTO {
-        @NotBlank
-        private String sido;
         @NotNull
-        private String sigugun;
-
-        public RequestStoreDTO() {
-        }
-
-        public RequestStoreDTO(String sido, String sigugun) {
-            this.sido = sido;
-            this.sigugun = sigugun;
-        }
+        private Double startLatitude;
+        @NotNull
+        private Double endLatitude;
+        @NotNull
+        private Double startLongitude;
+        @NotNull
+        private Double endLongitude;
+        private int limit;
     }
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class ResponseStoreDTO {
-        private List<Store> storeList;
-        private Integer status;
-        private String message;
+        private String storeUuid;
+        private String storeName;
+        private String storeAddress;
+        private String storeLatitude;
+        private String storeLongitude;
+        private String storeBizNo;
+        private String storeTelNum;
+        private String storeMobileNum;
+        private String storeOpenTime;
+        private String storeCloseTime;
+        private Boolean storeIsActivity;
+        private String storeSido;
+        private  String storeSigugun;
 
-        public ResponseStoreDTO() {
-        }
-
-        public ResponseStoreDTO(List<Store> storeList, Integer status, String message) {
-            this.storeList = storeList;
-            this.status = status;
-            this.message = message;
-        }
     }
 }

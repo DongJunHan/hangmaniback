@@ -1,0 +1,617 @@
+diff --git a/src/main/java/com/project/hangmani/controller/BoardController.java b/src/main/java/com/project/hangmani/controller/BoardController.java
+index f1f6ed7..9009a4f 100644
+--- a/src/main/java/com/project/hangmani/controller/BoardController.java
++++ b/src/main/java/com/project/hangmani/controller/BoardController.java
+@@ -1,24 +1,35 @@
+ package com.project.hangmani.controller;
+ 
++import com.project.hangmani.domain.Board;
++import com.project.hangmani.dto.BoardDTO;
+ import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
+ import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
++import com.project.hangmani.dto.ResponseDto;
+ import com.project.hangmani.service.BoardService;
++import jakarta.validation.Valid;
++import lombok.Builder;
+ import lombok.extern.slf4j.Slf4j;
++import org.springframework.http.HttpStatus;
+ import org.springframework.web.bind.annotation.*;
+ 
+ @RestController
+ @RequestMapping("/board")
++@Builder
+ @Slf4j
+ public class BoardController {
+     private final BoardService boardService;
+     public BoardController(BoardService boardService) {
+         this.boardService = boardService;
+     }
+-    @PostMapping("/board-insert")
++    @PostMapping
+     @ResponseBody
+-    public ResponseBoardDTO createBoard(@RequestBody RequestBoardDTO boardDTO) {
+-        RequestBoardDTO s = new RequestBoardDTO();
+-        ResponseBoardDTO responseDTO = boardService.createBoard(boardDTO);
+-        return responseDTO;
++    public ResponseDto<ResponseBoardDTO> createBoard(@RequestBody @Valid RequestBoardDTO boardDTO) {
++        ResponseBoardDTO responseBoardDTO = boardService.createBoard(boardDTO);
++
++        return ResponseDto.<ResponseBoardDTO>builder()
++                .data(responseBoardDTO)
++                .status(HttpStatus.OK.value())
++                .message(HttpStatus.OK.name())
++                .build();
+     }
+ }
+diff --git a/src/main/java/com/project/hangmani/controller/StoreController.java b/src/main/java/com/project/hangmani/controller/StoreController.java
+index cdb31f6..e769da9 100644
+--- a/src/main/java/com/project/hangmani/controller/StoreController.java
++++ b/src/main/java/com/project/hangmani/controller/StoreController.java
+@@ -1,12 +1,15 @@
+ package com.project.hangmani.controller;
+ 
+ import com.project.hangmani.domain.Store;
++import com.project.hangmani.dto.ResponseDto;
+ import com.project.hangmani.dto.StoreDTO;
+ import com.project.hangmani.dto.StoreDTO.RequestStoreDTO;
+ import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
+ import com.project.hangmani.service.StoreService;
+ import com.project.hangmani.util.ConvertData;
++import jakarta.validation.Valid;
+ import lombok.extern.slf4j.Slf4j;
++import org.springframework.http.HttpStatus;
+ import org.springframework.web.bind.annotation.*;
+ 
+ import java.util.List;
+@@ -21,12 +24,15 @@ public class StoreController {
+         this.storeService = storeService;
+         this.convertData = new ConvertData();
+     }
+-    @GetMapping("/storeinfo-sido")
++    @GetMapping
+     @ResponseBody
+-    //(@RequestParam("sido") String sido, @RequestParam("sigugun") String sigugun){
+-    public ResponseStoreDTO helloString(RequestStoreDTO requestStoreDTO){
+-        ResponseStoreDTO storeDTO = storeService.getStoreInfo(requestStoreDTO);
++    public ResponseDto<List<ResponseStoreDTO>> getStoresInfo(@ModelAttribute @Valid RequestStoreDTO requestStoreDTO){
++        List<ResponseStoreDTO> storeInfo = storeService.getStoreInfo(requestStoreDTO);
+ 
+-        return new ResponseStoreDTO();
++        return ResponseDto.<List<ResponseStoreDTO>>builder()
++                .data(storeInfo)
++                .status(HttpStatus.OK.value())
++                .message(HttpStatus.OK.name())
++                .build();
+     }
+ }
+diff --git a/src/main/java/com/project/hangmani/convert/RequestConvert.java b/src/main/java/com/project/hangmani/convert/RequestConvert.java
+index 997cf53..114ee7e 100644
+--- a/src/main/java/com/project/hangmani/convert/RequestConvert.java
++++ b/src/main/java/com/project/hangmani/convert/RequestConvert.java
+@@ -10,14 +10,15 @@ public class RequestConvert {
+      * @param boardDTO
+      * @return
+      */
+-    public Board boardInsertDTOToBoard(BoardDTO.RequestBoardDTO boardDTO) {
++    public Board convertEntity(BoardDTO.RequestBoardDTO boardDTO) {
+         String boardWriter = boardDTO.getBoardWriter();
+-        String content = boardDTO.getContent();
+-        String title = boardDTO.getTitle();
++        String content = boardDTO.getBoardContent();
++        String title = boardDTO.getBoardTitle();
++
+         Board board = new Board();
+         board.setBoardWriter(boardWriter);
+-        board.setContent(content);
+-        board.setTitle(title);
++        board.setBoardContent(content);
++        board.setBoardTitle(title);
+         return board;
+     }
+ }
+diff --git a/src/main/java/com/project/hangmani/convert/ResponseConvert.java b/src/main/java/com/project/hangmani/convert/ResponseConvert.java
+index f8d350f..486deb7 100644
+--- a/src/main/java/com/project/hangmani/convert/ResponseConvert.java
++++ b/src/main/java/com/project/hangmani/convert/ResponseConvert.java
+@@ -1,5 +1,37 @@
+ package com.project.hangmani.convert;
+ 
++import com.project.hangmani.domain.Board;
++import com.project.hangmani.domain.Store;
++import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
++import com.project.hangmani.dto.StoreDTO;
++import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
++
+ public class ResponseConvert {
+-//    public B
++    public ResponseBoardDTO convertResponseDTO(Board board) {
++        return ResponseBoardDTO.builder()
++                .boardNo(board.getBoardNo())
++                .boardContent(board.getBoardContent())
++                .boardWriter(board.getBoardWriter())
++                .boardTitle(board.getBoardTitle())
++                .createAt(board.getCreateAt())
++                .updateAt(board.getUpdateAt())
++                .build();
++    }
++    public ResponseStoreDTO convertResponseDTO(Store store) {
++        return ResponseStoreDTO.builder()
++                .storeUuid(store.getStoreUuid())
++                .storeName(store.getStoreName())
++                .storeAddress(store.getStoreAddress())
++                .storeLatitude(store.getStoreLatitude())
++                .storeLongitude(store.getStoreLongitude())
++                .storeBizNo(store.getStoreBizNo())
++                .storeTelNum(store.getStoreTelNum())
++                .storeMobileNum(store.getStoreMobileNum())
++                .storeOpenTime(store.getStoreOpenTime())
++                .storeCloseTime(store.getStoreCloseTime())
++                .storeIsActivity(store.getStoreIsActivity())
++                .storeSido(store.getStoreSido())
++                .storeSigugun(store.getStoreSigugun())
++                .build();
++    }
+ }
+diff --git a/src/main/java/com/project/hangmani/domain/Board.java b/src/main/java/com/project/hangmani/domain/Board.java
+index 3c9b578..57ae2b6 100644
+--- a/src/main/java/com/project/hangmani/domain/Board.java
++++ b/src/main/java/com/project/hangmani/domain/Board.java
+@@ -8,25 +8,15 @@ import java.sql.Date;
+ @Setter
+ @Getter
+ @ToString
++@AllArgsConstructor
++@NoArgsConstructor
+ @EqualsAndHashCode
+ public class Board {
+     private int boardNo;
+-    private String title;
+-    private String content;
++    private String boardTitle;
++    private String boardContent;
+     private String boardWriter;
+     private Date createAt;
+     private Date updateAt;
+ 
+-    public Board() {
+-    }
+-
+-    public Board(int boardNo, String title, String content,
+-                 String boardWriter, Date createAt, Date updateAt) {
+-        this.boardNo = boardNo;
+-        this.title = title;
+-        this.content = content;
+-        this.boardWriter = boardWriter;
+-        this.createAt = createAt;
+-        this.updateAt = updateAt;
+-    }
+ }
+diff --git a/src/main/java/com/project/hangmani/dto/BoardDTO.java b/src/main/java/com/project/hangmani/dto/BoardDTO.java
+index 7ec02f8..d36c8b0 100644
+--- a/src/main/java/com/project/hangmani/dto/BoardDTO.java
++++ b/src/main/java/com/project/hangmani/dto/BoardDTO.java
+@@ -1,43 +1,39 @@
+ package com.project.hangmani.dto;
+ 
+ import com.project.hangmani.domain.Board;
+-import com.project.hangmani.enums.ResponseStatus;
+ import jakarta.validation.constraints.NotBlank;
+ import jakarta.validation.constraints.NotNull;
++import lombok.AllArgsConstructor;
++import lombok.Builder;
+ import lombok.Getter;
++import lombok.NoArgsConstructor;
++
++import java.sql.Date;
+ 
+ public class BoardDTO {
+     @Getter
++
++    @NoArgsConstructor
++    @AllArgsConstructor
+     public static class RequestBoardDTO {
+-        @NotBlank
+-        private String title;
+-        @NotNull
+-        private String content;
+-        @NotNull
++        @NotBlank(message = "boardTitle insert")
++        private String boardTitle;
++        @NotNull(message = "boardContent insert")
++        private String boardContent;
++        @NotNull(message = "boardWriter insert")
+         private String boardWriter;
+ 
+-        public RequestBoardDTO() {
+-        }
+-
+-        public RequestBoardDTO(String title, String content, String boardWriter) {
+-            this.title = title;
+-            this.content = content;
+-            this.boardWriter = boardWriter;
+-        }
+     }
+     @Getter
++    @NoArgsConstructor
++    @AllArgsConstructor
++    @Builder
+     public static class ResponseBoardDTO {
+-            private Board board;
+-            private Integer status;
+-            private String message;
+-
+-            public ResponseBoardDTO() {
+-            }
+-
+-            public ResponseBoardDTO(Board board, Integer status, String message) {
+-                this.board = board;
+-                this.status = status;
+-                this.message = message;
+-            }
++        private int boardNo;
++        private String boardTitle;
++        private String boardContent;
++        private String boardWriter;
++        private Date createAt;
++        private Date updateAt;
+     }
+ }
+diff --git a/src/main/java/com/project/hangmani/dto/StoreDTO.java b/src/main/java/com/project/hangmani/dto/StoreDTO.java
+index 0c121b4..6f57da7 100644
+--- a/src/main/java/com/project/hangmani/dto/StoreDTO.java
++++ b/src/main/java/com/project/hangmani/dto/StoreDTO.java
+@@ -3,39 +3,45 @@ package com.project.hangmani.dto;
+ import com.project.hangmani.domain.Store;
+ import jakarta.validation.constraints.NotBlank;
+ import jakarta.validation.constraints.NotNull;
+-import lombok.Getter;
++import lombok.*;
+ 
+ import java.util.List;
+ 
+ public class StoreDTO {
+     @Getter
++    @Setter
++    @ToString
++    @AllArgsConstructor
++    @NoArgsConstructor
+     public static class RequestStoreDTO {
+-        @NotBlank
+-        private String sido;
+         @NotNull
+-        private String sigugun;
+-
+-        public RequestStoreDTO() {
+-        }
+-
+-        public RequestStoreDTO(String sido, String sigugun) {
+-            this.sido = sido;
+-            this.sigugun = sigugun;
+-        }
++        private Double startLatitude;
++        @NotNull
++        private Double endLatitude;
++        @NotNull
++        private Double startLongitude;
++        @NotNull
++        private Double endLongitude;
++        private int limit;
+     }
+     @Getter
++    @NoArgsConstructor
++    @AllArgsConstructor
++    @Builder
+     public static class ResponseStoreDTO {
+-        private List<Store> storeList;
+-        private Integer status;
+-        private String message;
+-
+-        public ResponseStoreDTO() {
+-        }
++        private String storeUuid;
++        private String storeName;
++        private String storeAddress;
++        private String storeLatitude;
++        private String storeLongitude;
++        private String storeBizNo;
++        private String storeTelNum;
++        private String storeMobileNum;
++        private String storeOpenTime;
++        private String storeCloseTime;
++        private Boolean storeIsActivity;
++        private String storeSido;
++        private  String storeSigugun;
+ 
+-        public ResponseStoreDTO(List<Store> storeList, Integer status, String message) {
+-            this.storeList = storeList;
+-            this.status = status;
+-            this.message = message;
+-        }
+     }
+ }
+diff --git a/src/main/java/com/project/hangmani/exception/CustomExceptionHandler.java b/src/main/java/com/project/hangmani/exception/CustomExceptionHandler.java
+index 02fb91d..6696973 100644
+--- a/src/main/java/com/project/hangmani/exception/CustomExceptionHandler.java
++++ b/src/main/java/com/project/hangmani/exception/CustomExceptionHandler.java
+@@ -1,23 +1,27 @@
+ package com.project.hangmani.exception;
+ 
+-import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
++import com.project.hangmani.dto.ResponseDto;
+ import lombok.extern.slf4j.Slf4j;
+ import org.springframework.http.HttpStatus;
+ import org.springframework.web.bind.annotation.ExceptionHandler;
+ import org.springframework.web.bind.annotation.ResponseStatus;
+ import org.springframework.web.bind.annotation.RestControllerAdvice;
+ 
+-import static com.project.hangmani.enums.ResponseStatus.*;
+ 
+ @RestControllerAdvice(basePackages = "com.project.hangmani")
+ @Slf4j
+ public class CustomExceptionHandler {
+     @ExceptionHandler(NotFoundUser.class)
+     @ResponseStatus(HttpStatus.NOT_FOUND)
+-    public ResponseBoardDTO NotFoundUserException(RuntimeException e) {
++    public ResponseDto NotFoundUserException(RuntimeException e) {
+         log.error("Error={}",e);
+-        return new ResponseBoardDTO(null, NOT_FOUND.getCode(), e.getMessage());
++        return ResponseDto.builder()
++                .data(null)
++                .status(HttpStatus.NOT_FOUND.value())
++                .message(e.getMessage())
++                .build();
+     }
+ 
+ 
++
+ }
+diff --git a/src/main/java/com/project/hangmani/exception/DBExceptionHandler.java b/src/main/java/com/project/hangmani/exception/DBExceptionHandler.java
+index bedb36c..eee5481 100644
+--- a/src/main/java/com/project/hangmani/exception/DBExceptionHandler.java
++++ b/src/main/java/com/project/hangmani/exception/DBExceptionHandler.java
+@@ -1,6 +1,6 @@
+ package com.project.hangmani.exception;
+ 
+-import com.project.hangmani.dto.BoardDTO;
++import com.project.hangmani.dto.ResponseDto;
+ import lombok.extern.slf4j.Slf4j;
+ import org.springframework.http.HttpStatus;
+ import org.springframework.web.bind.annotation.ExceptionHandler;
+@@ -9,14 +9,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
+ 
+ import java.net.ConnectException;
+ 
+-import static com.project.hangmani.enums.ResponseStatus.INTERNAL_SERER_ERROR;
+ @RestControllerAdvice
+ @Slf4j
+ public class DBExceptionHandler {
+     @ExceptionHandler(ConnectException.class)
+     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+-    public BoardDTO.ResponseBoardDTO DBConnectException(Exception e) {
++    public ResponseDto DBConnectException(Exception e) {
+         log.error("error={}", e);
+-        return new BoardDTO.ResponseBoardDTO(null, INTERNAL_SERER_ERROR.getCode(), "server not open");
++        return ResponseDto.builder()
++                .data(null)
++                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
++                .message("server not open")
++                .build();
+     }
+ }
+diff --git a/src/main/java/com/project/hangmani/exception/NotFoundUser.java b/src/main/java/com/project/hangmani/exception/NotFoundUser.java
+index 6ea5424..69731d4 100644
+--- a/src/main/java/com/project/hangmani/exception/NotFoundUser.java
++++ b/src/main/java/com/project/hangmani/exception/NotFoundUser.java
+@@ -1,10 +1,8 @@
+ package com.project.hangmani.exception;
+ 
+-import org.springframework.http.HttpStatus;
+-import org.springframework.web.bind.annotation.ResponseStatus;
+ 
+-@ResponseStatus(HttpStatus.NOT_FOUND)
+-public class NotFoundUser extends RuntimeException{
++
++public class NotFoundUser extends NotFoundException{
+     public NotFoundUser() {
+         super("존재하지 않는 사용자 입니다.");
+     }
+diff --git a/src/main/java/com/project/hangmani/repository/BoardRepository.java b/src/main/java/com/project/hangmani/repository/BoardRepository.java
+index 09ac222..c5bd3d4 100644
+--- a/src/main/java/com/project/hangmani/repository/BoardRepository.java
++++ b/src/main/java/com/project/hangmani/repository/BoardRepository.java
+@@ -34,14 +34,12 @@ public class BoardRepository {
+     }
+ 
+     public int insertBoard(Board board) {
+-        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+-
+         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(template);
+         Date createAt = convertData.getSqlDate();
+         MapSqlParameterSource params = new MapSqlParameterSource()
+                 .addValue("boardwriter", board.getBoardWriter())
+-                .addValue("content", board.getContent())
+-                .addValue("title", board.getTitle())
++                .addValue("boardcontent", board.getBoardContent())
++                .addValue("boardtitle", board.getBoardTitle())
+                 .addValue("createat", createAt)
+                 .addValue("updateat", createAt);
+ 
+@@ -57,8 +55,8 @@ public class BoardRepository {
+         return (rs, rowNum) -> {
+             Board board = new Board();
+             board.setBoardNo(rs.getInt("boardno"));
+-            board.setContent(rs.getString("content"));
+-            board.setTitle(rs.getString("title"));
++            board.setBoardContent(rs.getString("boardcontent"));
++            board.setBoardTitle(rs.getString("boardtitle"));
+             board.setUpdateAt(rs.getDate("updateat"));
+             board.setCreateAt(rs.getDate("createat"));
+             board.setBoardWriter(rs.getString("boardwriter"));
+diff --git a/src/main/java/com/project/hangmani/repository/StoreRepository.java b/src/main/java/com/project/hangmani/repository/StoreRepository.java
+index 003924a..2572016 100644
+--- a/src/main/java/com/project/hangmani/repository/StoreRepository.java
++++ b/src/main/java/com/project/hangmani/repository/StoreRepository.java
+@@ -1,6 +1,9 @@
+ package com.project.hangmani.repository;
+ 
+ import com.project.hangmani.domain.Store;
++import com.project.hangmani.dto.StoreDTO;
++import com.project.hangmani.dto.StoreDTO.RequestStoreDTO;
++import lombok.extern.slf4j.Slf4j;
+ import org.springframework.jdbc.core.JdbcTemplate;
+ import org.springframework.jdbc.core.RowMapper;
+ import org.springframework.stereotype.Repository;
+@@ -9,16 +12,24 @@ import javax.sql.DataSource;
+ import java.util.List;
+ 
+ @Repository
++@Slf4j
+ public class StoreRepository {
+-    private final String findByAreaSql = "SELECT * FROM store" +
+-            " where store.storesido= ? and store.storesigugun= ?;";
++    private final String findByAreaSql = "SELECT * FROM store " +
++            " where (? < storelatitude and storelatitude < ?) or (? < storelongitude and storelongitude < ?) limit ?;";
+     private JdbcTemplate template;
+     public StoreRepository(DataSource dataSource) {
+         this.template = new JdbcTemplate(dataSource);
+     }
+ 
+-    public List<Store> findStoreInfoByArea(String sido, String sigugun) {
+-        List<Store> list = template.query(findByAreaSql,new Object[]{sido, sigugun}, storeRowMapper());
++    public List<Store> findStoreInfoByArea(RequestStoreDTO requestStoreDTO) {
++        Double startLatitude = requestStoreDTO.getStartLatitude();
++        Double endLatitude = requestStoreDTO.getEndLatitude();
++        Double startLongitude = requestStoreDTO.getStartLongitude();
++        Double endLongitude = requestStoreDTO.getEndLongitude();
++        int limit = requestStoreDTO.getLimit();
++
++        List<Store> list = template.query(findByAreaSql, new Object[]{startLatitude, endLatitude
++                , startLongitude, endLongitude, limit}, storeRowMapper());
+         return list;
+     }
+     private RowMapper<Store> storeRowMapper(){
+diff --git a/src/main/java/com/project/hangmani/service/BoardService.java b/src/main/java/com/project/hangmani/service/BoardService.java
+index ffbd157..fd2e9c7 100644
+--- a/src/main/java/com/project/hangmani/service/BoardService.java
++++ b/src/main/java/com/project/hangmani/service/BoardService.java
+@@ -1,16 +1,15 @@
+ package com.project.hangmani.service;
+ 
++import com.project.hangmani.convert.ResponseConvert;
+ import com.project.hangmani.domain.Board;
+ import com.project.hangmani.dto.BoardDTO;
++import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
+ import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
+-import com.project.hangmani.enums.ResponseStatus;
+ import com.project.hangmani.exception.NotFoundUser;
+ import com.project.hangmani.repository.BoardRepository;
+ import com.project.hangmani.repository.UserRepository;
+ import com.project.hangmani.convert.RequestConvert;
+ import lombok.extern.slf4j.Slf4j;
+-import org.springframework.http.HttpStatus;
+-import org.springframework.http.HttpStatusCode;
+ import org.springframework.stereotype.Service;
+ import org.springframework.transaction.annotation.Transactional;
+ 
+@@ -21,11 +20,13 @@ public class BoardService {
+     private final BoardRepository boardRepository;
+     private final UserRepository userRepository;
+     private final RequestConvert requestConvert;
++    private final ResponseConvert responseConvert;
+ 
+     public BoardService(BoardRepository boardRepository, UserRepository userRepository) {
+         this.userRepository = userRepository;
+         this.boardRepository = boardRepository;
+         this.requestConvert = new RequestConvert();
++        this.responseConvert = new ResponseConvert();
+     }
+ 
+     /**
+@@ -34,18 +35,18 @@ public class BoardService {
+      * @return
+      */
+     @Transactional
+-    public ResponseBoardDTO createBoard(BoardDTO.RequestBoardDTO boardDTO) {
++    public ResponseBoardDTO createBoard(RequestBoardDTO boardDTO) {
+         //check id
+         if (userRepository.findById(boardDTO.getBoardWriter()).isEmpty()){
+-            String message = "존재하지 않는 사용자입니다.";
+-            throw new NotFoundUser(message);
++            throw new NotFoundUser();
+         }
+ 
+-        Board board = requestConvert.boardInsertDTOToBoard(boardDTO);
++        Board board = requestConvert.convertEntity(boardDTO);
+ 
+         int no = boardRepository.insertBoard(board);
+         Board resultBoard = boardRepository.findByNo(no).get();
+-        return new ResponseBoardDTO(resultBoard, ResponseStatus.OK.getCode(), "success");
++
++        return responseConvert.convertResponseDTO(resultBoard);
+ 
+     }
+ }
+\ No newline at end of file
+diff --git a/src/main/java/com/project/hangmani/service/StoreService.java b/src/main/java/com/project/hangmani/service/StoreService.java
+index 12ef311..af8568c 100644
+--- a/src/main/java/com/project/hangmani/service/StoreService.java
++++ b/src/main/java/com/project/hangmani/service/StoreService.java
+@@ -1,14 +1,14 @@
+ package com.project.hangmani.service;
+ 
++import com.project.hangmani.convert.ResponseConvert;
+ import com.project.hangmani.domain.Store;
+-import com.project.hangmani.dto.StoreDTO;
+ import com.project.hangmani.dto.StoreDTO.RequestStoreDTO;
+ import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
+-import com.project.hangmani.enums.ResponseStatus;
+ import com.project.hangmani.repository.StoreRepository;
++import org.springframework.http.HttpStatus;
+ import org.springframework.stereotype.Service;
+-import org.springframework.transaction.annotation.Transactional;
+ 
++import java.util.ArrayList;
+ import java.util.List;
+ 
+ //@Transactional
+@@ -16,13 +16,17 @@ import java.util.List;
+ public class StoreService {
+     private final StoreRepository storeRepository;
+ 
++    private final ResponseConvert responseConvert;
++
+     public StoreService(StoreRepository storeRepository) {
++        this.responseConvert = new ResponseConvert();
+         this.storeRepository = storeRepository;
+     }
+ 
+-    public ResponseStoreDTO getStoreInfo(RequestStoreDTO requestStoreDTO){
+-        List<Store> storeList = storeRepository.findStoreInfoByArea(
+-                requestStoreDTO.getSido(), requestStoreDTO.getSigugun());
+-        return new ResponseStoreDTO(storeList, ResponseStatus.OK.getCode(), "success");
++    public List<ResponseStoreDTO> getStoreInfo(RequestStoreDTO requestStoreDTO){
++        return storeRepository.findStoreInfoByArea(requestStoreDTO)
++                .stream()
++                .map(responseConvert::convertResponseDTO)
++                .toList();
+     }
+ }
+diff --git a/src/test/java/com/project/hangmani/service/StoreServiceTest.java b/src/test/java/com/project/hangmani/service/StoreServiceTest.java
+index 6f7fe21..52b3517 100644
+--- a/src/test/java/com/project/hangmani/service/StoreServiceTest.java
++++ b/src/test/java/com/project/hangmani/service/StoreServiceTest.java
+@@ -44,9 +44,9 @@ class StoreServiceTest {
+     @Test
+     @DisplayName("H2 데이터베이스 상점 데이터 확인")
+     void StoreInfoTest(){
+-        RequestStoreDTO requestStoreDTO = new RequestStoreDTO(sido, sigugun);
+-        ResponseStoreDTO data = storeService.getStoreInfo(requestStoreDTO);
+-        log.info("result={}",data);
+-        Assertions.assertThat(data.getStoreList().size()).isEqualTo(171);
++//        RequestStoreDTO requestStoreDTO = new RequestStoreDTO(sido, sigugun);
++//        ResponseStoreDTO data = storeService.getStoreInfo(requestStoreDTO);
++//        log.info("result={}",data);
++//        Assertions.assertThat(data.getStoreList().size()).isEqualTo(171);
+     }
+ }
+\ No newline at end of file

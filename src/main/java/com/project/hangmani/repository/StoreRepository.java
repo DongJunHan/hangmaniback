@@ -1,6 +1,9 @@
 package com.project.hangmani.repository;
 
 import com.project.hangmani.domain.Store;
+import com.project.hangmani.dto.StoreDTO;
+import com.project.hangmani.dto.StoreDTO.RequestStoreDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -9,16 +12,24 @@ import javax.sql.DataSource;
 import java.util.List;
 
 @Repository
+@Slf4j
 public class StoreRepository {
-    private final String findByAreaSql = "SELECT * FROM store" +
-            " where store.storesido= ? and store.storesigugun= ?;";
+    private final String findByAreaSql = "SELECT * FROM store " +
+            " where (? < storelatitude and storelatitude < ?) or (? < storelongitude and storelongitude < ?) limit ?;";
     private JdbcTemplate template;
     public StoreRepository(DataSource dataSource) {
         this.template = new JdbcTemplate(dataSource);
     }
 
-    public List<Store> findStoreInfoByArea(String sido, String sigugun) {
-        List<Store> list = template.query(findByAreaSql,new Object[]{sido, sigugun}, storeRowMapper());
+    public List<Store> findStoreInfoByArea(RequestStoreDTO requestStoreDTO) {
+        Double startLatitude = requestStoreDTO.getStartLatitude();
+        Double endLatitude = requestStoreDTO.getEndLatitude();
+        Double startLongitude = requestStoreDTO.getStartLongitude();
+        Double endLongitude = requestStoreDTO.getEndLongitude();
+        int limit = requestStoreDTO.getLimit();
+
+        List<Store> list = template.query(findByAreaSql, new Object[]{startLatitude, endLatitude
+                , startLongitude, endLongitude, limit}, storeRowMapper());
         return list;
     }
     private RowMapper<Store> storeRowMapper(){

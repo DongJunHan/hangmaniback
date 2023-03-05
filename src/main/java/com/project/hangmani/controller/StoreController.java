@@ -1,12 +1,15 @@
 package com.project.hangmani.controller;
 
 import com.project.hangmani.domain.Store;
+import com.project.hangmani.dto.ResponseDto;
 import com.project.hangmani.dto.StoreDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoreDTO;
 import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
 import com.project.hangmani.service.StoreService;
 import com.project.hangmani.util.ConvertData;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,12 +24,15 @@ public class StoreController {
         this.storeService = storeService;
         this.convertData = new ConvertData();
     }
-    @GetMapping("/storeinfo-sido")
+    @GetMapping
     @ResponseBody
-    //(@RequestParam("sido") String sido, @RequestParam("sigugun") String sigugun){
-    public ResponseStoreDTO helloString(RequestStoreDTO requestStoreDTO){
-        ResponseStoreDTO storeDTO = storeService.getStoreInfo(requestStoreDTO);
+    public ResponseDto<List<ResponseStoreDTO>> getStoresInfo(@ModelAttribute @Valid RequestStoreDTO requestStoreDTO){
+        List<ResponseStoreDTO> storeInfo = storeService.getStoreInfo(requestStoreDTO);
 
-        return new ResponseStoreDTO();
+        return ResponseDto.<List<ResponseStoreDTO>>builder()
+                .data(storeInfo)
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .build();
     }
 }

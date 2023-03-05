@@ -1,24 +1,35 @@
 package com.project.hangmani.controller;
 
+import com.project.hangmani.domain.Board;
+import com.project.hangmani.dto.BoardDTO;
 import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
 import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
+import com.project.hangmani.dto.ResponseDto;
 import com.project.hangmani.service.BoardService;
+import jakarta.validation.Valid;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/board")
+@Builder
 @Slf4j
 public class BoardController {
     private final BoardService boardService;
     public BoardController(BoardService boardService) {
         this.boardService = boardService;
     }
-    @PostMapping("/board-insert")
+    @PostMapping
     @ResponseBody
-    public ResponseBoardDTO createBoard(@RequestBody RequestBoardDTO boardDTO) {
-        RequestBoardDTO s = new RequestBoardDTO();
-        ResponseBoardDTO responseDTO = boardService.createBoard(boardDTO);
-        return responseDTO;
+    public ResponseDto<ResponseBoardDTO> createBoard(@RequestBody @Valid RequestBoardDTO boardDTO) {
+        ResponseBoardDTO responseBoardDTO = boardService.createBoard(boardDTO);
+
+        return ResponseDto.<ResponseBoardDTO>builder()
+                .data(responseBoardDTO)
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .build();
     }
 }
