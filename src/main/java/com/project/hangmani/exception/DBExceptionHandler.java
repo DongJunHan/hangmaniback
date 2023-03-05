@@ -1,6 +1,6 @@
 package com.project.hangmani.exception;
 
-import com.project.hangmani.dto.BoardDTO;
+import com.project.hangmani.dto.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,14 +9,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.net.ConnectException;
 
-import static com.project.hangmani.enums.ResponseStatus.INTERNAL_SERER_ERROR;
 @RestControllerAdvice
 @Slf4j
 public class DBExceptionHandler {
     @ExceptionHandler(ConnectException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public BoardDTO.ResponseBoardDTO DBConnectException(Exception e) {
+    public ResponseDto DBConnectException(Exception e) {
         log.error("error={}", e);
-        return new BoardDTO.ResponseBoardDTO(null, INTERNAL_SERER_ERROR.getCode(), "server not open");
+        return ResponseDto.builder()
+                .data(null)
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message("server not open")
+                .build();
     }
 }

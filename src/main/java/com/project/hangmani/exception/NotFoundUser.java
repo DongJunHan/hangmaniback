@@ -1,10 +1,8 @@
 package com.project.hangmani.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class NotFoundUser extends RuntimeException{
+
+public class NotFoundUser extends NotFoundException{
     public NotFoundUser() {
         super("존재하지 않는 사용자 입니다.");
     }
