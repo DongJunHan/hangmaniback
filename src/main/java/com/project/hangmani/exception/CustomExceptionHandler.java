@@ -15,7 +15,7 @@ public class CustomExceptionHandler {
     @ExceptionHandler(NotFoundUser.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseBoardDTO NotFoundUserException(RuntimeException e) {
-        e.printStackTrace();
+        log.error("Error={}",e);
         return new ResponseBoardDTO(null, NOT_FOUND.getCode(), e.getMessage());
     }
 
