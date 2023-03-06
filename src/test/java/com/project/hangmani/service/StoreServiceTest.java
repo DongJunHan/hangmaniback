@@ -1,7 +1,5 @@
 package com.project.hangmani.service;
 
-import com.project.hangmani.domain.Store;
-import com.project.hangmani.dto.StoreDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoreDTO;
 import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
 import com.project.hangmani.repository.StoreRepository;
@@ -20,8 +18,6 @@ import java.util.List;
 @Slf4j
 @SpringBootTest
 class StoreServiceTest {
-    private final String sido = "인천";
-    private final String sigugun = "부평구";
     @Autowired
     private StoreService storeService;
 
@@ -44,9 +40,18 @@ class StoreServiceTest {
     @Test
     @DisplayName("H2 데이터베이스 상점 데이터 확인")
     void StoreInfoTest(){
-//        RequestStoreDTO requestStoreDTO = new RequestStoreDTO(sido, sigugun);
-//        ResponseStoreDTO data = storeService.getStoreInfo(requestStoreDTO);
-//        log.info("result={}",data);
-//        Assertions.assertThat(data.getStoreList().size()).isEqualTo(171);
+        Double startLatitude = 37.463;
+        Double endLatitude = 37.528;
+        Double startLongitude = 127.019;
+        Double endLongitude = 127.107;
+        RequestStoreDTO requestStoreDTO = new RequestStoreDTO(
+                startLatitude,
+                endLatitude,
+                startLongitude,
+                endLongitude,
+                129);
+        List<ResponseStoreDTO> storeInfoList = storeService.getStoreInfo(requestStoreDTO);
+        log.info("result={}",storeInfoList);
+        Assertions.assertThat(storeInfoList.size()).isEqualTo(129);
     }
 }
