@@ -1,9 +1,9 @@
 package com.project.hangmani.controller;
 
-import com.project.hangmani.domain.Board;
-import com.project.hangmani.dto.BoardDTO;
 import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
+import com.project.hangmani.dto.BoardDTO.RequestDeleteDTO;
 import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
+import com.project.hangmani.dto.BoardDTO.ResponseDeleteDTO;
 import com.project.hangmani.dto.ResponseDto;
 import com.project.hangmani.service.BoardService;
 import jakarta.validation.Valid;
@@ -28,6 +28,18 @@ public class BoardController {
 
         return ResponseDto.<ResponseBoardDTO>builder()
                 .data(responseBoardDTO)
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .build();
+    }
+
+    @DeleteMapping
+    @ResponseBody
+    public ResponseDto<ResponseDeleteDTO> deleteBoard(@RequestBody @Valid RequestDeleteDTO boardDTO) {
+        ResponseDeleteDTO responseDeleteDTO = boardService.deleteBoard(boardDTO);
+
+        return ResponseDto.<ResponseDeleteDTO>builder()
+                .data(responseDeleteDTO)
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .build();

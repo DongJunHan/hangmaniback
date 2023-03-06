@@ -1,14 +1,12 @@
 package com.project.hangmani.repository;
 
 import com.project.hangmani.domain.Board;
-import com.project.hangmani.domain.User;
 import com.project.hangmani.util.ConvertData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +19,7 @@ import java.util.Optional;
 @Slf4j
 public class BoardRepository {
     private final String findByIdSql = "select * from board where boardno=?";
+    private final String deleteById = "delete from board where boardno=?";
     private JdbcTemplate template;
     private ConvertData convertData;
     public BoardRepository(DataSource dataSource) {
@@ -32,7 +31,9 @@ public class BoardRepository {
         List<Board> list = template.query(findByIdSql, boardRowMapper(), no);
         return list.stream().findAny();
     }
-
+    public int deleteBoard(int boardNo) {
+        return template.update(deleteById,boardNo);
+    }
     public int insertBoard(Board board) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(template);
         Date createAt = convertData.getSqlDate();

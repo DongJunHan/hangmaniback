@@ -3,10 +3,13 @@ package com.project.hangmani.convert;
 import com.project.hangmani.domain.Board;
 import com.project.hangmani.domain.Store;
 import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
-import com.project.hangmani.dto.StoreDTO;
+import com.project.hangmani.dto.BoardDTO.ResponseDeleteDTO;
 import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
 
 public class ResponseConvert {
+    public ResponseDeleteDTO convertResponseDTO(int rowNum) {
+        return ResponseDeleteDTO.builder().rowNum(rowNum).build();
+    }
     public ResponseBoardDTO convertResponseDTO(Board board) {
         return ResponseBoardDTO.builder()
                 .boardNo(board.getBoardNo())

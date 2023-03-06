@@ -2,9 +2,10 @@ package com.project.hangmani.service;
 
 import com.project.hangmani.convert.ResponseConvert;
 import com.project.hangmani.domain.Board;
-import com.project.hangmani.dto.BoardDTO;
 import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
+import com.project.hangmani.dto.BoardDTO.RequestDeleteDTO;
 import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
+import com.project.hangmani.dto.BoardDTO.ResponseDeleteDTO;
 import com.project.hangmani.exception.NotFoundUser;
 import com.project.hangmani.repository.BoardRepository;
 import com.project.hangmani.repository.UserRepository;
@@ -37,9 +38,7 @@ public class BoardService {
     @Transactional
     public ResponseBoardDTO createBoard(RequestBoardDTO boardDTO) {
         //check id
-        if (userRepository.findById(boardDTO.getBoardWriter()).isEmpty()){
-            throw new NotFoundUser();
-        }
+        checkID(boardDTO.getBoardWriter());
 
         Board board = requestConvert.convertEntity(boardDTO);
 
@@ -49,4 +48,24 @@ public class BoardService {
         return responseConvert.convertResponseDTO(resultBoard);
 
     }
+
+    /**
+     *
+     * @param boardDTO
+     * @return
+     */
+    @Transactional
+    public ResponseDeleteDTO deleteBoard(RequestDeleteDTO boardDTO) {
+        //check id
+        checkID(boardDTO.getBoardWriter());
+
+        int ret = boardRepository.deleteBoard(boardDTO.getBoardNo());
+        return responseConvert.convertResponseDTO(ret);
+    }
+    private void checkID(String boardWriter) {
+        if (userRepository.findById(boardWriter).isEmpty()){
+            throw new NotFoundUser();
+        }
+    }
+
 }

@@ -1,6 +1,5 @@
 package com.project.hangmani.dto;
 
-import com.project.hangmani.domain.Board;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,6 @@ import java.sql.Date;
 
 public class BoardDTO {
     @Getter
-
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RequestBoardDTO {
@@ -24,6 +22,19 @@ public class BoardDTO {
         private String boardWriter;
 
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class RequestDeleteDTO {
+        @NotNull(message = "please boardNo insert")
+        private int boardNo;
+        @NotNull(message = "please boardWriter insert")
+        private String boardWriter;
+
+    }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -36,4 +47,13 @@ public class BoardDTO {
         private Date createAt;
         private Date updateAt;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ResponseDeleteDTO {
+        private int rowNum;
+    }
+
 }
