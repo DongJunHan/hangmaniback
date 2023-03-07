@@ -2,10 +2,12 @@ package com.project.hangmani.service;
 
 import com.project.hangmani.convert.ResponseConvert;
 import com.project.hangmani.domain.Board;
+import com.project.hangmani.domain.User;
 import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
 import com.project.hangmani.dto.BoardDTO.RequestDeleteDTO;
 import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
 import com.project.hangmani.dto.BoardDTO.ResponseDeleteDTO;
+import com.project.hangmani.exception.FailDeleteData;
 import com.project.hangmani.exception.NotFoundUser;
 import com.project.hangmani.repository.BoardRepository;
 import com.project.hangmani.repository.UserRepository;
@@ -13,6 +15,8 @@ import com.project.hangmani.convert.RequestConvert;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 
 @Service
@@ -33,7 +37,7 @@ public class BoardService {
     /**
      *
      * @param boardDTO
-     * @return
+     * @return ResponseBoardDTO
      */
     @Transactional
     public ResponseBoardDTO createBoard(RequestBoardDTO boardDTO) {
@@ -52,15 +56,30 @@ public class BoardService {
     /**
      *
      * @param boardDTO
-     * @return
+     * @return ResponseDeleteDTO
      */
     @Transactional
     public ResponseDeleteDTO deleteBoard(RequestDeleteDTO boardDTO) {
-        //check id
-        checkID(boardDTO.getBoardWriter());
+        //check valid
+        validRequest(boardDTO);
 
-        int ret = boardRepository.deleteBoard(boardDTO.getBoardNo());
+        int ret = boardRepository.deleteByNo(boardDTO.getBoardNo());
+        if (ret == 0) {
+            throw new FailDeleteData();
+        }
         return responseConvert.convertResponseDTO(ret);
+    }
+
+    private void validRequest(RequestDeleteDTO dto) {
+        //check id
+        checkID(dto.getBoardWriter());
+
+        //check already delete
+        Optional<Board> byNo = boardRepository.findByNo(dto.getBoardNo());
+        Board board = byNo.get();
+        if (board.isDelete()){
+            throw new FailDeleteData();
+        }
     }
     private void checkID(String boardWriter) {
         if (userRepository.findById(boardWriter).isEmpty()){

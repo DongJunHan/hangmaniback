@@ -19,7 +19,7 @@ import java.util.Optional;
 @Slf4j
 public class BoardRepository {
     private final String findByIdSql = "select * from board where boardno=?";
-    private final String deleteById = "delete from board where boardno=?";
+    private final String deleteByNo = "update board set isdelete = 1 where boardno=?";
     private JdbcTemplate template;
     private ConvertData convertData;
     public BoardRepository(DataSource dataSource) {
@@ -31,8 +31,8 @@ public class BoardRepository {
         List<Board> list = template.query(findByIdSql, boardRowMapper(), no);
         return list.stream().findAny();
     }
-    public int deleteBoard(int boardNo) {
-        return template.update(deleteById,boardNo);
+    public int deleteByNo(int boardNo) {
+        return template.update(deleteByNo,boardNo);
     }
     public int insertBoard(Board board) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(template);
@@ -61,6 +61,7 @@ public class BoardRepository {
             board.setUpdateAt(rs.getDate("updateat"));
             board.setCreateAt(rs.getDate("createat"));
             board.setBoardWriter(rs.getString("boardwriter"));
+            board.setDelete(rs.getBoolean("isdelete"));
             return board;
         };
     }

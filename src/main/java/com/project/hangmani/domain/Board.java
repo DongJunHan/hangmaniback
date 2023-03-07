@@ -18,5 +18,6 @@ public class Board {
     private String boardWriter;
     private Date createAt;
     private Date updateAt;
+    private boolean isDelete;
 
 }
