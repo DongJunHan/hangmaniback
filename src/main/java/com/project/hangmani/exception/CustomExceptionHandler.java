@@ -14,7 +14,7 @@ public class CustomExceptionHandler {
     @ExceptionHandler(NotFoundUser.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseDTO NotFoundUserException(RuntimeException e) {
-        log.error("Error={}", e);
+        log.error("Error", e);
         return ResponseDTO.builder()
                 .data(null)
                 .status(HttpStatus.NOT_FOUND.value())
@@ -25,10 +25,21 @@ public class CustomExceptionHandler {
     @ExceptionHandler(FailDeleteData.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseDTO FailDeleteDataException(RuntimeException e) {
-        log.error("error={}",e);
+        log.error("error",e);
         return ResponseDTO.builder()
                 .data("data:{\"rowNum\" : 0}")
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message(e.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler(NotFoundStore.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseDTO NotFoundStoreException(RuntimeException e) {
+        log.error("NotFoundStore", e);
+        return ResponseDTO.builder()
+                .data(null)
+                .status(HttpStatus.NOT_FOUND.value())
                 .message(e.getMessage())
                 .build();
     }
