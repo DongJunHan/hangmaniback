@@ -1,6 +1,6 @@
 package com.project.hangmani.exception;
 
-import com.project.hangmani.dto.ResponseDto;
+import com.project.hangmani.dto.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -16,9 +16,9 @@ import java.net.ConnectException;
 public class DBExceptionHandler {
     @ExceptionHandler(ConnectException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseDto DBConnectException(Exception e) {
+    public ResponseDTO DBConnectException(Exception e) {
         log.error("error", e);
-        return ResponseDto.builder()
+        return ResponseDTO.builder()
                 .data(null)
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .message("server not open")
@@ -27,9 +27,9 @@ public class DBExceptionHandler {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseDto EmptyResultException(Exception e) {
+    public ResponseDTO EmptyResultException(Exception e) {
         log.error("EmptyResultException", e);
-        return ResponseDto.builder()
+        return ResponseDTO.builder()
                 .data(null)
                 .status(HttpStatus.NOT_FOUND.value())
                 .message(HttpStatus.NOT_FOUND.name())
@@ -38,9 +38,9 @@ public class DBExceptionHandler {
 
     @ExceptionHandler(IncorrectResultSizeDataAccessException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseDto ResultSizeException(Exception e) {
+    public ResponseDTO ResultSizeException(Exception e) {
         log.error("ResultSizeException", e);
-        return ResponseDto.builder()
+        return ResponseDTO.builder()
                 .data(null)
                 .status(HttpStatus.NOT_FOUND.value())
                 .message(HttpStatus.NOT_FOUND.name())

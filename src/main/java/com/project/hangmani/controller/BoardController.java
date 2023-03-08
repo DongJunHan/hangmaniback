@@ -4,7 +4,7 @@ import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
 import com.project.hangmani.dto.BoardDTO.RequestDeleteDTO;
 import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
 import com.project.hangmani.dto.BoardDTO.ResponseDeleteDTO;
-import com.project.hangmani.dto.ResponseDto;
+import com.project.hangmani.dto.ResponseDTO;
 import com.project.hangmani.service.BoardService;
 import jakarta.validation.Valid;
 import lombok.Builder;
@@ -23,10 +23,10 @@ public class BoardController {
     }
     @PostMapping
     @ResponseBody
-    public ResponseDto<ResponseBoardDTO> createBoard(@RequestBody @Valid RequestBoardDTO boardDTO) {
+    public ResponseDTO<ResponseBoardDTO> createBoard(@RequestBody @Valid RequestBoardDTO boardDTO) {
         ResponseBoardDTO responseBoardDTO = boardService.createBoard(boardDTO);
 
-        return ResponseDto.<ResponseBoardDTO>builder()
+        return ResponseDTO.<ResponseBoardDTO>builder()
                 .data(responseBoardDTO)
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
@@ -35,10 +35,10 @@ public class BoardController {
 
     @DeleteMapping
     @ResponseBody
-    public ResponseDto<ResponseDeleteDTO> deleteBoard(@RequestBody @Valid RequestDeleteDTO boardDTO) {
+    public ResponseDTO<ResponseDeleteDTO> deleteBoard(@RequestBody @Valid RequestDeleteDTO boardDTO) {
         ResponseDeleteDTO responseDeleteDTO = boardService.deleteBoard(boardDTO);
 
-        return ResponseDto.<ResponseDeleteDTO>builder()
+        return ResponseDTO.<ResponseDeleteDTO>builder()
                 .data(responseDeleteDTO)
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
