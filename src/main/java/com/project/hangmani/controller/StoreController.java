@@ -1,9 +1,7 @@
 package com.project.hangmani.controller;
 
-import com.project.hangmani.domain.Store;
 import com.project.hangmani.dto.ResponseDto;
-import com.project.hangmani.dto.StoreDTO;
-import com.project.hangmani.dto.StoreDTO.RequestStoreDTO;
+import com.project.hangmani.dto.StoreDTO.RequestStoresDTO;
 import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
 import com.project.hangmani.service.StoreService;
 import com.project.hangmani.util.ConvertData;
@@ -26,7 +24,7 @@ public class StoreController {
     }
     @GetMapping
     @ResponseBody
-    public ResponseDto<List<ResponseStoreDTO>> getStoresInfo(@ModelAttribute @Valid RequestStoreDTO requestStoreDTO){
+    public ResponseDto<List<ResponseStoreDTO>> getStoresInfo(@ModelAttribute @Valid RequestStoresDTO requestStoreDTO){
         List<ResponseStoreDTO> storeInfo = storeService.getStoreInfo(requestStoreDTO);
 
         return ResponseDto.<List<ResponseStoreDTO>>builder()
@@ -34,5 +32,16 @@ public class StoreController {
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .build();
+    }
+
+    @GetMapping("/{storeUuid}")
+    @ResponseBody
+    public ResponseDto<ResponseStoreDTO> getStoreInfoByUuid(@PathVariable("storeUuid") String storeUuid) {
+        return ResponseDto.<ResponseStoreDTO>builder()
+                .data(storeService.getStoreInfo(storeUuid))
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .build();
+
     }
 }

@@ -1,11 +1,9 @@
 package com.project.hangmani.dto;
 
-import com.project.hangmani.domain.Store;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.List;
 
 public class StoreDTO {
     @Getter
@@ -13,7 +11,7 @@ public class StoreDTO {
     @ToString
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class RequestStoreDTO {
+    public static class RequestStoresDTO {
         @NotNull
         private Double startLatitude;
         @NotNull
@@ -23,6 +21,15 @@ public class StoreDTO {
         @NotNull
         private Double endLongitude;
         private int limit;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class RequestStoreDTO {
+        @NotBlank
+        private String storeUuid;
     }
     @Getter
     @NoArgsConstructor
