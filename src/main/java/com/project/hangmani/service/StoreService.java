@@ -1,11 +1,16 @@
 package com.project.hangmani.service;
 
 import com.project.hangmani.convert.ResponseConvert;
+import com.project.hangmani.domain.Store;
+import com.project.hangmani.dto.StoreDTO.RequestStoreUpdateDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoresDTO;
 import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
+import com.project.hangmani.exception.FailUpdateStore;
+import com.project.hangmani.exception.NotFoundStore;
 import com.project.hangmani.repository.StoreRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,5 +37,21 @@ public class StoreService {
         return responseConvert.convertResponseDTO(
                 storeRepository.findStoreInfoByUuid(
                         storeUuid));
+    }
+    @Transactional
+    public ResponseStoreDTO updateStoreInfo(String storeUuid, RequestStoreUpdateDTO requestStoreUpdateDTO) {
+        //check store exist
+        Store storeInfoByUuid = storeRepository.findStoreInfoByUuid(storeUuid);
+        if (storeInfoByUuid == null){
+            throw new NotFoundStore();
+        }
+        //update store info
+        int ret = storeRepository.updateStoreInfo(storeUuid, requestStoreUpdateDTO);
+        if (ret == 0) {
+            throw new FailUpdateStore();
+        }
+
+        return responseConvert.convertResponseDTO(
+                storeRepository.findStoreInfoByUuid(storeUuid));
     }
 }

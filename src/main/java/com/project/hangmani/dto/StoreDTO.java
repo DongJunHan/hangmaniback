@@ -27,9 +27,27 @@ public class StoreDTO {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class RequestStoreDTO {
+    public static class RequestStoreUpdateDTO {
         @NotBlank
-        private String storeUuid;
+        private String storeName;
+        @NotBlank
+        private String storeAddress;
+        @NotNull
+        private String storeLatitude;
+        @NotNull
+        private String storeLongitude;
+        @NotBlank
+        private String storeBizNo;
+        @NotBlank
+        private String storeTelNum;
+        @NotBlank
+        private String storeMobileNum;
+
+        private String storeOpenTime;
+        private String storeCloseTime;
+        private Boolean storeIsActivity;
+        private String storeSido;
+        private  String storeSigugun;
     }
     @Getter
     @NoArgsConstructor
