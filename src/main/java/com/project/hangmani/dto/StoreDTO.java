@@ -22,6 +22,17 @@ public class StoreDTO {
         private Double endLongitude;
         private int limit;
     }
+    @Getter
+    @Setter
+    @ToString
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class RequestStoreDeleteDTO {
+        @NotBlank
+        private String storeUuid;
+        private Double latitude;
+        private Double longitude;
+    }
 
     @Getter
     @Setter
@@ -49,6 +60,28 @@ public class StoreDTO {
         private String storeSido;
         private  String storeSigugun;
     }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class RequestStoreInsertDTO {
+        @NotBlank
+        private String storeName;
+        @NotBlank
+        private String storeAddress;
+        @NotNull
+        private String storeLatitude;
+        @NotNull
+        private String storeLongitude;
+        private String storeBizNo;
+        private String storeTelNum;
+        private String storeMobileNum;
+
+        private String storeOpenTime;
+        private String storeCloseTime;
+    }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
