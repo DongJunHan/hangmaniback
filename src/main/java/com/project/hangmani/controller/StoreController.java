@@ -1,6 +1,7 @@
 package com.project.hangmani.controller;
 
 import com.project.hangmani.dto.ResponseDTO;
+import com.project.hangmani.dto.StoreDTO.RequestStoreInsertDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoreUpdateDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoresDTO;
 import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
@@ -48,9 +49,19 @@ public class StoreController {
     @PutMapping("/{storeUuid}")
     @ResponseBody
     public ResponseDTO<ResponseStoreDTO> updateStore(@PathVariable("storeUuid") String storeUuid,
-                                                           @RequestBody RequestStoreUpdateDTO requestStoreUpdateDTO) {
+                                                           @RequestBody @Valid RequestStoreUpdateDTO requestStoreUpdateDTO) {
         return ResponseDTO.<ResponseStoreDTO>builder()
                 .data(storeService.updateStoreInfo(storeUuid, requestStoreUpdateDTO))
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .build();
+    }
+
+    @PostMapping
+    @ResponseBody
+    public ResponseDTO<ResponseStoreDTO> insertStore(@ModelAttribute @Valid RequestStoreInsertDTO requestStoreDTO) {
+        return ResponseDTO.<ResponseStoreDTO>builder()
+                .data(storeService.insertStoreInfo(requestStoreDTO))
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .build();

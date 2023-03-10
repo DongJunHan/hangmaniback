@@ -2,9 +2,12 @@ package com.project.hangmani.service;
 
 import com.project.hangmani.convert.ResponseConvert;
 import com.project.hangmani.domain.Store;
+import com.project.hangmani.dto.StoreDTO.RequestStoreInsertDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoreUpdateDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoresDTO;
 import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
+import com.project.hangmani.exception.AlreadyExistStore;
+import com.project.hangmani.exception.FailInsertData;
 import com.project.hangmani.exception.FailUpdateStore;
 import com.project.hangmani.exception.NotFoundStore;
 import com.project.hangmani.repository.StoreRepository;
@@ -53,5 +56,22 @@ public class StoreService {
 
         return responseConvert.convertResponseDTO(
                 storeRepository.findStoreInfoByUuid(storeUuid));
+    }
+    @Transactional
+    public ResponseStoreDTO insertStoreInfo(RequestStoreInsertDTO requestStoreDTO) {
+        //check already exist
+        Store findStore = storeRepository.findStoreByNameLatiLongi(requestStoreDTO);
+        log.info("store={}", findStore);
+        if (findStore != null) {
+            throw new AlreadyExistStore();
+        }
+
+        int index = storeRepository.insertStoreInfo(requestStoreDTO);
+        if (index == 0) {
+            throw new FailInsertData();
+        }
+
+        //get store info
+        return responseConvert.convertResponseDTO(storeRepository.findStoreByNameLatiLongi(requestStoreDTO));
     }
 }
