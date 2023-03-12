@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/winhistory")
+@RequestMapping("/api/v1/winhistory")
 @Slf4j
 public class WinHistoryController {
     private final WinHistoryService winHistoryService;
@@ -18,4 +18,6 @@ public class WinHistoryController {
         this.convertData = new ConvertData();
         this.winHistoryService = winHistoryService;
     }
+
+
 }

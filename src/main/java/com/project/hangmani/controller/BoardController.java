@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/board")
+@RequestMapping("/api/v1/board")
 @Builder
 @Slf4j
 public class BoardController {

@@ -1,10 +1,7 @@
 package com.project.hangmani.controller;
 
 import com.project.hangmani.dto.ResponseDTO;
-import com.project.hangmani.dto.StoreDTO.RequestStoreInsertDTO;
-import com.project.hangmani.dto.StoreDTO.RequestStoreUpdateDTO;
-import com.project.hangmani.dto.StoreDTO.RequestStoresDTO;
-import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
+import com.project.hangmani.dto.StoreDTO.*;
 import com.project.hangmani.service.StoreService;
 import com.project.hangmani.util.ConvertData;
 import jakarta.validation.Valid;
@@ -15,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/store")
+@RequestMapping("/api/v1/store")
 @Slf4j
 public class StoreController {
     private final StoreService storeService;
@@ -66,4 +63,17 @@ public class StoreController {
                 .message(HttpStatus.OK.name())
                 .build();
     }
+
+//    @PutMapping("/{storeUuid}")
+//    @ResponseBody
+//    public ResponseDTO<ResponseStoreChangeDTO> updateStore(@PathVariable("storeUuid") String storeUuid,
+//                                    @RequestBody @Valid RequestStoreChangeDTO requestStoreChangeDTO) {
+//        return ResponseDTO.<ResponseStoreChangeDTO>builder()
+//                .data(storeService.updateStoreInfo(requestStoreChangeDTO))
+//                .status(HttpStatus.OK.value())
+//                .message(HttpStatus.OK.name())
+//                .build();
+//    }
+
+
 }
