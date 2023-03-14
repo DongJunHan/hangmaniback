@@ -54,4 +54,15 @@ public class CustomExceptionHandler {
                 .message(e.getMessage())
                 .build();
     }
+
+    @ExceptionHandler(StringToJsonException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseDTO StringToJsonException(RuntimeException e) {
+        log.error("StringToJson", e);
+        return ResponseDTO.builder()
+                .data(null)
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(e.getMessage())
+                .build();
+    }
 }
