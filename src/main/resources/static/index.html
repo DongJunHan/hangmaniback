@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OAuthTest</title>
+</head>
+<body>
+<a onClick=handleClick()>login</a>
+<a onClick=handleOutClick()>logout</a>
+<script>
+
+    const client_id = "eec30559b1482179d83dd69beb47a816";
+    const redirect_uri = "http://localhost:8080/user";
+    const logout_uri = "http://localhost:8080/logout"
+    const admin = "c200e2b5c60b9b328adad0269005e146";
+    const handleClick = (e) => location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code`;
+    const handleOutClick = (e) => location.href = `https://kauth.kakao.com/oauth/logout?client_id=${client_id}&logout_redirect_uri=${logout_uri}`;
+    // function handleOutClick() {
+    //     var xhr = new XMLHttpRequest();
+    //     xhr.open('POST', 'https://kauth.kakao.com/v1/user/logout');
+    //     xhr.setRequestHeader('Authorization', 'Bearer ' + client_id + '/KakaoAK ' + admin);
+    //     xhr.onreadystatechange = function() {
+    //         if (xhr.readyState === 4) {
+    //             // 로그아웃 성공 후 처리할 내용
+    //             location.href = "http://localhost:8080/index.html";
+    //         }
+    //     };
+    //     xhr.send();
+    // }
+</script>
+</body>
+</html>
