@@ -3,6 +3,7 @@ package com.project.hangmani.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.hangmani.exception.StringToJsonException;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -19,8 +20,12 @@ public class ConvertData {
         }
     }
 
-    public Map<String, String> JsonToMap(String data) throws JsonProcessingException {
-        return objectMapper.readValue(data, new TypeReference<>() {});
+    public Map<String, String> JsonToMap(String data) {
+        try {
+            return objectMapper.readValue(data, new TypeReference<>() {});
+        } catch (JsonProcessingException e) {
+            throw new StringToJsonException("string to json data convert fail",e);
+        }
 
     }
 
@@ -35,5 +40,11 @@ public class ConvertData {
         return new java.sql.Date(timestamp.getTime());
     }
 
-
+    public String byteToHexString(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b & 0xff));
+        }
+        return sb.toString();
+    }
 }
