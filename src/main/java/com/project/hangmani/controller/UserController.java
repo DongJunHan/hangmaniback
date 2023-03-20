@@ -1,11 +1,7 @@
 package com.project.hangmani.controller;
 
-import com.project.hangmani.dto.UserDTO;
-import com.project.hangmani.dto.UserDTO.RequestUserDTO;
 import com.project.hangmani.service.OAuthService;
-import com.project.hangmani.util.ConvertData;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +14,8 @@ import java.util.Map;
 @Slf4j
 public class UserController {
     private final OAuthService oAuthService;
-    private final ConvertData convertData;
 
     public UserController(OAuthService oAuthService) {
-        this.convertData = new ConvertData();
         this.oAuthService = oAuthService;
     }
 
@@ -40,9 +34,9 @@ public class UserController {
         String kakaoUserInfo = oAuthService.getKakaoUserInfo(respTable);
         log.info("kakoUserInfo={}",kakaoUserInfo);
         model.addAttribute("access_token", respTable.get("access_token"));
+        oAuthService.InsertKaKaoUser(kakaoUserInfo, respTable.get("access_token"));
         return "redirect:/basic/login";
     }
-
 
     @GetMapping("/logout")
     public String logout() {
