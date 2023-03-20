@@ -3,12 +3,14 @@ package com.project.hangmani.security;
 import com.project.hangmani.exception.InvalidKeySpec;
 import com.project.hangmani.exception.NoSuchAlgorithm;
 import com.project.hangmani.exception.NullPointKey;
+import com.project.hangmani.util.ConvertData;
 import com.project.hangmani.util.Util;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 
 import static com.project.hangmani.config.SecurityConst.*;
@@ -30,10 +32,11 @@ public class AES {
 
 
     public byte[] encryptData(String text) {
-        Cipher cipher = getCipher();
+        Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
+        ConvertData convertData = new ConvertData();
         // Encrypt plaintext
         try {
-            return cipher.doFinal(text.getBytes());
+            return cipher.doFinal(convertData.stringToByte(text, StandardCharsets.UTF_8));
         } catch (IllegalBlockSizeException e) {
             throw new RuntimeException(e);
         } catch (BadPaddingException e) {
@@ -42,7 +45,7 @@ public class AES {
     }
 
     public byte[] decryptData(byte[] encryptData) {
-        Cipher cipher = getCipher();
+        Cipher cipher = getCipher(Cipher.DECRYPT_MODE);
         try {
             return cipher.doFinal(encryptData);
         } catch (IllegalBlockSizeException e) {
@@ -52,7 +55,7 @@ public class AES {
         }
     }
 
-    private Cipher getCipher() {
+    private Cipher getCipher(int mode) {
         if (key == null && key.length == 0)
             throw new NullPointKey();
         // Create secret key
@@ -61,7 +64,7 @@ public class AES {
         Cipher cipher;
         try {
             cipher = Cipher.getInstance(CIPHER_ALGORITHM);
-            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+            cipher.init(mode, secretKeySpec);
             return cipher;
         } catch (NoSuchAlgorithmException e) {
             throw new NoSuchAlgorithm("getCipher", e);
