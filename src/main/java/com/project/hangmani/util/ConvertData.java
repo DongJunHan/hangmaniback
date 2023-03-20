@@ -5,7 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.hangmani.exception.StringToJsonException;
 
+import java.nio.charset.Charset;
 import java.sql.Timestamp;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
@@ -46,5 +48,22 @@ public class ConvertData {
             sb.append(String.format("%02x", b & 0xff));
         }
         return sb.toString();
+    }
+    public String byteToBase64(byte[] input) {
+        // Convert encrypted bytes to Base64 encoded string
+        return Base64.getEncoder().encodeToString(input);
+    }
+
+    public byte[] base64ToByte(String base64) {
+        // Convert decrypt base64 to byte[]
+        return Base64.getDecoder().decode(base64);
+    }
+
+    public String byteToString(byte[] input, Charset encoding) {
+        return new String(input, encoding);
+    }
+
+    public byte[] stringToByte(String input, Charset encoding) {
+        return input.getBytes(encoding);
     }
 }
