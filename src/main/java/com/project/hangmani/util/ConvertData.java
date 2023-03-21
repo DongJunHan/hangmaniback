@@ -22,7 +22,7 @@ public class ConvertData {
         }
     }
 
-    public Map<String, String> JsonToMap(String data) {
+    public Map<String, Object> JsonToMap(String data) {
         try {
             return objectMapper.readValue(data, new TypeReference<>() {});
         } catch (JsonProcessingException e) {
@@ -36,7 +36,12 @@ public class ConvertData {
         long time = date.getTime();
         return new java.sql.Date(time);
     }
+    public java.sql.Date addCurrentDate(long timeStamp) {
+        Date date = new Date();
+        long futureTime = date.getTime() + timeStamp;
+        return new java.sql.Date(futureTime);
 
+    }
     public java.sql.Date convertSqlDate(long timeStamp) {
         Timestamp timestamp = new Timestamp(timeStamp * 1000);
         return new java.sql.Date(timestamp.getTime());
