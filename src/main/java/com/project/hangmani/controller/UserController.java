@@ -1,5 +1,11 @@
 package com.project.hangmani.controller;
 
+import com.project.hangmani.convert.RequestConvert;
+import com.project.hangmani.dto.UserDTO.RequestInsertOAuthDTO;
+import com.project.hangmani.dto.UserDTO.RequestInsertScopeDTO;
+import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
+import com.project.hangmani.dto.UserDTO.ResponseUserDTO;
+import com.project.hangmani.service.KakaoOAuthService;
 import com.project.hangmani.service.OAuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -13,10 +19,25 @@ import java.util.Map;
 @RequestMapping("/user")
 @Slf4j
 public class UserController {
-    private final OAuthService oAuthService;
+    private final KakaoOAuthService kakaoOAuthService;
+    private static OAuthService oAuthService;
+    private final RequestConvert requestConvert;
+    private String oauth_type;
 
-    public UserController(OAuthService oAuthService) {
-        this.oAuthService = oAuthService;
+    public UserController(KakaoOAuthService kakaoOAuthService) {
+        this.requestConvert = new RequestConvert();
+        this.kakaoOAuthService = kakaoOAuthService;
+    }
+    @GetMapping("/{oauth_type}")
+    public String login(@PathVariable("oauth_type") String oauth_type) {
+        if (oauth_type.equals("kakao")) {
+            this.oAuthService = kakaoOAuthService;
+            this.oauth_type = oauth_type;
+            return "redirect:" + oAuthService.getAuthorizationUrl();
+        }else{
+            return "redirect:/error";
+        }
+
     }
 
     @GetMapping
@@ -30,11 +51,16 @@ public class UserController {
         log.info("error={}", error);
         log.info("errorDescription={}", errorDescription);
 
-        Map<String, String> respTable = oAuthService.getAccessToken(code);
-        String kakaoUserInfo = oAuthService.getKakaoUserInfo(respTable);
-        log.info("kakoUserInfo={}",kakaoUserInfo);
-        model.addAttribute("access_token", respTable.get("access_token"));
-        oAuthService.InsertKaKaoUser(kakaoUserInfo, respTable.get("access_token"));
+        Map<String, Object> respTable = oAuthService.getAccessToken(code);
+        Map<String, Object> kakaoUserInfo = oAuthService.getUserInfo(respTable);
+
+        RequestInsertUserDTO userDTO = requestConvert.convertDTO(respTable, kakaoUserInfo.get("id").toString());
+        RequestInsertScopeDTO scopeDTO = requestConvert.convertDTO(kakaoUserInfo);
+        RequestInsertOAuthDTO oAuthDTO = requestConvert.convertDTO(kakaoUserInfo.get("id").toString(), this.oauth_type);
+
+        ResponseUserDTO responseUserDTO = oAuthService.InsertUser(userDTO, scopeDTO, oAuthDTO);
+
+        model.addAttribute("responseUserDTO", responseUserDTO);
         return "redirect:/basic/login";
     }
 

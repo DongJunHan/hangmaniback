@@ -1,23 +1,21 @@
 package com.project.hangmani.domain;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+
+import java.sql.Date;
 
 @Setter
 @Getter
 @ToString
 @EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
-    private String member_id;
-    private int money;
-
-    public User() {
-    }
-
-    public User(String member_id, int money) {
-        this.member_id = member_id;
-        this.money = money;
-    }
+    private String refreshToken;
+    private Date refreshTokenExpire;
+    private String id;
+    private String gender;
+    private String email;
+    private String oAuthType;
+    private String age;
 }

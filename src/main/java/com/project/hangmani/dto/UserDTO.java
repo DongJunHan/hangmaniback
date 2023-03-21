@@ -1,9 +1,8 @@
 package com.project.hangmani.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.sql.Date;
 
 
 public class UserDTO {
@@ -12,31 +11,48 @@ public class UserDTO {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RequestUserDTO {
-        private String accessToken;
-        private String tokenType;
+    @Builder
+    public static class RequestInsertUserDTO {
+        private String id;
         private String refreshToken;
-        private long expiresIn;
-        private String scope;
-        private long refreshTokenExpiresIn;
+        private Date refreshTokenExpire;
 
     }
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RequestAuthDTO {
-        private String tokenType;
-        private String accessToken;
-        private String idToken;
-        private long expiresIn;
-        private String refreshToken;
-        private String refreshTokenExpiresIn;
-        private String scope;
+    @Builder
+    public static class RequestInsertScopeDTO {
+        private String id;
+        private String email;
+        private String oauthType;
+        private String age;
+        private String  gender;
+    }
 
-
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class RequestInsertOAuthDTO {
+        private String id;
+        private String oAuthType;
     }
 
 
+
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ResponseUserDTO {
+        private String id;
+        private String oAuthType;
+        private String refreshToken;
+    }
 
 }
