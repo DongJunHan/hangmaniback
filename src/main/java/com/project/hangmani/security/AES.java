@@ -7,6 +7,7 @@ import com.project.hangmani.util.ConvertData;
 import com.project.hangmani.util.Util;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
@@ -16,11 +17,12 @@ import java.security.*;
 import static com.project.hangmani.config.SecurityConst.*;
 
 @Slf4j
+@Component
 public class AES {
-    private byte[] key;
-
+    private static byte[] key;
     @PostConstruct
     public void init() {
+        log.info("start");
         Util util = new Util();
 
         this.key = util.getKeyFromFile();
@@ -28,13 +30,14 @@ public class AES {
             this.key = createAESKey(KEY_SIZE);
             util.saveByteData(this.key);
         }
+        log.info("this.key={}", this.key);
     }
 
 
     public byte[] encryptData(String text) {
         Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
         ConvertData convertData = new ConvertData();
-        // Encrypt plaintext
+        // Encrypt plaintext®
         try {
             return cipher.doFinal(convertData.stringToByte(text, StandardCharsets.UTF_8));
         } catch (IllegalBlockSizeException e) {
