@@ -7,9 +7,9 @@ import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
 import com.project.hangmani.dto.UserDTO.ResponseUserDTO;
 import com.project.hangmani.service.KakaoOAuthService;
 import com.project.hangmani.service.OAuthService;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -45,7 +45,7 @@ public class UserController {
                           @RequestParam(name = "state", defaultValue = "") String state,
                           @RequestParam(name = "error", defaultValue = "") String error,
                           @RequestParam(name = "error_description", defaultValue = "") String errorDescription,
-                          Model model) {
+                          HttpSession session) {
         log.info("code={}", code);
         log.info("state={}", state);
         log.info("error={}", error);
@@ -60,12 +60,20 @@ public class UserController {
 
         ResponseUserDTO responseUserDTO = oAuthService.InsertUser(userDTO, scopeDTO, oAuthDTO);
 
-        model.addAttribute("responseUserDTO", responseUserDTO);
+        session.setAttribute("refresh_token", responseUserDTO.getRefreshToken());
         return "redirect:/basic/login";
     }
 
     @GetMapping("/logout")
     public String logout() {
+        return "redirect:/";
+    }
+
+    @DeleteMapping
+    public String linkOut(@SessionAttribute("refresh_token") String token,
+                          HttpSession session) {
+        oAuthService.deleteUser(token);
+        session.removeAttribute("refresh_token");
         return "redirect:/";
     }
 }

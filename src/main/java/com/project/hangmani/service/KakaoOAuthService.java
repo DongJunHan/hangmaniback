@@ -2,8 +2,7 @@ package com.project.hangmani.service;
 
 import com.project.hangmani.domain.User;
 import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
-import com.project.hangmani.exception.FailInsertData;
-import com.project.hangmani.exception.KO310Exception;
+import com.project.hangmani.exception.*;
 import com.project.hangmani.repository.UserRepository;
 import com.project.hangmani.security.AES;
 import com.project.hangmani.util.ConvertData;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.sql.Date;
 import java.util.Map;
 import java.util.Optional;
 
@@ -38,7 +38,7 @@ public class KakaoOAuthService implements OAuthService{
     public Map<String, Object> getAccessToken(String code) {
         String responseBody = webClient.post()
                 .uri(builder -> builder.scheme("https")
-                        .host(HOST)
+                        .host(KAUTH_HOST)
                         .path(URI)
                         .queryParam("grant_type", GRANT_TYPE)
                         .queryParam("client_id", CLIENT_ID)
@@ -69,7 +69,7 @@ public class KakaoOAuthService implements OAuthService{
         log.info("access_token={}",tokenInfos.get("access_token"));
         String responseBody = webClient.get()
                 .uri(builder -> builder.scheme("https")
-                        .host(USER_INFO_HOST)
+                        .host(KAPI_HOST)
                         .path(USER_INFO_URI)
                         .build())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer "+tokenInfos.get("access_token"))
@@ -134,5 +134,75 @@ public class KakaoOAuthService implements OAuthService{
     @Override
     public String getAuthorizationUrl() {
         return KAKAO_LOGIN_URL;
+    }
+
+    @Transactional
+    @Override
+    public void deleteUser(String id) {
+        //check id
+        Optional<User> retUser = userRepository.findById(id);
+        if (retUser.isEmpty())
+            throw new NotFoundUser();
+
+        User user = retUser.get();
+        //get access_token
+        String accessToken = getAccessTokenByRefreshToken(user.getRefreshToken(), id);
+        //session unlink
+        String req_id = unlinkUserInfo(accessToken);
+        //check id validation
+        byte[] encryptData = this.aes.encryptData(req_id);
+        String base64Id = convertData.byteToBase64(encryptData);
+        //TODO if return id , parameter id not equal
+        if (!base64Id.equals(id))
+            throw new NotFoundUser();
+
+        //delete db
+        int ret = userRepository.deleteUser(id);
+        if (ret < 3)
+            throw new FailInsertData();
+    }
+
+    private String unlinkUserInfo(String accessToken) {
+        String responseBody = webClient.post().uri(builder -> builder.scheme("https")
+                        .host(KAPI_HOST)
+                        .path(UNLINK_URI)
+                        .build())
+                .header(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .syncBody("")
+                .exchange()
+                .block()
+                .bodyToMono(String.class)
+                .block();
+        Map<String, Object> respTable = convertData.JsonToMap(responseBody);
+        return respTable.get("id").toString();
+
+    }
+    private String getAccessTokenByRefreshToken(String refreshToken, String id) {
+        String responseBody = webClient.post().uri(builder -> builder.scheme("https")
+                        .host(KAUTH_HOST)
+                        .path(USER_INFO_URI)
+                        .queryParam("grant_type", "refresh_token")
+                        .queryParam("client_id", CLIENT_ID)
+                        .queryParam("refresh_token", refreshToken)
+                        .build())
+                .header(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded")
+                .syncBody("")
+                .exchange()
+                .block()
+                .bodyToMono(String.class)
+                .block();
+
+        Map<String, Object> respTable = convertData.JsonToMap(responseBody);
+
+        //check refresh token
+        if (!refreshToken.equals(respTable.get("refresh_token").toString())) {
+            Date expiresIn = convertData.addSecondsCurrentDate((int) respTable.get("refresh_token_expires_in"));
+            //update refresh token
+            int ret = userRepository.updateRefreshToken(respTable.get("refresh_token").toString(), expiresIn, id);
+            if (ret == 0)
+                throw new FailUpdateData();
+        }
+        return respTable.get("access_token").toString();
     }
 }

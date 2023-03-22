@@ -13,4 +13,5 @@ public interface OAuthService {
                     RequestInsertScopeDTO requestInsertScopeDTO,
                     RequestInsertOAuthDTO requestInsertOAuthDTO);
     String getAuthorizationUrl();
+    void deleteUser(String id);
 }

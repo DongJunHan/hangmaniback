@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,9 +23,11 @@ public class UserRepository {
             "    JOIN member ON oauth.ID = member.ID\n" +
             "WHERE\n" +
             "  member.ID=?;";
+    private final String deleteSql = "DELETE FROM member WHERE ID = ?; DELETE FROM oauth WHERE ID = ?; DELETE FROM scope WHERE ID = ?;";
     private final String insertSql = "insert into member(refreshtoken,REFRESHTOKENEXPIRE,ID) values(?,?,?);";
     private final String insertScopeSql = "insert into scope(id, email, age, gender) values(?,?,?,?);";
     private final String insertOAuthSql = "insert into oauth(id, oauthtype) values(?,?);";
+    private final String updateRefreshTokenSql = "update member set from refreshtoken=?, REFRESHTOKENEXPIRE=? where id=?";
     private JdbcTemplate template;
     public UserRepository(DataSource dataSource) {
         this.template = new JdbcTemplate(dataSource);
@@ -60,5 +63,14 @@ public class UserRepository {
 
     public int insertOAuthType(RequestInsertOAuthDTO requestDTO) {
         return template.update(insertOAuthSql, new Object[]{requestDTO.getId(), requestDTO.getOAuthType()});
+    }
+
+    public int deleteUser(String id) {
+        return template.update(deleteSql, new Object[]{id, id, id});
+    }
+
+
+    public int updateRefreshToken(String refreshToken, Date expiresIn, String id) {
+        return template.update(updateRefreshTokenSql, new Object[]{refreshToken, expiresIn, id});
     }
 }
