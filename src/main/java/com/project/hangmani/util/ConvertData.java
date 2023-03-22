@@ -36,9 +36,9 @@ public class ConvertData {
         long time = date.getTime();
         return new java.sql.Date(time);
     }
-    public java.sql.Date addCurrentDate(long timeStamp) {
+    public java.sql.Date addSecondsCurrentDate(long seconds) {
         Date date = new Date();
-        long futureTime = date.getTime() + timeStamp;
+        long futureTime = date.getTime() + (seconds * 1000);
         return new java.sql.Date(futureTime);
 
     }
