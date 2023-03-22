@@ -6,6 +6,7 @@
 </head>
 <body>
 <a href="#" onClick=handleClick()>kakao_login</a><br/>
+<a href="#" onClick=handleWithDrawClick()>kakao withdraw</a><br/>
 <script>
     // const client_id = "eec30559b1482179d83dd69beb47a816";
     // const redirect_uri = "http://localhost:8080/user";
@@ -14,6 +15,7 @@
     //&scope=account_email,gender,age_range,birthday,talk_message
     // const handleClick = (e) => location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code&scope=account_email,gender,age_range,birthday,talk_message`;
     const handleClick = (e) => location.href = `http://localhost:8080/user/kakao`;
+    const handleWithDrawClick  = (e) => location.href = `http://localhost:8080/user`;
 </script>
 </body>
 </html>

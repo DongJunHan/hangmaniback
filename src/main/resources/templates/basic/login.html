@@ -7,8 +7,10 @@
 <body>
 <a href="#" onClick=handleUnlinkClick()>linkout</a><br/>
 <a href="#" onClick=handleLogOutClick()>logout</a><br/><br/>
-<
-<p name="token" th:text="${responseUserDTO.refreshToken}"></p>
+
+<p name="token" th:text="${responseUserDTO?.refreshToken}"></p>
+<p name="id" th:text="${responseUserDTO?.id}"></p>
+<p name="type" th:text="${responseUserDTO?.oAuthType}"></p>
 <script>
     const accessToken = document.querySelector('p[name="token"]').innerText;
     const client_id = "eec30559b1482179d83dd69beb47a816";
