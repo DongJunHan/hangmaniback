@@ -10,6 +10,7 @@ import java.nio.file.*;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.UUID;
 
 import static com.project.hangmani.config.SecurityConst.*;
 @Slf4j
@@ -59,5 +60,15 @@ public class Util {
         } catch (IOException e) {
             throw new IO(e);
         }
+    }
+    public boolean isBase64(String input) {
+        //check input data
+        if ((input.length() % 4) == 0 && input.matches("^[A-Za-z0-9+/]*[=]{0,2}$"))
+            return false;
+        return true;
+    }
+
+    public UUID getUUID() {
+        return UUID.randomUUID();
     }
 }
