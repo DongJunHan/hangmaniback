@@ -4,8 +4,6 @@ import com.project.hangmani.domain.Board;
 import com.project.hangmani.domain.Store;
 import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoreUpdateDTO;
-import com.project.hangmani.dto.UserDTO.RequestInsertOAuthDTO;
-import com.project.hangmani.dto.UserDTO.RequestInsertScopeDTO;
 import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
 import com.project.hangmani.util.ConvertData;
 
@@ -52,30 +50,20 @@ public class RequestConvert {
         return store;
     }
 
-    public RequestInsertUserDTO convertDTO(Map<String, Object> input, String id) {
-        Date refreshTokenExpiresIn = this.convertData.addSecondsCurrentDate((int) input.get("refresh_token_expires_in"));
+    public RequestInsertUserDTO convertDTO(Map<String, Object> tokenInput, Map<String, Object> userInfo,
+                                           String oAuthType) {
+        Date refreshTokenExpiresIn = this.convertData.addSecondsCurrentDate((int) tokenInput.get("refresh_token_expires_in"));
+        String oAuthID = userInfo.get("id").toString();
+        Map<String, Object> scope = (Map<String, Object>) userInfo.get("kakao_account");
         return RequestInsertUserDTO.builder()
-                .id(id)
-                .refreshToken((String)input.get("refresh_token"))
+                .oAuthID(oAuthID)
+                .refreshToken((String)tokenInput.get("refresh_token"))
                 .refreshTokenExpire(refreshTokenExpiresIn)
+                .age(scope.get("age_range").toString())
+                .email(scope.get("email").toString())
+                .gender(scope.get("gender").toString())
+                .oAuthType(oAuthType)
                 .build();
 
-    }
-
-    public RequestInsertScopeDTO convertDTO(Map<String, Object> input) {
-        Map<String, Object> scope = (Map<String, Object>)input.get("kakao_account");
-
-        return RequestInsertScopeDTO.builder()
-                .age((String)scope.get("age_range"))
-                .email((String)scope.get("email"))
-                .gender((String)scope.get("gender"))
-                .id(input.get("id").toString())
-                .build();
-    }
-    public RequestInsertOAuthDTO convertDTO(String id, String oAuth) {
-        return RequestInsertOAuthDTO.builder()
-                .id(id)
-                .oAuthType(oAuth)
-                .build();
     }
 }

@@ -1,8 +1,6 @@
 package com.project.hangmani.controller;
 
 import com.project.hangmani.convert.RequestConvert;
-import com.project.hangmani.dto.UserDTO.RequestInsertOAuthDTO;
-import com.project.hangmani.dto.UserDTO.RequestInsertScopeDTO;
 import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
 import com.project.hangmani.dto.UserDTO.ResponseUserDTO;
 import com.project.hangmani.service.KakaoOAuthService;
@@ -54,14 +52,12 @@ public class UserController {
         Map<String, Object> respTable = oAuthService.getAccessToken(code);
         Map<String, Object> kakaoUserInfo = oAuthService.getUserInfo(respTable);
 
-        RequestInsertUserDTO userDTO = requestConvert.convertDTO(respTable, kakaoUserInfo.get("id").toString());
-        RequestInsertScopeDTO scopeDTO = requestConvert.convertDTO(kakaoUserInfo);
-        RequestInsertOAuthDTO oAuthDTO = requestConvert.convertDTO(kakaoUserInfo.get("id").toString(), this.oauth_type);
+        RequestInsertUserDTO userDTO = requestConvert.convertDTO(respTable, kakaoUserInfo, this.oauth_type);
+        ResponseUserDTO responseUserDTO = oAuthService.InsertUser(userDTO);
 
-        ResponseUserDTO responseUserDTO = oAuthService.InsertUser(userDTO, scopeDTO, oAuthDTO);
-
+        session.setAttribute("user_id", responseUserDTO.getId());
         session.setAttribute("refresh_token", responseUserDTO.getRefreshToken());
-        return "redirect:/basic/login";
+        return "redirect:/";
     }
 
     @GetMapping("/logout")
@@ -70,10 +66,13 @@ public class UserController {
     }
 
     @DeleteMapping
-    public String linkOut(@SessionAttribute("refresh_token") String token,
+    public String linkOut(@SessionAttribute("refresh_token") String refreshToken,
+                          @SessionAttribute("user_id") String userID,
                           HttpSession session) {
-        oAuthService.deleteUser(token);
+        log.info("refresh_token={}", refreshToken);
+        oAuthService.deleteUser(refreshToken, userID);
         session.removeAttribute("refresh_token");
+        session.removeAttribute("user_id");
         return "redirect:/";
     }
 }

@@ -11,6 +11,6 @@ public class OAuthConst {
     public static final String UNLINK_URI = "/v1/user/unlink";
     public static final String POST_REDIRECT_URI = "http://localhost:8080/user";
     public static final String GRANT_TYPE = "authorization_code";
-    public static final String KAKAO_LOGIN_URL = "https://kauth.kakao.com/oauth/authorize?client_id="+CLIENT_ID+"&redirect_uri="+LOGIN_REDIRECT_URI+"&response_type=code&scope=account_email,gender,age_range,birthday,talk_message";
+    public static final String KAKAO_LOGIN_URL = "https://kauth.kakao.com/oauth/authorize?client_id="+CLIENT_ID+"&response_type=code&scope=account_email,gender,age_range,birthday,talk_message"+"&redirect_uri="+LOGIN_REDIRECT_URI;
 
 }

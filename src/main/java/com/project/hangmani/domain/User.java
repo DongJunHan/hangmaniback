@@ -18,4 +18,5 @@ public class User {
     private String email;
     private String oAuthType;
     private String age;
+    private String oAuthID;
 }
