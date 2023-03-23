@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 
@@ -34,12 +35,12 @@ public class AES {
     }
 
 
-    public byte[] encryptData(String text) {
+    public byte[] encryptData(String text, Charset encode) {
         Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
         ConvertData convertData = new ConvertData();
         // Encrypt plaintext®
         try {
-            return cipher.doFinal(convertData.stringToByte(text, StandardCharsets.UTF_8));
+            return cipher.doFinal(convertData.stringToByte(text, encode));
         } catch (IllegalBlockSizeException e) {
             throw new RuntimeException(e);
         } catch (BadPaddingException e) {
