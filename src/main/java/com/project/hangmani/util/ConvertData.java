@@ -60,6 +60,11 @@ public class ConvertData {
     }
 
     public byte[] base64ToByte(String base64) {
+        Util util = new Util();
+        //check input data
+        if (!util.isBase64(base64))
+            return null;
+
         // Convert decrypt base64 to byte[]
         return Base64.getDecoder().decode(base64);
     }
