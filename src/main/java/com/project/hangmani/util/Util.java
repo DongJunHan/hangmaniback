@@ -63,8 +63,18 @@ public class Util {
     }
     public boolean isBase64(String input) {
         //check input data
-        if ((input.length() % 4) == 0 && input.matches("^[A-Za-z0-9+/]*[=]{0,2}$"))
+        if (input.length() % 4 != 0)
             return false;
+        // Base64 문자셋에 속하는지 확인
+        if (!input.matches("^[A-Za-z0-9+/]*[=]{0,2}$"))
+            return false;
+        // Base64 문자셋에 속하는지 확인
+//        for (char c : input.toCharArray()) {
+//            if (!Character.isLetterOrDigit(c) && c != '+' && c != '/') {
+//                return false;
+//            }
+//        }
+
         return true;
     }
 
