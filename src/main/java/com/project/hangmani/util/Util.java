@@ -4,6 +4,7 @@ import com.project.hangmani.exception.IO;
 import com.project.hangmani.exception.InvalidKeySpec;
 import com.project.hangmani.exception.NoSuchAlgorithm;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.nio.file.*;
@@ -14,19 +15,8 @@ import java.util.UUID;
 
 import static com.project.hangmani.config.SecurityConst.*;
 @Slf4j
+@Component
 public class Util {
-    public byte[] getKeyFromFile() {
-        Path path = Paths.get(KEY_FILE_PATH);
-        File file = path.toFile();
-        if (!file.exists())
-            return null;
-        try {
-            return Files.readAllBytes(path);
-        } catch (IOException e) {
-            throw new IO(e);
-        }
-    }
-
     public PublicKey getPublicKeyFromFile() {
         try {
             byte[] bytes = readByteFile(KEY_FILE_PATH);
