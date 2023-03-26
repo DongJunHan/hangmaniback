@@ -25,30 +25,27 @@ import static java.util.Arrays.stream;
 @Slf4j
 public class UserRepository {
     private final String findByOAuthIdSql = "SELECT \n" +
-            "    member.ID, oauth.oauthid, oauth.oauthtype, scope.email, scope.age, scope.gender, member.REFRESHTOKEN, member.REFRESHTOKENEXPIRE\n" +
+            "    user.ID, oauth.oauthid, oauth.oauthtype, user.email, user.age, user.gender\n" +
             "FROM \n" +
             "    oauth\n" +
-            "    JOIN scope ON oauth.ID = scope.ID\n" +
-            "    JOIN member ON oauth.ID = member.ID\n" +
+            "    JOIN user ON oauth.ID = user.ID\n" +
             "WHERE\n" +
             "  oauth.OAUTHID=?;";
 
     private final String findByIDSql = "SELECT \n" +
-            "    member.ID, oauth.oauthid, oauth.oauthtype, scope.email, scope.age, scope.gender, member.REFRESHTOKEN, member.REFRESHTOKENEXPIRE\n" +
+            "    user.ID, oauth.oauthid, oauth.oauthtype, user.email, user.age, user.gender\n" +
             "FROM \n" +
             "    oauth\n" +
-            "    JOIN scope ON oauth.ID = scope.ID\n" +
-            "    JOIN member ON oauth.ID = member.ID\n" +
+            "    JOIN user ON oauth.ID = user.ID\n" +
             "WHERE\n" +
-            "  member.id=?;";
-    private final String deleteSql = "DELETE FROM oauth WHERE ID = ?; DELETE FROM scope WHERE ID = ?; DELETE FROM member WHERE ID = ?;";
-    private final String insertUserSql = "insert into member(REFRESHTOKEN, REFRESHTOKENEXPIRE, id) values(?,?,?);\n"+
-                                         "insert into scope(id, email, age, gender) values(?,?,?,?);\n"+
+            "  user.id=?;";
+    private final String deleteSql = "DELETE FROM oauth WHERE ID = ?; DELETE FROM user WHERE ID = ?;";
+    private final String insertUserSql = "insert into user(email, age, gender, id) values(?,?,?,?);\n"+
                                          "insert into oauth(id, oauthtype, oauthID) values(?,?,?);";
-//    private final String insertUserSql = "insert into member(REFRESHTOKEN, REFRESHTOKENEXPIRE, id) values(?,?,?);";
+//    private final String insertUserSql = "insert into user(REFRESHTOKEN, REFRESHTOKENEXPIRE, id) values(?,?,?);";
 //    private final String insertScopeSql = "insert into scope(id, email, age, gender) values(?,?,?,?);";
 //    private final String insertOAuthSql = "insert into oauth(id, oauthtype) values(?,?);";
-    private final String updateRefreshTokenSql = "update member set from refreshtoken=?, REFRESHTOKENEXPIRE=? where id=?";
+    private final String updateRefreshTokenSql = "update user set from age=?, email=?, gender=? where id=?";
     private JdbcTemplate template;
     private Util util;
     private AES aes;
@@ -90,24 +87,21 @@ public class UserRepository {
         //set refresh token
         requestDTO.setRefreshToken(base64Token);
 
-        int ret = template.update(insertUserSql, new Object[]{requestDTO.getRefreshToken(),
-                requestDTO.getRefreshTokenExpire(), requestDTO.getId(),
-                requestDTO.getId(), requestDTO.getEmail(), requestDTO.getAge(), requestDTO.getGender(),
+        int ret = template.update(insertUserSql, new Object[]{ requestDTO.getEmail(),
+                requestDTO.getAge(), requestDTO.getGender(), requestDTO.getId(),
                 requestDTO.getId(), requestDTO.getOAuthType(), requestDTO.getOAuthID()});
         return userID;
     }
     private RowMapper<User> userRowMapper() {
         return (rs, rowNum) -> {
-            User member = new User();
-            member.setId(rs.getString("id"));
-            member.setEmail(rs.getString("email"));
-            member.setGender(rs.getString("gender"));
-            member.setAge(rs.getString("age"));
-            member.setRefreshToken(rs.getString("refreshToken"));
-            member.setRefreshTokenExpire(rs.getDate("REFRESHTOKENEXPIRE"));
-            member.setOAuthType(rs.getString("oauthtype"));
-            member.setOAuthID(rs.getString("oauthid"));
-            return member;
+            User user = new User();
+            user.setId(rs.getString("id"));
+            user.setEmail(rs.getString("email"));
+            user.setGender(rs.getString("gender"));
+            user.setAge(rs.getString("age"));
+            user.setOAuthType(rs.getString("oauthtype"));
+            user.setOAuthID(rs.getString("oauthid"));
+            return user;
         };
     }
 
@@ -121,16 +115,6 @@ public class UserRepository {
 //    }
 
     public int deleteUser(String userID) {
-        log.info("id={}", userID);
-//        List<Object[]> batchArgs = new ArrayList<>();
-//        batchArgs.add(new Object[]{userID, userID, userID});
-//        int[] ints = template.batchUpdate(deleteSql, batchArgs);
-//        log.info("ret={}",ints);
-        return template.update(deleteSql, new Object[]{userID, userID, userID});
-    }
-
-
-    public int updateRefreshToken(String refreshToken, Date expiresIn, String userID) {
-        return template.update(updateRefreshTokenSql, new Object[]{refreshToken, expiresIn, userID});
+        return template.update(deleteSql, new Object[]{userID, userID});
     }
 }

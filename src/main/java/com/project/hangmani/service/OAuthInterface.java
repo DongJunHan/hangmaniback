@@ -1,7 +1,5 @@
 package com.project.hangmani.service;
 
-import com.project.hangmani.dto.UserDTO;
-
 import java.util.Map;
 
 public interface OAuthInterface {

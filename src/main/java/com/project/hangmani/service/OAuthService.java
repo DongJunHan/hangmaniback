@@ -2,12 +2,10 @@ package com.project.hangmani.service;
 
 import com.project.hangmani.exception.KO310Exception;
 import com.project.hangmani.exception.KakaoAuthException;
-import com.project.hangmani.repository.UserRepository;
 import com.project.hangmani.security.AES;
 import com.project.hangmani.util.ConvertData;
 import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -35,6 +33,7 @@ public class OAuthService implements OAuthInterface{
 
     @Override
     public Map<String, Object> getAccessTokenByCode(String code) {
+        log.info("code={}", code);
         String responseBody = webClient.post()
                 .uri(builder -> builder.scheme("https")
                         .host(KAUTH_HOST)

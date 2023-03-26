@@ -11,8 +11,6 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    private String refreshToken;
-    private Date refreshTokenExpire;
     private String id;
     private String gender;
     private String email;

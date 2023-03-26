@@ -35,8 +35,7 @@ public class UserController {
     @GetMapping("/{oauth_type}")
     public String login(@PathVariable("oauth_type") String oauth_type) {
         if (oauth_type.equals("kakao")) {
-//            this.oAuthService = kakaoOAuthService;
-//            this.oauth_type = oauth_type;
+            this.oauth_type = oauth_type;
             return "redirect:" + oAuthService.getAuthorizationUrl(KAUTH_HOST, KAKAO_SCOPE);
 
 //        }else if() {
@@ -45,6 +44,7 @@ public class UserController {
 
         }
         else{
+            log.error("we are get");
             return "redirect:/error";
         }
 
@@ -60,9 +60,7 @@ public class UserController {
         log.info("state={}", state);
         log.info("error={}", error);
         log.info("errorDescription={}", errorDescription);
-//        response={"access_token":"sDYY2gCTfYUbjh75nDpHuALiRkoVlgNQc6WkqgqeCj10mAAAAYb9mXwR","token_type":"bearer","refresh_token":"0pZQYURVwcIGntLJA8ATxCCHlM5dfNLUOFomK35xCj10mAAAAYb9mXwQ","expires_in":21599,"scope":"age_range birthday account_email talk_message gender","refresh_token_expires_in":5183999}
         Map<String, Object> respTable = oAuthService.getAccessTokenByCode(code);
-//        kakoUserInfo={"id":1235586990,"connected_at":"2023-03-18T08:03:31Z","kakao_account":{"profile_needs_agreement":true,"has_email":true,"email_needs_agreement":false,"is_email_valid":true,"is_email_verified":true,"email":"gamedokdok@naver.com","has_age_range":true,"age_range_needs_agreement":false,"age_range":"30~39","has_birthday":true,"birthday_needs_agreement":false,"birthday":"1028","birthday_type":"SOLAR","has_gender":true,"gender_needs_agreement":false,"gender":"male"}}
         Map<String, Object> kakaoUserInfo = oAuthService.getUserInfo(respTable);
 
         RequestInsertUserDTO userDTO = requestConvert.convertDTO(respTable, kakaoUserInfo, this.oauth_type);
@@ -73,21 +71,20 @@ public class UserController {
     }
 
     @GetMapping("/logout")
-    public String logout() {
+    public String logout(HttpSession session) {
+        session.removeAttribute("userDTO");
         return "redirect:/";
     }
 
-    @DeleteMapping
+    @DeleteMapping("/withdraw")
     public String linkOut(@SessionAttribute("userDTO") ResponseUserDTO userDTO,
                           HttpSession session) {
         log.info("refresh_token={}", userDTO.getRefreshToken());
-        //TODO getACcessToken 분리
+        //logout
         String accessToken = oAuthService.getAccessTokenByRefreshToken(userDTO.getRefreshToken());
         userService.deleteUser(userDTO.getId());
         oAuthService.unlinkUserInfo(accessToken);
-
-        session.removeAttribute("refresh_token");
-        session.removeAttribute("user_id");
+        session.removeAttribute("userDTO");
         return "redirect:/";
     }
 }
