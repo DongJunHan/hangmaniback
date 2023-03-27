@@ -1,11 +1,10 @@
 package com.project.hangmani.service;
 
+import com.project.hangmani.convert.RequestConvert;
 import com.project.hangmani.convert.ResponseConvert;
 import com.project.hangmani.domain.Store;
-import com.project.hangmani.dto.StoreDTO.RequestStoreInsertDTO;
-import com.project.hangmani.dto.StoreDTO.RequestStoreUpdateDTO;
-import com.project.hangmani.dto.StoreDTO.RequestStoresDTO;
-import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
+import com.project.hangmani.dto.StoreDTO;
+import com.project.hangmani.dto.StoreDTO.*;
 import com.project.hangmani.exception.AlreadyExistStore;
 import com.project.hangmani.exception.FailInsertData;
 import com.project.hangmani.exception.FailUpdateStore;
@@ -30,7 +29,7 @@ public class StoreService {
     }
 
     public List<ResponseStoreDTO> getStoreInfo(RequestStoresDTO requestStoresDTO){
-        return storeRepository.findStoreInfoByLatitudeLongitude(requestStoresDTO)
+        return storeRepository.getStoreInfoByLatitudeLongitude(requestStoresDTO)
                 .stream()
                 .map(responseConvert::convertResponseDTO)
                 .toList();
@@ -38,13 +37,13 @@ public class StoreService {
 
     public ResponseStoreDTO getStoreInfo(String storeUuid) {
         return responseConvert.convertResponseDTO(
-                storeRepository.findStoreInfoByUuid(
+                storeRepository.getStoreInfoByUuid(
                         storeUuid));
     }
     @Transactional
     public ResponseStoreDTO updateStoreInfo(String storeUuid, RequestStoreUpdateDTO requestStoreUpdateDTO) {
         //check store exist
-        Store storeInfoByUuid = storeRepository.findStoreInfoByUuid(storeUuid);
+        Store storeInfoByUuid = storeRepository.getStoreInfoByUuid(storeUuid);
         if (storeInfoByUuid == null){
             throw new NotFoundStore();
         }
@@ -55,23 +54,61 @@ public class StoreService {
         }
 
         return responseConvert.convertResponseDTO(
-                storeRepository.findStoreInfoByUuid(storeUuid));
+                storeRepository.getStoreInfoByUuid(storeUuid));
     }
     @Transactional
     public ResponseStoreDTO insertStoreInfo(RequestStoreInsertDTO requestStoreDTO) {
         //check already exist
-        Store findStore = storeRepository.findStoreByNameLatiLongi(requestStoreDTO);
+        Store findStore = storeRepository.getStoreByNameLatiLongi(requestStoreDTO);
         log.info("store={}", findStore);
         if (findStore != null) {
             throw new AlreadyExistStore();
         }
 
-        int index = storeRepository.insertStoreInfo(requestStoreDTO);
-        if (index == 0) {
-            throw new FailInsertData();
-        }
+        String storeUuid = storeRepository.insertStoreInfo(requestStoreDTO);
+        if (requestStoreDTO.getOriginalFileName() != null && requestStoreDTO.getFileSize() == 0)
+            requestStoreDTO.setFileSize(requestStoreDTO.getFileData().length);
+        storeRepository.insertStoreAttachment(requestStoreDTO, storeUuid);
 
         //get store info
-        return responseConvert.convertResponseDTO(storeRepository.findStoreByNameLatiLongi(requestStoreDTO));
+        return responseConvert.convertResponseDTO(storeRepository.getStoreByNameLatiLongi(requestStoreDTO));
+    }
+
+    public ResponseStoreChangeDTO updateStoreInfo(RequestStoreChangeDTO requestStoreChangeDTO) {
+        return null;
+    }
+
+    /*
+    WHERE (34.49350 < s.storelatitude and s.storelatitude < 37.523217) and (126.68852 < s.storelongitude and s.storelongitude < 126.74672)
+
+   SELECT s.storeUuid, s.storeName, l.lottoname,
+SUM(CASE WHEN w.winRank = 1 THEN 1 ELSE 0 END) AS win1stCount,
+SUM(CASE WHEN w.winRank = 2 THEN 1 ELSE 0 END) AS win2stCount
+FROM
+    store s
+    JOIN win_history w ON s.storeUuid = w.storeUuid
+    JOIN lotto_type l ON w.lottoId = l.lottoId
+where s.storesido='인천' and s.storesigugun='부평구'
+GROUP BY
+    s.storeUuid,
+    s.storeName,
+    w.winRank,
+   l.lottoname
+order by l.lottoname, win1stcount, win2stcount desc;
+
+     */
+    public List<ResponseStoreFilterDTO> getStoreInfo(RequestStoreFilterDTO requestDTO) {
+        List<Store> storeInfos;
+        if (requestDTO.getStartLatitude() == null
+                || requestDTO.getStartLatitude() == null
+                || requestDTO.getStartLongitude() == null
+                || requestDTO.getEndLongitude() == null) {
+            storeInfos = storeRepository.getStoreInfoWithWinCountBySidoSigugun(requestDTO);
+        } else {
+            storeInfos = storeRepository.getStoreInfoWithWinCountByLatitudeLongitude(requestDTO);
+        }
+
+
+        return null;
     }
 }

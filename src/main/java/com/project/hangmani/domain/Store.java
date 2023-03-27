@@ -1,14 +1,14 @@
 package com.project.hangmani.domain;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.validation.Valid;
+import lombok.*;
 
 @Setter
 @Getter
 @ToString
 @EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class Store {
     private String storeUuid;
     private String storeName;
@@ -22,26 +22,8 @@ public class Store {
     private String storeCloseTime;
     private Boolean storeIsActivity;
     private String storeSido;
-    private  String storeSigugun;
-    public Store() {
-    }
-
-    public Store(String storeUuid, String storeName, String storeAddress, String storeLatitude,
-                 String storeLongitude, String storeBizNo, String storeTelNum, String storeMobileNum,
-                 String storeOpenTime, String storeCloseTime, Boolean storeIsActivity,
-                 String storeSido, String storeSigugun) {
-        this.storeUuid = storeUuid;
-        this.storeName = storeName;
-        this.storeAddress = storeAddress;
-        this.storeLatitude = storeLatitude;
-        this.storeLongitude = storeLongitude;
-        this.storeBizNo = storeBizNo;
-        this.storeTelNum = storeTelNum;
-        this.storeMobileNum = storeMobileNum;
-        this.storeOpenTime = storeOpenTime;
-        this.storeCloseTime = storeCloseTime;
-        this.storeIsActivity = storeIsActivity;
-        this.storeSido = storeSido;
-        this.storeSigugun = storeSigugun;
-    }
+    private String storeSigugun;
+    private Integer win2stCount;
+    private Integer win1stCount;
+    private String lottoName;
 }

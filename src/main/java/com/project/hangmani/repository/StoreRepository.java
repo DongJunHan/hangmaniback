@@ -2,45 +2,42 @@ package com.project.hangmani.repository;
 
 import com.project.hangmani.convert.RequestConvert;
 import com.project.hangmani.domain.Store;
-import com.project.hangmani.dto.StoreDTO.RequestStoreDeleteDTO;
-import com.project.hangmani.dto.StoreDTO.RequestStoreInsertDTO;
-import com.project.hangmani.dto.StoreDTO.RequestStoreUpdateDTO;
-import com.project.hangmani.dto.StoreDTO.RequestStoresDTO;
+import com.project.hangmani.dto.StoreDTO;
+import com.project.hangmani.dto.StoreDTO.*;
+import com.project.hangmani.exception.FailInsertData;
+import com.project.hangmani.util.ConvertData;
+import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.project.hangmani.config.query.StoreQueryConst.*;
+
 @Repository
 @Slf4j
 public class StoreRepository {
-    private final String findByLatitudeLongitudeSql = "SELECT * FROM store " +
-            " where (? < storelatitude and storelatitude < ?) or (? < storelongitude and storelongitude < ?) limit ?;";
-    private final String findByUuid = "SELECT * FROM store where storeuuid=?;";
-    private final String updateByUuid = "UPDATE store SET storename=?,storeaddress=?,"+
-            "storelatitude=?,storelongitude=?,storebizno=?,storetelnum=?,storemobilenum=?,storeopentime=?,"+
-            "storeclosetime=?,storeisactivity=?,storesido=?,storesigugun=? where storeuuid=?;";
-    private final String findByName = "SELECT * FROM store WHERE storename=? and "+
-            "storelatitude like CONCAT(?, '%') and storelongitude like CONCAT(?, '%');";
-    private final String insert = "insert into store(storeuuid, storename, storeaddress,storelatitude, storelongitude," +
-            "storebizno,storetelnum, STOREMOBILENUM, STOREOPENTIME,STORECLOSETIME,STORESIDO,STORESIGUGUN) " +
-            "values(?,?,?,?,?,?,?,?,?,?,?,?)";
-    private final String deleteByUuid = "UPDATE  store SET STOREISACTIVITY=1 where storeuuid=?";
-    private final String deleteByLatiLongi = "UPDATE  store SET STOREISACTIVITY=1 where storelatitude=? and storelongitude=?";
     private JdbcTemplate template;
     private RequestConvert requestConvert;
+    private ConvertData convertData;
 
     private final Map<String, String> sidoMap;
+    private Util util;
 
     public StoreRepository(DataSource dataSource) {
         this.requestConvert = new RequestConvert();
         this.template = new JdbcTemplate(dataSource);
+        this.convertData = new ConvertData();
+        this.util = new Util();
         this.sidoMap = new HashMap<>();
         sidoMap.put("경기도", "경기");
         sidoMap.put("서울특별시", "서울");
@@ -55,19 +52,28 @@ public class StoreRepository {
         sidoMap.put("대전광역시", "대전");
     }
 
-    public List<Store> findStoreInfoByLatitudeLongitude(RequestStoresDTO requestStoresDTO) {
+    public List<Store> getStoreInfoByLatitudeLongitude(RequestStoresDTO requestStoresDTO) {
         Double startLatitude = requestStoresDTO.getStartLatitude();
         Double endLatitude = requestStoresDTO.getEndLatitude();
         Double startLongitude = requestStoresDTO.getStartLongitude();
         Double endLongitude = requestStoresDTO.getEndLongitude();
         int limit = requestStoresDTO.getLimit();
 
-        return template.query(findByLatitudeLongitudeSql, new Object[]{startLatitude, endLatitude
+        return template.query(getStoreInfoByLatitudeLongitudeSql, new Object[]{startLatitude, endLatitude
                 , startLongitude, endLongitude, limit}, storesRowMapper());
     }
 
-    public Store findStoreInfoByUuid(String storeUuid) {
-        return template.queryForObject(findByUuid, new Object[]{storeUuid}, storeRowMapper());
+    public Store getStoreInfoByUuid(String storeUuid) {
+        return template.queryForObject(getStoreInfoByUuid, new Object[]{storeUuid}, storeRowMapper());
+    }
+    public List<Store> getStoreInfoWithWinCountBySidoSigugun(RequestStoreFilterDTO requestDTO) {
+        return template.query(getStoreInfoWithWinCountBySidoSigugun, new Object[]{requestDTO.getSido(), requestDTO.getSigugun()},
+                storeWithWinCountLottoNameRowMapper());
+    }
+
+    public List<Store> getStoreInfoWithWinCountByLatitudeLongitude(RequestStoreFilterDTO requestDTO) {
+        return template.query(getStoreInfoWithWinCountByLatitudeLongitude, new Object[]{requestDTO.getUserLatitude(), requestDTO.getUserLongitude()},
+                storeWithWinCountLottoNameRowMapper());
     }
 
     public int updateStoreInfo(String StoreUuid, RequestStoreUpdateDTO requestStoreUpdateDTO) {
@@ -76,17 +82,14 @@ public class StoreRepository {
         store.getStoreLongitude(), store.getStoreBizNo(), store.getStoreTelNum(), store.getStoreMobileNum(),
         store.getStoreOpenTime(), store.getStoreCloseTime(), store.getStoreIsActivity(), store.getStoreSido(),
         store.getStoreSigugun(), StoreUuid};
-        return template.update(updateByUuid, objects);
+        return template.update(updateStoreInfoByUuid, objects);
     }
-    public Store findStoreByNameLatiLongi(RequestStoreInsertDTO requestStoreDTO) {
+    public Store getStoreByNameLatiLongi(RequestStoreInsertDTO requestStoreDTO) {
         String storeName = requestStoreDTO.getStoreName();
         Double storeLatitude = convertPoint(requestStoreDTO.getStoreLatitude());
         Double storeLongitude = convertPoint(requestStoreDTO.getStoreLongitude());
-        log.info("latitude={}", storeLatitude);
-        log.info("longitude={}", storeLongitude);
-        log.info("storename={}", storeName);
-        log.info("sql={}", findByName);
-        List<Store> query = template.query(findByName,
+
+        List<Store> query = template.query(getStoreInfoByName,
                 new Object[]{storeName, storeLatitude, storeLongitude},
                 storeRowMapper());
         if (query.size() == 0)
@@ -94,30 +97,51 @@ public class StoreRepository {
         else
             return query.get(0);
     }
+
+
     public int deleteByStoreUuid(RequestStoreDeleteDTO requestStoreDeleteDTO) {
         String uuid = requestStoreDeleteDTO.getStoreUuid();
 //        deleteByUuid
-        return template.update(deleteByUuid, new Object[]{uuid});
+        return template.update(deleteStoreInfoByUuid, new Object[]{uuid});
     }
 
     public int deleteByLatitudeLongitude(RequestStoreDeleteDTO requestStoreDeleteDTO) {
-        return template.update(deleteByUuid, new Object[]{requestStoreDeleteDTO.getLatitude(),
+        return template.update(deleteStoreInfoByLatiLongi, new Object[]{requestStoreDeleteDTO.getLatitude(),
                 requestStoreDeleteDTO.getLongitude()});
     }
     /**
      * @param requestStoreDTO
      * @return
      */
-    public int insertStoreInfo(RequestStoreInsertDTO requestStoreDTO) {
+    public String insertStoreInfo(RequestStoreInsertDTO requestStoreDTO) {
         //make store uuid
-        UUID uuid = UUID.randomUUID();
+        UUID uuid = this.util.getUUID();
         String[] sidoSigugun = extractSidoSigugunByAddress(requestStoreDTO.getStoreAddress());
-        return template.update(insert, new Object[]{uuid.toString(), requestStoreDTO.getStoreName(),
+
+        int ret =  template.update(insertStoreInfo, new Object[]{uuid.toString(), requestStoreDTO.getStoreName(),
                 requestStoreDTO.getStoreAddress(), requestStoreDTO.getStoreLatitude(), requestStoreDTO.getStoreLongitude(),
                 requestStoreDTO.getStoreBizNo(), requestStoreDTO.getStoreTelNum(), requestStoreDTO.getStoreMobileNum(),
                 requestStoreDTO.getStoreOpenTime(), requestStoreDTO.getStoreCloseTime(), sidoSigugun[0], sidoSigugun[1]});
+        if (ret == 0){
+            throw new FailInsertData();
+        }
+        return uuid.toString();
     }
 
+    public int insertStoreAttachment(RequestStoreInsertDTO requestStoreDTO, String storeUuid) {
+        //make rename file name
+        Date uploadTime = this.convertData.getSqlDate();
+        String renamedFile = this.util.getRenameWithDate(uploadTime, this.util.getRandomValue(),
+                requestStoreDTO.getOriginalFileName());
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        int ret = template.update(insertStoreAttachment, new Object[]{requestStoreDTO.getOriginalFileName(), renamedFile,
+                requestStoreDTO.getFileSize(), uploadTime, requestStoreDTO.getFileData(), storeUuid}, keyHolder);
+        if (ret == 0)
+            throw new FailInsertData();
+        return keyHolder.getKey().intValue();
+    }
     private String[] extractSidoSigugunByAddress(String address) {
         String[] ret = new String[2];
         String[] splitAddress = address.split(" ");
@@ -131,7 +155,6 @@ public class StoreRepository {
             }
         }
         ret[0] = splitAddress[0];
-        log.info("sido={}", ret[0]);
         int firstLength = splitAddress[1].length();
         int secondLength = splitAddress[2].length();
         if (splitAddress[1].substring(firstLength - 1, firstLength).equals("시") &&
@@ -139,7 +162,6 @@ public class StoreRepository {
             ret[1] = splitAddress[1] + " " + splitAddress[2];
         else
             ret[1] = splitAddress[1];
-        log.info("sigugun={}", ret[1]);
         return ret;
 
     }
@@ -149,7 +171,40 @@ public class StoreRepository {
         return Double.parseDouble(splitPoint[0]+ "." + cutPoint);
     }
 
-
+    private RowMapper<Store> storeWinCountMapper() {
+        return (rs, rowNum) -> {
+            Store store = new Store();
+            store.setStoreUuid(rs.getString("storeuuid"));
+            store.setStoreName(rs.getString("storename"));
+            store.setStoreAddress(rs.getString("storeaddress"));
+            store.setStoreLatitude(rs.getString("storelatitude"));
+            store.setStoreLongitude(rs.getString("storelongitude"));
+            store.setStoreBizNo(rs.getString("storebizno"));
+            store.setStoreTelNum(rs.getString("storetelnum"));
+            store.setStoreMobileNum(rs.getString("storemobilenum"));
+            store.setStoreOpenTime(rs.getString("storeopentime"));
+            store.setStoreCloseTime(rs.getString("storeclosetime"));
+            store.setStoreIsActivity(rs.getBoolean("storeisactivity"));
+            store.setStoreSido(rs.getString("storesido"));
+            store.setStoreSigugun(rs.getString("storesigugun"));
+            return store;
+        };
+    }
+    private RowMapper<Store> storeWithWinCountLottoNameRowMapper() {
+        return (rs, rowNum) -> {
+            Store store = new Store();
+            store.setStoreUuid(rs.getString("storeuuid"));
+            store.setStoreName(rs.getString("storename"));
+            store.setStoreAddress(rs.getString("storeaddress"));
+            store.setLottoName(rs.getString("lottoname"));
+            store.setWin1stCount(rs.getInt("win1stcount"));
+            store.setWin2stCount(rs.getInt("win2stcount"));
+            store.setStoreLatitude(rs.getString("storelatitude"));
+            store.setStoreLongitude(rs.getString("storelongitude"));
+            //TODO 첨부파일
+            return store;
+        };
+    }
     private RowMapper<Store> storeRowMapper() {
         return (rs, rowNum) -> {
             Store store = new Store();

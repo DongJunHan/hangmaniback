@@ -21,7 +21,7 @@ public class StoreController {
         this.storeService = storeService;
         this.convertData = new ConvertData();
     }
-    @GetMapping
+    @GetMapping("/all")
     @ResponseBody
     public ResponseDTO<List<ResponseStoreDTO>> getStoresInfo(@ModelAttribute @Valid RequestStoresDTO requestStoreDTO){
         List<ResponseStoreDTO> storeInfo = storeService.getStoreInfo(requestStoreDTO);
@@ -42,6 +42,18 @@ public class StoreController {
                 .message(HttpStatus.OK.name())
                 .build();
 
+    }
+
+    @GetMapping
+    @ResponseBody
+    public ResponseDTO<List<ResponseStoreFilterDTO>> getStoreInfoByFilter(@ModelAttribute @Valid RequestStoreFilterDTO requestDTO) {
+        List<ResponseStoreFilterDTO> storeInfoList = storeService.getStoreInfo(requestDTO);
+
+        return ResponseDTO.<List<ResponseStoreFilterDTO>>builder()
+                .data(storeInfoList)
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .build();
     }
     @PutMapping("/{storeUuid}")
     @ResponseBody
