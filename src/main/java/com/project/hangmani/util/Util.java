@@ -11,6 +11,9 @@ import java.nio.file.*;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Random;
 import java.util.UUID;
 
 import static com.project.hangmani.config.SecurityConst.*;
@@ -70,5 +73,24 @@ public class Util {
 
     public UUID getUUID() {
         return UUID.randomUUID();
+    }
+
+    public String getRenameWithDate(Date date, int randomSeed, String originalFileName) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        String formattedNow = dateFormat.format(date); // "yyyyMMdd" 형식의 문자열로 변환
+
+
+        int lastDotIndex = originalFileName.lastIndexOf(".");
+        String extension;
+        if (lastDotIndex >= 0) {
+            extension = originalFileName.substring(lastDotIndex);
+        }else{
+            extension = originalFileName;
+        }
+        return formattedNow + "_" + randomSeed + extension;
+    }
+    public int getRandomValue() {
+        Random random = new Random();
+        return random.nextInt(10000);
     }
 }
