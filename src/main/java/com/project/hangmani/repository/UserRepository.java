@@ -9,39 +9,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import org.springframework.validation.ObjectError;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Arrays.stream;
+import static com.project.hangmani.config.query.UserQueryConst.*;
 
 @Repository
 @Slf4j
 public class UserRepository {
-    private final String findByOAuthIdSql = "SELECT \n" +
-            "    user.ID, oauth.oauthid, oauth.oauthtype, user.email, user.age, user.gender\n" +
-            "FROM \n" +
-            "    oauth\n" +
-            "    JOIN user ON oauth.ID = user.ID\n" +
-            "WHERE\n" +
-            "  oauth.OAUTHID=?;";
 
-    private final String findByIDSql = "SELECT \n" +
-            "    user.ID, oauth.oauthid, oauth.oauthtype, user.email, user.age, user.gender\n" +
-            "FROM \n" +
-            "    oauth\n" +
-            "    JOIN user ON oauth.ID = user.ID\n" +
-            "WHERE\n" +
-            "  user.id=?;";
-    private final String deleteSql = "DELETE FROM oauth WHERE ID = ?; DELETE FROM user WHERE ID = ?;";
-    private final String insertUserSql = "insert into user(email, age, gender, id) values(?,?,?,?);\n"+
-                                         "insert into oauth(id, oauthtype, oauthID) values(?,?,?);";
 //    private final String insertUserSql = "insert into user(REFRESHTOKEN, REFRESHTOKENEXPIRE, id) values(?,?,?);";
 //    private final String insertScopeSql = "insert into scope(id, email, age, gender) values(?,?,?,?);";
 //    private final String insertOAuthSql = "insert into oauth(id, oauthtype) values(?,?);";
@@ -63,12 +42,12 @@ public class UserRepository {
             byte[] bytes = this.aes.encryptData(oAuthId, StandardCharsets.UTF_8);
             oAuthId = this.convertData.byteToBase64(bytes);
         }
-        List<User> user = template.query(findByOAuthIdSql, userRowMapper(), oAuthId);
+        List<User> user = template.query(getUserByOAuthIdSql, userRowMapper(), oAuthId);
         return user.stream().findAny();
     }
 
     public Optional<User> findById(String userID) {
-        List<User> user = template.query(findByIDSql, userRowMapper(), userID);
+        List<User> user = template.query(getUserByIDSql, userRowMapper(), userID);
         return user.stream().findAny();
     }
 
@@ -115,6 +94,6 @@ public class UserRepository {
 //    }
 
     public int deleteUser(String userID) {
-        return template.update(deleteSql, new Object[]{userID, userID});
+        return template.update(deleteUserSql, new Object[]{userID, userID});
     }
 }

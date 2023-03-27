@@ -1,7 +1,6 @@
 package com.project.hangmani.service;
 
 import com.project.hangmani.domain.User;
-import com.project.hangmani.dto.UserDTO;
 import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
 import com.project.hangmani.dto.UserDTO.ResponseUserDTO;
 import com.project.hangmani.exception.FailInsertData;
@@ -9,9 +8,7 @@ import com.project.hangmani.exception.NotFoundUser;
 import com.project.hangmani.repository.UserRepository;
 import com.project.hangmani.security.AES;
 import com.project.hangmani.util.ConvertData;
-import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +39,7 @@ public class UserService {
             User user = users.get();
             return ResponseUserDTO.builder()
                     .id(user.getId())
-                    .refreshToken(user.getRefreshToken())
+                    .refreshToken(requestInsertUserDTO.getRefreshToken())
                     .oAuthType(user.getOAuthType())
                     .build();
         }
@@ -61,7 +58,7 @@ public class UserService {
         User user = findUser.get();
         return ResponseUserDTO.builder()
                 .id(user.getId())
-                .refreshToken(user.getRefreshToken())
+                .refreshToken(requestInsertUserDTO.getRefreshToken())
                 .oAuthType(user.getOAuthType())
                 .build();
     }
@@ -74,16 +71,11 @@ public class UserService {
             throw new NotFoundUser();
         }
         User user = usersByID.get();
-        //TODO if return id , parameter id not equal
-//        if (!base64OAuthID.equals(user.getOAuthID()))
-//            throw new NotFoundUser();
-
         //delete db
         int ret = userRepository.deleteUser(user.getId());
         log.error("ret={}",ret);
         if (ret != 1) {
             throw new FailInsertData();
         }
-
     }
 }
