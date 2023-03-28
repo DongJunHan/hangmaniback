@@ -3,6 +3,8 @@ package com.project.hangmani.convert;
 import com.project.hangmani.domain.Board;
 import com.project.hangmani.domain.Store;
 import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
+import com.project.hangmani.dto.FileDTO.RequestStoreFileDTO;
+import com.project.hangmani.dto.StoreDTO.RequestStoreInsertDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoreUpdateDTO;
 import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
 import com.project.hangmani.util.ConvertData;
@@ -11,7 +13,7 @@ import java.sql.Date;
 import java.util.Map;
 
 public class RequestConvert {
-    private ConvertData convertData;
+    private final ConvertData convertData;
     public RequestConvert() {
         this.convertData = new ConvertData();
     }
@@ -65,5 +67,14 @@ public class RequestConvert {
                 .oAuthType(oAuthType)
                 .build();
 
+    }
+
+    public RequestStoreFileDTO convertDTO(RequestStoreInsertDTO insertDTO, String uuid) {
+        return RequestStoreFileDTO.builder()
+                .fileData(insertDTO.getFileData())
+                .fileSize(insertDTO.getFileData().getSize())
+                .originalFileName(insertDTO.getFileData().getOriginalFilename())
+                .storeUUID(uuid)
+                .build();
     }
 }
