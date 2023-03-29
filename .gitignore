@@ -5,7 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 ### config ###
-./config
+key*
 
 ### STS ###
 .apt_generated
