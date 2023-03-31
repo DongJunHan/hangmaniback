@@ -29,9 +29,10 @@ dependencies {
 	//swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
-	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 //	implementation 'org.springframework.boot:spring-boot-starter-security'
-	runtimeOnly 'com.h2database:h2'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'com.h2database:h2:1.4.200'
+//	runtimeOnly 'com.h2database:h2:1.4.200'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 //	runtimeOnly 'com.mysql:mysql-connector-j:8.0.31'
