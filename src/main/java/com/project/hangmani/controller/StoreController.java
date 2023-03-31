@@ -1,11 +1,14 @@
 package com.project.hangmani.controller;
 
+import com.project.hangmani.convert.RequestConvert;
 import com.project.hangmani.dto.ResponseDTO;
 import com.project.hangmani.dto.StoreDTO.*;
+import com.project.hangmani.service.FileService;
 import com.project.hangmani.service.StoreService;
 import com.project.hangmani.util.ConvertData;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +19,12 @@ import java.util.List;
 @Slf4j
 public class StoreController {
     private final StoreService storeService;
+    private final FileService fileService;
     private final ConvertData convertData;
-    public StoreController(StoreService storeService) {
+
+    public StoreController(StoreService storeService, FileService fileService) {
         this.storeService = storeService;
+        this.fileService = fileService;
         this.convertData = new ConvertData();
     }
     @GetMapping("/all")
@@ -46,10 +52,10 @@ public class StoreController {
 
     @GetMapping
     @ResponseBody
-    public ResponseDTO<List<ResponseStoreFilterDTO>> getStoreInfoByFilter(@ModelAttribute @Valid RequestStoreFilterDTO requestDTO) {
-        List<ResponseStoreFilterDTO> storeInfoList = storeService.getStoreInfo(requestDTO);
-
-        return ResponseDTO.<List<ResponseStoreFilterDTO>>builder()
+    public ResponseDTO<List<ResponseStoreDTO>> getStoreInfoByFilter(@ModelAttribute @Valid RequestStoreFilterDTO requestDTO) {
+        log.info("Store Controller getStoreInfoByFilter");
+        List<ResponseStoreDTO> storeInfoList = storeService.getStoreInfo(requestDTO);
+        return ResponseDTO.<List<ResponseStoreDTO>>builder()
                 .data(storeInfoList)
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
@@ -68,7 +74,10 @@ public class StoreController {
 
     @PostMapping
     @ResponseBody
-    public ResponseDTO<ResponseStoreDTO> insertStore(@ModelAttribute @Valid RequestStoreInsertDTO requestStoreDTO) {
+    public ResponseDTO<ResponseStoreDTO>  insertStore(@ModelAttribute @Valid RequestStoreInsertDTO requestStoreDTO) {
+        log.info("requestStoreDTO={}", requestStoreDTO.toString());
+        log.info("filename={}",requestStoreDTO.getFileData().getOriginalFilename());
+
         return ResponseDTO.<ResponseStoreDTO>builder()
                 .data(storeService.insertStoreInfo(requestStoreDTO))
                 .status(HttpStatus.OK.value())

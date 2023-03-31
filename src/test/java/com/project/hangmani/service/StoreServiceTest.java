@@ -1,10 +1,13 @@
 package com.project.hangmani.service;
 
+import com.project.hangmani.dto.StoreDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoreInsertDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoresDTO;
 import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
 import com.project.hangmani.exception.AlreadyExistStore;
+import com.project.hangmani.repository.FileRepository;
 import com.project.hangmani.repository.StoreRepository;
+import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
@@ -36,33 +39,52 @@ class StoreServiceTest {
     @TestConfiguration
     static class TestConfig {
         private final DataSource dataSource;
-        TestConfig(DataSource dataSource) {
+        private final Util util;
+        TestConfig(DataSource dataSource, Util util) {
             this.dataSource = dataSource;
+            this.util = util;
 
         }
-        @Bean
-        JdbcTemplate getJdbcTemplate() {
-            return new JdbcTemplate(dataSource);
-        }
-
-
+        FileRepository fileRepository() {
+            return new FileRepository(dataSource,new Util());}
         StoreRepository storeRepository() {
-            return new StoreRepository(dataSource);
+            return new StoreRepository(dataSource, this.util);
         }
+        FileService fileService() {return new FileService(fileRepository(), this.util);}
         @Bean
         StoreService StoreServiceV1() {
-            return new StoreService(storeRepository());
+            return new StoreService(storeRepository(),fileService());
         }
 
     }
-    @AfterEach
+//    @AfterEach
     void afterEach() {
         String delSql = "delete from store where storelatitude=? and storelongitude=?";
         template.update(delSql, new Object[] {"11212.488214","1234.054415"});
     }
+
+    @Test
+    @DisplayName("H2 데이터베이스 조건별 상점데이터 확인")
+    void filterStoreInfoTest() {
+        Double userLatitude = 37.3914817;
+        Double userLongitude = 127.0777273;
+
+
+        List<ResponseStoreDTO> storeInfo = storeService.getStoreInfo(new StoreDTO.RequestStoreFilterDTO().builder()
+                .filter("")
+                .userLatitude(userLatitude)
+                .userLongitude(userLongitude)
+                .sido("인천")
+                .sigugun("부평구")
+                .lottoType("lotto645")
+                .build());
+        assertThat(storeInfo).isNotNull();
+
+    }
     @Test
     @DisplayName("H2 데이터베이스 상점 데이터 확인")
-    void StoresInfoTest(){
+    void StoresInfoTest() {
+
         Double startLatitude = 37.463;
         Double endLatitude = 37.528;
         Double startLongitude = 127.019;
@@ -74,7 +96,7 @@ class StoreServiceTest {
                 endLongitude,
                 129);
         List<ResponseStoreDTO> storeInfoList = storeService.getStoreInfo(requestStoreDTO);
-        log.info("result={}",storeInfoList);
+        log.info("result={}", storeInfoList);
         assertThat(storeInfoList.size()).isEqualTo(129);
     }
 
@@ -99,8 +121,8 @@ class StoreServiceTest {
     void StoreInfoInsertFail() {
         RequestStoreInsertDTO requestStoreInsertDTO = new RequestStoreInsertDTO();
         requestStoreInsertDTO.setStoreAddress("서울 강남구 언주로30길 56");
-        requestStoreInsertDTO.setStoreLatitude("37.488214");
-        requestStoreInsertDTO.setStoreLongitude("127.054415");
+        requestStoreInsertDTO.setStoreLatitude(37.488214);
+        requestStoreInsertDTO.setStoreLongitude(127.054415);
         requestStoreInsertDTO.setStoreName("CU(타워팰리스점)");
         assertThatThrownBy(() -> storeService.insertStoreInfo(requestStoreInsertDTO))
                 .isInstanceOf(AlreadyExistStore.class);
@@ -111,8 +133,8 @@ class StoreServiceTest {
     void StoreInfoInsert() {
         RequestStoreInsertDTO requestStoreInsertDTO = new RequestStoreInsertDTO();
         requestStoreInsertDTO.setStoreAddress("서울 강남구 언주로30길 56");
-        requestStoreInsertDTO.setStoreLatitude("11212.488214");
-        requestStoreInsertDTO.setStoreLongitude("1234.054415");
+        requestStoreInsertDTO.setStoreLatitude(11212.488214);
+        requestStoreInsertDTO.setStoreLongitude(1234.054415);
         requestStoreInsertDTO.setStoreName("CU(테스트테스트)");
         requestStoreInsertDTO.setStoreBizNo("111-111");
         requestStoreInsertDTO.setStoreMobileNum(null);

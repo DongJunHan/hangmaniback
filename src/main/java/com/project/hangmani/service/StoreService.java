@@ -10,6 +10,7 @@ import com.project.hangmani.exception.FailInsertData;
 import com.project.hangmani.exception.FailUpdateStore;
 import com.project.hangmani.exception.NotFoundStore;
 import com.project.hangmani.repository.StoreRepository;
+import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +21,16 @@ import java.util.List;
 @Slf4j
 public class StoreService {
     private final StoreRepository storeRepository;
+    private final FileService fileService;
 
     private final ResponseConvert responseConvert;
+    private final RequestConvert requestConvert;
 
-    public StoreService(StoreRepository storeRepository) {
-        this.responseConvert = new ResponseConvert();
+    public StoreService(StoreRepository storeRepository, FileService fileService) {
+        this.responseConvert = new ResponseConvert(new Util());
         this.storeRepository = storeRepository;
+        this.requestConvert = new RequestConvert();
+        this.fileService = fileService;
     }
 
     public List<ResponseStoreDTO> getStoreInfo(RequestStoresDTO requestStoresDTO){
@@ -66,12 +71,12 @@ public class StoreService {
         }
 
         String storeUuid = storeRepository.insertStoreInfo(requestStoreDTO);
-        if (requestStoreDTO.getOriginalFileName() != null && requestStoreDTO.getFileSize() == 0)
-            requestStoreDTO.setFileSize(requestStoreDTO.getFileData().length);
-        storeRepository.insertStoreAttachment(requestStoreDTO, storeUuid);
+        fileService.insertAttachment(requestConvert.convertDTO(requestStoreDTO, storeUuid));
+
+
 
         //get store info
-        return responseConvert.convertResponseDTO(storeRepository.getStoreByNameLatiLongi(requestStoreDTO));
+        return responseConvert.convertResponseDTO(storeRepository.getStoreInfoByUuid(storeUuid));
     }
 
     public ResponseStoreChangeDTO updateStoreInfo(RequestStoreChangeDTO requestStoreChangeDTO) {
@@ -97,7 +102,7 @@ GROUP BY
 order by l.lottoname, win1stcount, win2stcount desc;
 
      */
-    public List<ResponseStoreFilterDTO> getStoreInfo(RequestStoreFilterDTO requestDTO) {
+    public List<ResponseStoreDTO> getStoreInfo(RequestStoreFilterDTO requestDTO) {
         List<Store> storeInfos;
         if (requestDTO.getStartLatitude() == null
                 || requestDTO.getStartLatitude() == null
@@ -107,8 +112,10 @@ order by l.lottoname, win1stcount, win2stcount desc;
         } else {
             storeInfos = storeRepository.getStoreInfoWithWinCountByLatitudeLongitude(requestDTO);
         }
+        log.info("storeinfo={}",storeInfos);
+        //TODO
 
-
+        responseConvert.convertResponseDTO(storeInfos);
         return null;
     }
 }

@@ -13,8 +13,8 @@ public class Store {
     private String storeUuid;
     private String storeName;
     private String storeAddress;
-    private String storeLatitude;
-    private String storeLongitude;
+    private Double storeLatitude;
+    private Double storeLongitude;
     private String storeBizNo;
     private String storeTelNum;
     private String storeMobileNum;
@@ -26,4 +26,5 @@ public class Store {
     private Integer win2stCount;
     private Integer win1stCount;
     private String lottoName;
+    private String savedFileNames;
 }

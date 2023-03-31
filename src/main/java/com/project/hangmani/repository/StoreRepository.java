@@ -33,11 +33,12 @@ public class StoreRepository {
     private final Map<String, String> sidoMap;
     private Util util;
 
-    public StoreRepository(DataSource dataSource) {
-        this.requestConvert = new RequestConvert();
+    public StoreRepository(DataSource dataSource, Util util) {
+        log.info("StoreRepository={}", dataSource);
         this.template = new JdbcTemplate(dataSource);
         this.convertData = new ConvertData();
-        this.util = new Util();
+        this.requestConvert = new RequestConvert();
+        this.util = util;
         this.sidoMap = new HashMap<>();
         sidoMap.put("경기도", "경기");
         sidoMap.put("서울특별시", "서울");
@@ -67,12 +68,28 @@ public class StoreRepository {
         return template.queryForObject(getStoreInfoByUuid, new Object[]{storeUuid}, storeRowMapper());
     }
     public List<Store> getStoreInfoWithWinCountBySidoSigugun(RequestStoreFilterDTO requestDTO) {
-        return template.query(getStoreInfoWithWinCountBySidoSigugun, new Object[]{requestDTO.getSido(), requestDTO.getSigugun()},
+        String sqlQuery;
+        if (requestDTO.getFilter() =="2st")
+            sqlQuery = getStoreInfoWithWinCountBySidoSigugun + orderBy2st;
+        else if (requestDTO.getFilter() == "1st")
+            sqlQuery = getStoreInfoWithWinCountBySidoSigugun + orderBy1st;
+        else
+            sqlQuery = getStoreInfoWithWinCountBySidoSigugun + orderByDistance;
+        return template.query(sqlQuery, new Object[]{requestDTO.getUserLatitude(), requestDTO.getUserLongitude()
+                        ,requestDTO.getSido(), requestDTO.getSigugun(), requestDTO.getLottoType()},
                 storeWithWinCountLottoNameRowMapper());
     }
 
     public List<Store> getStoreInfoWithWinCountByLatitudeLongitude(RequestStoreFilterDTO requestDTO) {
-        return template.query(getStoreInfoWithWinCountByLatitudeLongitude, new Object[]{requestDTO.getUserLatitude(), requestDTO.getUserLongitude()},
+        String sqlQuery;
+        if (requestDTO.getFilter() =="2st")
+            sqlQuery = getStoreInfoWithWinCountByLatitudeLongitude + orderBy2st;
+        else if (requestDTO.getFilter() =="1st")
+            sqlQuery = getStoreInfoWithWinCountByLatitudeLongitude + orderBy1st;
+        else
+            sqlQuery = getStoreInfoWithWinCountByLatitudeLongitude + orderByDistance;
+        return template.query(sqlQuery, new Object[]{requestDTO.getUserLatitude(), requestDTO.getUserLongitude(),
+                        requestDTO.getUserLatitude(), requestDTO.getUserLongitude(), requestDTO.getLottoType()},
                 storeWithWinCountLottoNameRowMapper());
     }
 
@@ -128,20 +145,6 @@ public class StoreRepository {
         return uuid.toString();
     }
 
-    public int insertStoreAttachment(RequestStoreInsertDTO requestStoreDTO, String storeUuid) {
-        //make rename file name
-        Date uploadTime = this.convertData.getSqlDate();
-        String renamedFile = this.util.getRenameWithDate(uploadTime, this.util.getRandomValue(),
-                requestStoreDTO.getOriginalFileName());
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        int ret = template.update(insertStoreAttachment, new Object[]{requestStoreDTO.getOriginalFileName(), renamedFile,
-                requestStoreDTO.getFileSize(), uploadTime, requestStoreDTO.getFileData(), storeUuid}, keyHolder);
-        if (ret == 0)
-            throw new FailInsertData();
-        return keyHolder.getKey().intValue();
-    }
     private String[] extractSidoSigugunByAddress(String address) {
         String[] ret = new String[2];
         String[] splitAddress = address.split(" ");
@@ -165,8 +168,8 @@ public class StoreRepository {
         return ret;
 
     }
-    private Double convertPoint(String value) {
-        String[] splitPoint = value.split("\\.");
+    private Double convertPoint(Double value) {
+        String[] splitPoint = value.toString().split("\\.");
         String cutPoint = splitPoint[1].substring(0,3);
         return Double.parseDouble(splitPoint[0]+ "." + cutPoint);
     }
@@ -177,8 +180,8 @@ public class StoreRepository {
             store.setStoreUuid(rs.getString("storeuuid"));
             store.setStoreName(rs.getString("storename"));
             store.setStoreAddress(rs.getString("storeaddress"));
-            store.setStoreLatitude(rs.getString("storelatitude"));
-            store.setStoreLongitude(rs.getString("storelongitude"));
+            store.setStoreLatitude(rs.getDouble("storelatitude"));
+            store.setStoreLongitude(rs.getDouble("storelongitude"));
             store.setStoreBizNo(rs.getString("storebizno"));
             store.setStoreTelNum(rs.getString("storetelnum"));
             store.setStoreMobileNum(rs.getString("storemobilenum"));
@@ -199,9 +202,9 @@ public class StoreRepository {
             store.setLottoName(rs.getString("lottoname"));
             store.setWin1stCount(rs.getInt("win1stcount"));
             store.setWin2stCount(rs.getInt("win2stcount"));
-            store.setStoreLatitude(rs.getString("storelatitude"));
-            store.setStoreLongitude(rs.getString("storelongitude"));
-            //TODO 첨부파일
+            store.setStoreLatitude(rs.getDouble("storelatitude"));
+            store.setStoreLongitude(rs.getDouble("storelongitude"));
+            store.setSavedFileNames(rs.getString("saved_file_names"));
             return store;
         };
     }
@@ -211,8 +214,8 @@ public class StoreRepository {
             store.setStoreUuid(rs.getString("storeuuid"));
             store.setStoreName(rs.getString("storename"));
             store.setStoreAddress(rs.getString("storeaddress"));
-            store.setStoreLatitude(rs.getString("storelatitude"));
-            store.setStoreLongitude(rs.getString("storelongitude"));
+            store.setStoreLatitude(rs.getDouble("storelatitude"));
+            store.setStoreLongitude(rs.getDouble("storelongitude"));
             store.setStoreBizNo(rs.getString("storebizno"));
             store.setStoreTelNum(rs.getString("storetelnum"));
             store.setStoreMobileNum(rs.getString("storemobilenum"));
@@ -246,8 +249,8 @@ public class StoreRepository {
             store.setStoreUuid(rs.getString("storeuuid"));
             store.setStoreName(rs.getString("storename"));
             store.setStoreAddress(rs.getString("storeaddress"));
-            store.setStoreLatitude(rs.getString("storelatitude"));
-            store.setStoreLongitude(rs.getString("storelongitude"));
+            store.setStoreLatitude(rs.getDouble("storelatitude"));
+            store.setStoreLongitude(rs.getDouble("storelongitude"));
             store.setStoreBizNo(rs.getString("storebizno"));
             store.setStoreTelNum(rs.getString("storetelnum"));
             store.setStoreMobileNum(rs.getString("storemobilenum"));
@@ -256,6 +259,7 @@ public class StoreRepository {
             store.setStoreIsActivity(rs.getBoolean("storeisactivity"));
             store.setStoreSido(rs.getString("storesido"));
             store.setStoreSigugun(rs.getString("storesigugun"));
+            store.setSavedFileNames(rs.getString("saved_file_names"));
             return store;
         };
     }

@@ -15,6 +15,5 @@ public class StoreAttachment {
     private String savedFileName;
     private long fileSize;
     private Date uploadDate;
-    private Byte[] fileData;
-
+    private String storeUuid;
 }
