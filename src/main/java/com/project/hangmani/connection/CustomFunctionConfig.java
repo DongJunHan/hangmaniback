@@ -19,7 +19,7 @@ public class CustomFunctionConfig {
         String qualifiedClassName = packageName + "." + className;
         log.info("class={}", qualifiedClassName);
 
-        this.jdbcTemplate.execute("CREATE ALIAS distance FOR \""+qualifiedClassName+".getDistance\";");
+        this.jdbcTemplate.execute("CREATE ALIAS  IF NOT EXISTS distance  FOR \""+qualifiedClassName+".getDistance\";");
     }
 
 }
