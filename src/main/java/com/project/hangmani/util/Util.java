@@ -4,7 +4,9 @@ import com.project.hangmani.exception.IO;
 import com.project.hangmani.exception.InvalidKeySpec;
 import com.project.hangmani.exception.NoSuchAlgorithm;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.*;
@@ -20,6 +22,14 @@ import static com.project.hangmani.config.SecurityConst.*;
 @Slf4j
 @Component
 public class Util {
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
+    @Value("${file.upload.domain}")
+    private String DOMAIN;
+
+    @Value("${earth.radius}")
+    private static Double earthRadius;
     public PublicKey getPublicKeyFromFile() {
         try {
             byte[] bytes = readByteFile(KEY_FILE_PATH);
@@ -76,8 +86,8 @@ public class Util {
     }
 
     public String getRenameWithDate(Date date, int randomSeed, String originalFileName) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        String formattedNow = dateFormat.format(date); // "yyyyMMdd" 형식의 문자열로 변환
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddSSS");
+        String formattedNow = dateFormat.format(date); // 년도, 월, 일, 밀리초 형식의 문자열로 변환
 
 
         int lastDotIndex = originalFileName.lastIndexOf(".");
@@ -93,4 +103,34 @@ public class Util {
         Random random = new Random();
         return random.nextInt(10000);
     }
+
+    public String generateFileUrl(String savedFileName) {
+        return DOMAIN + savedFileName;
+    }
+    public void savedMultipartFile(MultipartFile file, String fileName) {
+        Path path = Paths.get(uploadDir + fileName);
+        log.info("upload={}", uploadDir);
+        log.info("sad={}", path.getFileName());
+        log.info("asd={}", path.toAbsolutePath());
+        File dest = path.toFile();
+        try {
+            file.transferTo(dest);
+        } catch (IOException e) {
+            throw new IO(e);
+        } catch (IllegalStateException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static Double getDistance(Double userLatitude, Double userLongitude, Double targetLatitude, Double targetLongitude) {
+        Double dLat = Math.toRadians(targetLatitude - userLatitude);
+        Double dLon = Math.toRadians(targetLongitude - userLongitude);
+        userLatitude = Math.toRadians(userLatitude);
+        targetLatitude = Math.toRadians(targetLatitude);
+
+        Double alpha =  (Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(userLatitude) * Math.cos(targetLatitude) * Math.sin(dLon/2) * Math.sin(dLon/2));
+        Double centralAngle = (2 * Math.atan2(Math.sqrt(alpha), Math.sqrt(1-alpha)));
+
+        return earthRadius * centralAngle;
+    }
+
 }
