@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.sql.Date;
 
 public class FileDTO {
+
     @Getter
     @Setter
     @AllArgsConstructor
@@ -15,7 +16,9 @@ public class FileDTO {
         private MultipartFile fileData;
         private long fileSize;
         private String originalFileName;
+        private String savedFileName;
         private String storeUUID;
         private Date uploadTime;
+        private String fileUrl;
     }
 }
