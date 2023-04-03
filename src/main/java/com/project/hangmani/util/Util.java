@@ -28,8 +28,6 @@ public class Util {
     @Value("${file.upload.domain}")
     private String DOMAIN;
 
-    @Value("${earth.radius}")
-    public static Double earthRadius;
     public PublicKey getPublicKeyFromFile() {
         try {
             byte[] bytes = readByteFile(KEY_FILE_PATH);
@@ -122,6 +120,7 @@ public class Util {
         }
     }
     public static Double getDistance(Double userLatitude, Double userLongitude, Double targetLatitude, Double targetLongitude) {
+        Double earthRadius = 6371.;
         Double dLat = Math.toRadians(targetLatitude - userLatitude);
         Double dLon = Math.toRadians(targetLongitude - userLongitude);
         userLatitude = Math.toRadians(userLatitude);
