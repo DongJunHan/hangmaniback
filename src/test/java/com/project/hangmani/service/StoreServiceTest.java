@@ -9,7 +9,6 @@ import com.project.hangmani.repository.FileRepository;
 import com.project.hangmani.repository.StoreRepository;
 import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -71,16 +70,17 @@ class StoreServiceTest {
 
 
         List<ResponseStoreDTO> storeInfo = storeService.getStoreInfo(new StoreDTO.RequestStoreFilterDTO().builder()
-                .filter("")
+                .filter("2st")
                 .userLatitude(userLatitude)
                 .userLongitude(userLongitude)
                 .sido("인천")
                 .sigugun("부평구")
-                .lottoType("lotto645")
+                .lottoType("speetto2000")
                 .build());
         assertThat(storeInfo).isNotNull();
 
     }
+
     @Test
     @DisplayName("H2 데이터베이스 상점 데이터 확인")
     void StoresInfoTest() {

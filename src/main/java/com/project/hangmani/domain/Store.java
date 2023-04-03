@@ -1,6 +1,5 @@
 package com.project.hangmani.domain;
 
-import jakarta.validation.Valid;
 import lombok.*;
 
 @Setter
@@ -27,4 +26,5 @@ public class Store {
     private Integer win1stCount;
     private String lottoName;
     private String savedFileNames;
+    private Double distance;
 }

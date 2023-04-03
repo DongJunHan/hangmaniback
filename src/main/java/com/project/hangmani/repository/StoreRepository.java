@@ -10,12 +10,9 @@ import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,22 +66,22 @@ public class StoreRepository {
     }
     public List<Store> getStoreInfoWithWinCountBySidoSigugun(RequestStoreFilterDTO requestDTO) {
         String sqlQuery;
-        if (requestDTO.getFilter() =="2st")
+        if (requestDTO.getFilter().equals("2st"))
             sqlQuery = getStoreInfoWithWinCountBySidoSigugun + orderBy2st;
-        else if (requestDTO.getFilter() == "1st")
+        else if (requestDTO.getFilter().equals("1st"))
             sqlQuery = getStoreInfoWithWinCountBySidoSigugun + orderBy1st;
         else
             sqlQuery = getStoreInfoWithWinCountBySidoSigugun + orderByDistance;
-        return template.query(sqlQuery, new Object[]{requestDTO.getUserLatitude(), requestDTO.getUserLongitude()
-                        ,requestDTO.getSido(), requestDTO.getSigugun(), requestDTO.getLottoType()},
+        return template.query(sqlQuery, new Object[]{ requestDTO.getUserLatitude(), requestDTO.getUserLongitude(),
+                        requestDTO.getSido(), requestDTO.getSigugun(), requestDTO.getLottoType()},
                 storeWithWinCountLottoNameRowMapper());
     }
 
     public List<Store> getStoreInfoWithWinCountByLatitudeLongitude(RequestStoreFilterDTO requestDTO) {
         String sqlQuery;
-        if (requestDTO.getFilter() =="2st")
+        if (requestDTO.getFilter().equals("2st"))
             sqlQuery = getStoreInfoWithWinCountByLatitudeLongitude + orderBy2st;
-        else if (requestDTO.getFilter() =="1st")
+        else if (requestDTO.getFilter().equals("1st"))
             sqlQuery = getStoreInfoWithWinCountByLatitudeLongitude + orderBy1st;
         else
             sqlQuery = getStoreInfoWithWinCountByLatitudeLongitude + orderByDistance;
@@ -92,7 +89,6 @@ public class StoreRepository {
                         requestDTO.getUserLatitude(), requestDTO.getUserLongitude(), requestDTO.getLottoType()},
                 storeWithWinCountLottoNameRowMapper());
     }
-
     public int updateStoreInfo(String StoreUuid, RequestStoreUpdateDTO requestStoreUpdateDTO) {
         Store store = requestConvert.convertEntity(requestStoreUpdateDTO);
         Object[] objects = {store.getStoreName(),store.getStoreAddress(), store.getStoreLatitude(),
@@ -205,6 +201,7 @@ public class StoreRepository {
             store.setStoreLatitude(rs.getDouble("storelatitude"));
             store.setStoreLongitude(rs.getDouble("storelongitude"));
             store.setSavedFileNames(rs.getString("saved_file_names"));
+            store.setDistance(rs.getDouble("distance"));
             return store;
         };
     }
