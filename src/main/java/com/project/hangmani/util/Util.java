@@ -29,7 +29,7 @@ public class Util {
     private String DOMAIN;
 
     @Value("${earth.radius}")
-    private static Double earthRadius;
+    public static Double earthRadius;
     public PublicKey getPublicKeyFromFile() {
         try {
             byte[] bytes = readByteFile(KEY_FILE_PATH);
