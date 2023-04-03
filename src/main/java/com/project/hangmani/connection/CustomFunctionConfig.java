@@ -17,9 +17,9 @@ public class CustomFunctionConfig {
         String packageName = Util.class.getPackage().getName();
         String className = Util.class.getSimpleName();
         String qualifiedClassName = packageName + "." + className;
-        log.info("class={}", qualifiedClassName);
-
-        this.jdbcTemplate.execute("CREATE ALIAS  IF NOT EXISTS distance  FOR \""+qualifiedClassName+".getDistance\";");
+//        Delete alias
+//        this.jdbcTemplate.execute("DROP ALIAS IF EXISTS distance;");
+        this.jdbcTemplate.execute("CREATE ALIAS IF NOT EXISTS distance  FOR \""+qualifiedClassName+".getDistance\";");
     }
 
 }
