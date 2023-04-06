@@ -40,12 +40,10 @@ public class AES implements TwoWayEncryptionInterface {
 //            return;
         this.key = getKeyFromFile();
 
-        //TODO config 파일 있는지 체크하는걸 서버가 띄워질 때 체크해야힘. 없으면 에러.
         if(this.key == null) {
             this.key = createKey(KEY_SIZE);
             util.saveByteData(this.key);
         }
-        log.info("this.key={}", this.key);
         SecretKeySpec secretKeySpec = new SecretKeySpec(this.key, ALGORITHM);
         try {
             this.encrpytCipher = Cipher.getInstance(CIPHER_ALGORITHM);
@@ -59,7 +57,6 @@ public class AES implements TwoWayEncryptionInterface {
         } catch (InvalidKeyException e) {
             throw new RuntimeException(e);
         }
-        log.info("al={}", encrpytCipher.getAlgorithm());
     }
 
     @Override
