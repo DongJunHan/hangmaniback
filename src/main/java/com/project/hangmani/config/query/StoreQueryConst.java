@@ -38,7 +38,6 @@ public class StoreQueryConst {
             "    JOIN lotto_type l ON w.lottoId = l.lottoId " +
             "where (? < storelatitude and storelatitude < ?) and (? < storelongitude and storelongitude < ?) and l.lottoname=? " +
             "GROUP BY s.storeUuid, s.storeName, s.storeaddress, l.lottoname, s.storelatitude, s.storelongitude\n";
-    public static final String testDistance = "select get_distance(?, ?, storelatitude, storelongitude) AS distance from store where storesigugun=?";
     public static final String orderBy1st = "order by win1stcount desc;";
     public static final String orderBy2st = "order by win2stcount desc;";
     public static final String orderByDistance = "order by distance;";
