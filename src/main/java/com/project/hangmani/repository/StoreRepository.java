@@ -2,7 +2,6 @@ package com.project.hangmani.repository;
 
 import com.project.hangmani.convert.RequestConvert;
 import com.project.hangmani.domain.Store;
-import com.project.hangmani.dto.StoreDTO;
 import com.project.hangmani.dto.StoreDTO.*;
 import com.project.hangmani.exception.FailInsertData;
 import com.project.hangmani.util.ConvertData;
@@ -195,11 +194,11 @@ public class StoreRepository {
             store.setStoreUuid(rs.getString("storeuuid"));
             store.setStoreName(rs.getString("storename"));
             store.setStoreAddress(rs.getString("storeaddress"));
-            store.setLottoName(rs.getString("lottoname"));
             store.setWin1stCount(rs.getInt("win1stcount"));
             store.setWin2stCount(rs.getInt("win2stcount"));
             store.setStoreLatitude(rs.getDouble("storelatitude"));
             store.setStoreLongitude(rs.getDouble("storelongitude"));
+            store.setLottoName(rs.getString("lottonames"));
             store.setSavedFileNames(rs.getString("saved_file_names"));
             store.setDistance(rs.getDouble("distance"));
             return store;
@@ -221,6 +220,7 @@ public class StoreRepository {
             store.setStoreIsActivity(rs.getBoolean("storeisactivity"));
             store.setStoreSido(rs.getString("storesido"));
             store.setStoreSigugun(rs.getString("storesigugun"));
+            store.setLottoName(rs.getString("lottonames"));
             return store;
         };
     }
