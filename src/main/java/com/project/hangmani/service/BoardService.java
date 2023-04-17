@@ -2,7 +2,6 @@ package com.project.hangmani.service;
 
 import com.project.hangmani.convert.ResponseConvert;
 import com.project.hangmani.domain.Board;
-import com.project.hangmani.domain.User;
 import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
 import com.project.hangmani.dto.BoardDTO.RequestDeleteDTO;
 import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
@@ -12,6 +11,7 @@ import com.project.hangmani.exception.NotFoundUser;
 import com.project.hangmani.repository.BoardRepository;
 import com.project.hangmani.repository.UserRepository;
 import com.project.hangmani.convert.RequestConvert;
+import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +26,14 @@ public class BoardService {
     private final UserRepository userRepository;
     private final RequestConvert requestConvert;
     private final ResponseConvert responseConvert;
+    private final Util util;
 
-    public BoardService(BoardRepository boardRepository, UserRepository userRepository) {
+    public BoardService(BoardRepository boardRepository, UserRepository userRepository, Util util) {
         this.userRepository = userRepository;
         this.boardRepository = boardRepository;
         this.requestConvert = new RequestConvert();
-        this.responseConvert = new ResponseConvert();
+        this.util = util;
+        this.responseConvert = new ResponseConvert(this.util);
     }
 
     /**
@@ -81,10 +83,9 @@ public class BoardService {
             throw new FailDeleteData();
         }
     }
-    private void checkID(String boardWriter) {
-        if (userRepository.findById(boardWriter).isEmpty()){
+    private void checkID(String boardWriterID) {
+        if (userRepository.findById(boardWriterID).isEmpty()){
             throw new NotFoundUser();
         }
     }
-
 }
