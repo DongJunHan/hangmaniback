@@ -72,7 +72,7 @@ public class StoreRepository {
         else
             sqlQuery = getStoreInfoWithWinCountBySidoSigugun + orderByDistance;
         return template.query(sqlQuery, new Object[]{ requestDTO.getUserLatitude(), requestDTO.getUserLongitude(),
-                        requestDTO.getSido(), requestDTO.getSigugun(), requestDTO.getLottoType()},
+                        requestDTO.getSido(), requestDTO.getSigugun(), requestDTO.getLottoID()},
                 storeWithWinCountLottoNameRowMapper());
     }
 
@@ -85,7 +85,8 @@ public class StoreRepository {
         else
             sqlQuery = getStoreInfoWithWinCountByLatitudeLongitude + orderByDistance;
         return template.query(sqlQuery, new Object[]{requestDTO.getUserLatitude(), requestDTO.getUserLongitude(),
-                        requestDTO.getUserLatitude(), requestDTO.getUserLongitude(), requestDTO.getLottoType()},
+                        requestDTO.getStartLatitude(), requestDTO.getEndLatitude(), requestDTO.getStartLongitude(),
+                        requestDTO.getEndLongitude(), requestDTO.getLottoID()},
                 storeWithWinCountLottoNameRowMapper());
     }
     public int updateStoreInfo(String StoreUuid, RequestStoreUpdateDTO requestStoreUpdateDTO) {

@@ -65,4 +65,28 @@ public class CustomExceptionHandler {
                 .message(e.getMessage())
                 .build();
     }
+
+    @ExceptionHandler(KO310Exception.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseDTO KO310Exception(RuntimeException e) {
+        log.error("KO310Exception", e);
+        return ResponseDTO.builder()
+                .data(null)
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(e.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler(KOE303Exception.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseDTO KOE303Exception(RuntimeException e) {
+        log.error("KOE303Exception", e);
+        return ResponseDTO.builder()
+                .data(null)
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(e.getMessage())
+                .build();
+    }
+
+
 }

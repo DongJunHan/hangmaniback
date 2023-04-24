@@ -29,10 +29,10 @@ public class UserRepository {
     private Util util;
     private AES aes;
     private ConvertData convertData;
-    public UserRepository(DataSource dataSource, Util util) {
+    public UserRepository(DataSource dataSource, Util util,AES aes) {
         this.template = new JdbcTemplate(dataSource);
         this.util = util;
-        this.aes = new AES(this.util);
+        this.aes = aes;
         this.convertData = new ConvertData();
     }
 

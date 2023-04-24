@@ -16,10 +16,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 class AESTest {
     AES AES;
+    Util util;
     @BeforeEach
     void beforeEach() {
         ConfigurableApplicationContext ac = new AnnotationConfigApplicationContext(AES.class);
+        ConfigurableApplicationContext utilac = new AnnotationConfigApplicationContext(Util.class);
         AES = ac.getBean(AES.class);
+        util = utilac.getBean(Util.class);
     }
     @AfterEach
     void afterEach() {
@@ -32,19 +35,13 @@ class AESTest {
     }
     @Test
     void encryptData() {
-        byte[] testTexts = AES.encryptData("testText");
+        byte[] testTexts = AES.encryptData("testText", StandardCharsets.UTF_8);
         ConvertData convertData = new ConvertData();
         String base64 = convertData.byteToBase64(testTexts);
 
         log.info("base64={}", base64);
         log.info("encrypt={}", testTexts);
         assertThat(base64).isEqualTo("iN4DKYNOzYNc4l4Jm3xJwg==");
-    }
-    @Test
-    void getPrivateKeyFile(){
-        Util util = new Util();
-        byte[] keyFromFile = util.getKeyFromFile();
-        assertThat(keyFromFile).isNotNull();
     }
 
     @Test

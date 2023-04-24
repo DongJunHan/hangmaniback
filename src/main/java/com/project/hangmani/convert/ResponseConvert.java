@@ -4,9 +4,21 @@ import com.project.hangmani.domain.Board;
 import com.project.hangmani.domain.Store;
 import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
 import com.project.hangmani.dto.BoardDTO.ResponseDeleteDTO;
+import com.project.hangmani.dto.StoreDTO;
 import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
+import com.project.hangmani.dto.StoreDTO.ResponseStoreFilterDTO;
+import com.project.hangmani.util.Util;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ResponseConvert {
+    private final Util util;
+
+    public ResponseConvert(Util util) {
+        this.util = util;
+    }
+
     public ResponseDeleteDTO convertResponseDTO(int rowNum) {
         return ResponseDeleteDTO.builder().rowNum(rowNum).build();
     }
@@ -21,6 +33,12 @@ public class ResponseConvert {
                 .build();
     }
     public ResponseStoreDTO convertResponseDTO(Store store) {
+        String savedFileNames = store.getSavedFileNames();
+        String[] split = savedFileNames.split(",");
+        List<String> fileUrls = new ArrayList<>();
+        for (String s:split) {
+            fileUrls.add(this.util.generateFileUrl(s));
+        }
         return ResponseStoreDTO.builder()
                 .storeUuid(store.getStoreUuid())
                 .storeName(store.getStoreName())
@@ -35,6 +53,46 @@ public class ResponseConvert {
                 .storeIsActivity(store.getStoreIsActivity())
                 .storeSido(store.getStoreSido())
                 .storeSigugun(store.getStoreSigugun())
+                .fileUrlList(fileUrls)
                 .build();
+    }
+/*
+        private String storeUUID;
+        private String storeName;
+        private String storeAddress;
+        private Double distance;
+        private int firstWinCount;
+        private int secondWinCount;
+        private List<String> attachFileList;
+        private List<String> lottoTypes;
+ */
+
+    public List<ResponseStoreFilterDTO> convertResponseDTO(List<Store> storeInfos) {
+        List<ResponseStoreFilterDTO> result = new ArrayList<>();
+        for (Store storeInfo:storeInfos) {
+            //split saved file name
+            List<String> savedFileList = new ArrayList<>();
+            String[] savedFiles = storeInfo.getSavedFileNames().split(",");
+            for(String s: savedFiles){
+                savedFileList.add(s.trim());
+            }
+            //split lotto type
+            List<String> lottoTypeList = new ArrayList<>();
+            String[] lottoTypes = storeInfo.getLottoName().split(",");
+            for(String l: lottoTypes){
+                lottoTypeList.add(l.trim());
+            }
+            result.add(ResponseStoreFilterDTO.builder()
+                    .storeUUID(storeInfo.getStoreUuid())
+                    .storeName(storeInfo.getStoreName())
+                    .storeAddress(storeInfo.getStoreAddress())
+                    .distance(storeInfo.getDistance())
+                    .firstWinCount(storeInfo.getWin1stCount())
+                    .secondWinCount(storeInfo.getWin2stCount())
+                    .attachFileList(savedFileList)
+                    .lottoTypes(lottoTypeList)
+                    .build());
+        }
+        return result;
     }
 }

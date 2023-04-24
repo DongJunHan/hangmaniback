@@ -59,10 +59,6 @@ public class FileRepository {
 
     }
 
-    public int insertAttachment() {
-        return 0;
-    }
-
     public List<StoreAttachment> getAttachmentsByUuid(String uuid) {
         return template.query(sql, new Object[]{uuid}, attachmentMapper());
     }

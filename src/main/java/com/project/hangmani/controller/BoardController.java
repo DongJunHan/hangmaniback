@@ -44,4 +44,7 @@ public class BoardController {
                 .message(HttpStatus.OK.name())
                 .build();
     }
+
+    //TODO. read board list
+
 }

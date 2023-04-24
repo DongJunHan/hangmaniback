@@ -26,7 +26,7 @@ public class StoreDTO {
         private Double endLatitude;
         private Double startLongitude;
         private Double endLongitude;
-        private String lottoType;
+        private int lottoID;
         private String filter;
     }
     @Getter
@@ -149,6 +149,7 @@ public class StoreDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    @ToString
     public static class ResponseStoreFilterDTO {
         private String storeUUID;
         private String storeName;

@@ -102,7 +102,7 @@ GROUP BY
 order by l.lottoname, win1stcount, win2stcount desc;
 
      */
-    public List<ResponseStoreDTO> getStoreInfo(RequestStoreFilterDTO requestDTO) {
+    public List<ResponseStoreFilterDTO> getStoreInfo(RequestStoreFilterDTO requestDTO) {
         List<Store> storeInfos;
         if (requestDTO.getStartLatitude() == null
                 || requestDTO.getStartLatitude() == null
@@ -113,9 +113,8 @@ order by l.lottoname, win1stcount, win2stcount desc;
             storeInfos = storeRepository.getStoreInfoWithWinCountByLatitudeLongitude(requestDTO);
         }
         log.info("storeinfo={}",storeInfos);
-        //TODO
 
-        responseConvert.convertResponseDTO(storeInfos);
-        return null;
+        return responseConvert.convertResponseDTO(storeInfos);
     }
+
 }

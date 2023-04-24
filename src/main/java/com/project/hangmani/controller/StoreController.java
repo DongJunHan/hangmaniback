@@ -52,10 +52,10 @@ public class StoreController {
 
     @GetMapping
     @ResponseBody
-    public ResponseDTO<List<ResponseStoreDTO>> getStoreInfoByFilter(@ModelAttribute @Valid RequestStoreFilterDTO requestDTO) {
+    public ResponseDTO<List<ResponseStoreFilterDTO>> getStoreInfoByFilter(@ModelAttribute @Valid RequestStoreFilterDTO requestDTO) {
         log.info("Store Controller getStoreInfoByFilter");
-        List<ResponseStoreDTO> storeInfoList = storeService.getStoreInfo(requestDTO);
-        return ResponseDTO.<List<ResponseStoreDTO>>builder()
+        List<ResponseStoreFilterDTO> storeInfoList = storeService.getStoreInfo(requestDTO);
+        return ResponseDTO.<List<ResponseStoreFilterDTO>>builder()
                 .data(storeInfoList)
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())

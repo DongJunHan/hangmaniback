@@ -1,5 +1,6 @@
 package com.project.hangmani.repository;
 
+import com.project.hangmani.connection.CustomFunctionConfig;
 import com.project.hangmani.domain.Board;
 import com.project.hangmani.util.ConvertData;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +23,12 @@ public class BoardRepository {
     private final String deleteByNo = "update board set isdelete = 1 where boardno=?";
     private JdbcTemplate template;
     private ConvertData convertData;
+    private CustomFunctionConfig customFunctionConfig;
     public BoardRepository(DataSource dataSource) {
         this.convertData = new ConvertData();
         this.template = new JdbcTemplate(dataSource);
+        this.customFunctionConfig = new CustomFunctionConfig(this.template);
+        this.customFunctionConfig.registerFunctions();
     }
 
     public Optional<Board> findByNo(int no) {

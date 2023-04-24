@@ -5,8 +5,11 @@ import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
 import com.project.hangmani.exception.NotFoundUser;
 import com.project.hangmani.repository.BoardRepository;
 import com.project.hangmani.repository.UserRepository;
+import com.project.hangmani.security.AES;
+import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +31,12 @@ class BoardServiceTest {
     @TestConfiguration
     static class TestConfig {
         private final DataSource dataSource;
-
-        TestConfig(DataSource dataSource) {
+        private final Util util;
+        private final AES aes;
+        TestConfig(DataSource dataSource, Util util, AES aes) {
             this.dataSource = dataSource;
+            this.util = util;
+            this.aes = aes;
         }
 
         BoardRepository boardRepository() {
@@ -38,19 +44,19 @@ class BoardServiceTest {
         }
 
         UserRepository userRepository() {
-            return new UserRepository(dataSource);
+            return new UserRepository(dataSource, util, aes);
         }
 
         @Bean
         BoardService BoardService1() {
-            return new BoardService(boardRepository(), userRepository());
+            return new BoardService(boardRepository(), userRepository(),this.util);
         }
     }
 
-    @AfterEach
-    void afterEach() {
-
-    }
+//    @BeforeEach
+//    void beforeEach() {
+//
+//    }
 
     @Test
     @DisplayName("H2 데이터베이스 게시물 삽입 성공")
