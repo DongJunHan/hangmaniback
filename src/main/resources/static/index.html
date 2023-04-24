@@ -3,19 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <title>OAuthTest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 </head>
 <body>
 <a href="#" onClick=handleClick()>kakao_login</a><br/>
 <a href="#" onClick=handleWithDrawClick()>kakao withdraw</a><br/>
+<a href="#" onClick=handleLogOutClick()>kakao logout</a><br/>
+<br/>
+
+<form action="/api/v1/store" method="POST" enctype="multipart/form-data" style="border: 2px solid black; padding: 10px;">
+    <label for="storeName">Store Name:</label>
+    <input type="text" id="storeName" name="storeName" required><br><br>
+
+    <label for="storeAddress">Store Address:</label>
+    <input type="text" id="storeAddress" name="storeAddress" required><br><br>
+
+    <label for="storeLatitude">Store Latitude:</label>
+    <input type="text" id="storeLatitude" name="storeLatitude" required><br><br>
+
+    <label for="storeLongitude">Store Longitude:</label>
+    <input type="text" id="storeLongitude" name="storeLongitude" required><br><br>
+
+    <label for="storeBizNo">Business Number:</label>
+    <input type="text" id="storeBizNo" name="storeBizNo"><br><br>
+
+    <label for="storeTelNum">Telephone Number:</label>
+    <input type="tel" id="storeTelNum" name="storeTelNum"><br><br>
+
+    <label for="storeMobileNum">Mobile Number:</label>
+    <input type="tel" id="storeMobileNum" name="storeMobileNum"><br><br>
+
+    <label for="storeOpenTime">Open Time:</label>
+    <input type="text" id="storeOpenTime" name="storeOpenTime"><br><br>
+
+    <label for="storeCloseTime">Close Time:</label>
+    <input type="text" id="storeCloseTime" name="storeCloseTime"><br><br>
+
+    <label for="fileData">File:</label>
+    <input type="file" id="fileData" name="fileData"><br><br>
+
+    <button type="submit">Submit</button>
+</form>
+
+<h1>Geolocation API Example</h1>
+
+<p>Click the button to get your current location:</p>
+
+<button onclick="getLocation()">Get Location</button>
+
+<p id="demo"></p>
+
+
+<a href="#" onClick=handleStore()>getStoreInfo</a><br/>
+
 <script>
-    // const client_id = "eec30559b1482179d83dd69beb47a816";
+    const client_id = "eec30559b1482179d83dd69beb47a816";
     // const redirect_uri = "http://localhost:8080/user";
-    // const logout_uri = "http://localhost:8080/logout"
+    const logout_uri = "http://localhost:8080/user/logout"
     // const adminKey = "c200e2b5c60b9b328adad0269005e146";
     //&scope=account_email,gender,age_range,birthday,talk_message
     // const handleClick = (e) => location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code&scope=account_email,gender,age_range,birthday,talk_message`;
     const handleClick = (e) => location.href = `http://localhost:8080/user/kakao`;
-    const handleWithDrawClick  = (e) => location.href = `http://localhost:8080/user`;
+    const handleLogOutClick = (e) => location.href = `https://kauth.kakao.com/oauth/logout?client_id=${client_id}&logout_redirect_uri=${logout_uri}`;
+
+    const handleStore = (e) => location.href = `http://localhost:8080/api/v1/store?sido=인천&sigugun=부평구&userLatitude=37.3914817&userLongitude=127.0777273&startLatitude=&endLatitude=&startLongitude=&endLongitude=&lottoType=lotto645&filter=1st`;
+    function handleWithDrawClick() {
+        fetch('http://localhost:8080/user/withdraw', {
+            method: 'DELETE'
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = "/";
+                } else {
+                    console.log('Error occurred while deleting user.');
+                }
+            })
+            .catch(error => {
+                console.log('Error occurred while deleting user:', error);
+            });
+    }
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function showPosition(position) {
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+        document.getElementById("demo").innerHTML = "Latitude: " + latitude + "<br>Longitude: " + longitude;
+    }
 </script>
 </body>
 </html>
