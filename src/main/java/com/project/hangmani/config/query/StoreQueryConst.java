@@ -14,8 +14,7 @@ public class StoreQueryConst {
             "FROM store s join lotto_type_handle lh on s.storeuuid=lh.storeuuid "+
             "join lotto_type l on l.lottoid=lh.lottoid "+
             "left join store_attachment sa on s.storeuuid=sa.storeuuid\n"+
-            "where s.storeuuid=?\n"+
-            "GROUP BY s.storeuuid;";
+            "where s.storeuuid=?";
     public static final String getStoreInfoWithWinCountBySidoSigugun =
             "SELECT s.storeUuid, s.storeName, s.storeaddress, \n" +
             "SUM(CASE WHEN w.winRank = 1 THEN 1 ELSE 0 END) AS win1stCount, \n" +
