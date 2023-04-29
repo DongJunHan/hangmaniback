@@ -143,6 +143,9 @@ public class StoreDTO {
         private String storeSido;
         private  String storeSigugun;
         private List<String> fileUrlList;
+        private List<String> lottoTypes;
+        private int firstWinCount;
+        private int secondWinCount;
     }
 
     @Getter

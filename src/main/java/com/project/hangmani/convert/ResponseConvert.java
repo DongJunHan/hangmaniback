@@ -34,10 +34,21 @@ public class ResponseConvert {
     }
     public ResponseStoreDTO convertResponseDTO(Store store) {
         String savedFileNames = store.getSavedFileNames();
-        String[] split = savedFileNames.split(",");
+        String[] split = null;
         List<String> fileUrls = new ArrayList<>();
-        for (String s:split) {
-            fileUrls.add(this.util.generateFileUrl(s));
+        List<String> lottoType = new ArrayList<>();
+        if (savedFileNames != null) {
+            split = savedFileNames.split(",");
+            for (String s : split) {
+                fileUrls.add(this.util.generateFileUrl(s));
+            }
+        }
+        split = null;
+        if (store.getLottoName() != null){
+            split = store.getLottoName().split(",");
+            for (String s : split) {
+                lottoType.add(s);
+            }
         }
         return ResponseStoreDTO.builder()
                 .storeUuid(store.getStoreUuid())
@@ -54,6 +65,9 @@ public class ResponseConvert {
                 .storeSido(store.getStoreSido())
                 .storeSigugun(store.getStoreSigugun())
                 .fileUrlList(fileUrls)
+                .lottoTypes(lottoType)
+                .firstWinCount(store.getWin1stCount())
+                .secondWinCount(store.getWin2stCount())
                 .build();
     }
 /*

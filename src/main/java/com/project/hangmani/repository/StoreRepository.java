@@ -222,6 +222,9 @@ public class StoreRepository {
             store.setStoreSido(rs.getString("storesido"));
             store.setStoreSigugun(rs.getString("storesigugun"));
             store.setLottoName(rs.getString("lottonames"));
+            store.setWin1stCount(rs.getInt("win1stCount"));
+            store.setWin2stCount(rs.getInt("win2stCount"));
+            store.setSavedFileNames(rs.getString("saved_file_names"));
             return store;
         };
     }
