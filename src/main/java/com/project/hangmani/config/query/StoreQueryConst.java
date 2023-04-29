@@ -11,10 +11,10 @@ public class StoreQueryConst {
             "s.storeIsActivity, s.storeSido, s.storeSigugun, " +
             "SUM(CASE WHEN w.winRank = 1 THEN 1 ELSE 0 END) AS win1stCount, " +
             "SUM(CASE WHEN w.winRank = 2 THEN 1 ELSE 0 END) AS win2stCount," +
-            "(SELECT COALESCE(GROUP_CONCAT(l.lottoname ORDER BY l.lottoname ASC SEPARATOR ', '),'') AS lottonames " +
+            "(SELECT COALESCE(GROUP_CONCAT(l.lottoname ORDER BY l.lottoname ASC SEPARATOR ','),'') AS lottonames " +
             "FROM lotto_type_handle lh JOIN lotto_type l ON l.lottoid=lh.lottoid " +
             "WHERE lh.storeuuid=s.storeuuid) AS lottonames, "+
-            "COALESCE(GROUP_CONCAT(DISTINCT sa.saved_file_name ORDER BY sa.saved_file_name ASC SEPARATOR ', '), '') AS saved_file_names " +
+            "COALESCE(GROUP_CONCAT(DISTINCT sa.saved_file_name ORDER BY sa.saved_file_name ASC SEPARATOR ','), '') AS saved_file_names " +
             "FROM store s " +
             "JOIN win_history w ON s.storeUuid = w.storeUuid " +
             "JOIN lotto_type_handle lh ON s.storeuuid = lh.storeuuid " +
@@ -26,10 +26,10 @@ public class StoreQueryConst {
             "SUM(CASE WHEN w.winRank = 1 THEN 1 ELSE 0 END) AS win1stCount, \n" +
             "SUM(CASE WHEN w.winRank = 2 THEN 1 ELSE 0 END) AS win2stCount,\n" +
             "s.storelatitude, s.storelongitude, \n" +
-            "(SELECT COALESCE(GROUP_CONCAT(l.lottoname ORDER BY l.lottoname ASC SEPARATOR ', '),'') AS lottonames " +
+            "(SELECT COALESCE(GROUP_CONCAT(l.lottoname ORDER BY l.lottoname ASC SEPARATOR ','),'') AS lottonames " +
                 "FROM lotto_type_handle lh JOIN lotto_type l ON l.lottoid=lh.lottoid " +
                 "WHERE lh.storeuuid=s.storeuuid) AS lottonames, "+
-            "COALESCE(GROUP_CONCAT(DISTINCT sa.saved_file_name ORDER BY sa.saved_file_name ASC SEPARATOR ', '), '') AS saved_file_names, \n" +
+            "COALESCE(GROUP_CONCAT(DISTINCT sa.saved_file_name ORDER BY sa.saved_file_name ASC SEPARATOR ','), '') AS saved_file_names, \n" +
             "get_distance(?, ?, s.storelatitude, s.storelongitude) AS distance \n"+
             "FROM " +
             "store s " +
@@ -44,10 +44,10 @@ public class StoreQueryConst {
             "SUM(CASE WHEN w.winRank = 1 THEN 1 ELSE 0 END) AS win1stCount, " +
             "SUM(CASE WHEN w.winRank = 2 THEN 1 ELSE 0 END) AS win2stCount, " +
             "s.storelatitude, s.storelongitude, "+
-            "(SELECT COALESCE(GROUP_CONCAT(l.lottoname ORDER BY l.lottoname ASC SEPARATOR ', '),'') AS lottonames " +
+            "(SELECT COALESCE(GROUP_CONCAT(l.lottoname ORDER BY l.lottoname ASC SEPARATOR ','),'') AS lottonames " +
                 "FROM lotto_type_handle lh JOIN lotto_type l ON l.lottoid=lh.lottoid " +
                 "WHERE lh.storeuuid=s.storeuuid) AS lottonames, "+
-            "COALESCE(GROUP_CONCAT(DISTINCT sa.saved_file_name ORDER BY sa.saved_file_name ASC SEPARATOR ', '), '') AS saved_file_names, " +
+            "COALESCE(GROUP_CONCAT(DISTINCT sa.saved_file_name ORDER BY sa.saved_file_name ASC SEPARATOR ','), '') AS saved_file_names, " +
             "get_distance(?, ?, s.storelatitude, s.storelongitude) AS distance "+
             "FROM " +
             "store s " +
@@ -58,7 +58,7 @@ public class StoreQueryConst {
             "where (? < storelatitude and storelatitude < ?) and (? < storelongitude and storelongitude < ?) and l.lottoid=? " +
             "GROUP BY s.storeUuid, s.storeName, s.storeaddress, l.lottoname, s.storelatitude, s.storelongitude\n";
     public static final String getLottoTypeHandleBySidoSigugun =
-            "SELECT s.storeuuid, s.storename, COALESCE(GROUP_CONCAT(l.lottoname ORDER BY l.lottoname ASC SEPARATOR ', '),'') AS lottonames "+
+            "SELECT s.storeuuid, s.storename, COALESCE(GROUP_CONCAT(l.lottoname ORDER BY l.lottoname ASC SEPARATOR ','),'') AS lottonames "+
             "FROM store s JOIN lotto_type_handle lh ON s.storeuuid=lh.storeuuid JOIN lotto_type l ON l.lottoid=lh.lottoid "+
             "WHERE s.storesido=? and s.storesigugun=? group by s.storeuuid ;";
     public static final String orderBy1st = "order by win1stcount desc;";
