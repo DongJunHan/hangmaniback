@@ -27,8 +27,7 @@ public class BoardRepository {
     public BoardRepository(DataSource dataSource) {
         this.convertData = new ConvertData();
         this.template = new JdbcTemplate(dataSource);
-        this.customFunctionConfig = new CustomFunctionConfig(this.template);
-        this.customFunctionConfig.registerFunctions();
+        this.customFunctionConfig = new CustomFunctionConfig(this.template, "");
     }
 
     public Optional<Board> findByNo(int no) {
