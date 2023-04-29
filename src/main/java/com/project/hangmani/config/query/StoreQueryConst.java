@@ -9,12 +9,18 @@ public class StoreQueryConst {
     public static final String getStoreInfoByUuid = "SELECT s.storeUuid, s.storeName, s.storeAddress, s.storeLatitude, s.storeLongitude, " +
             "s.storeBizNo, s.storeTelNum, s.storeMobileNum, s.storeOpenTime, s.storeCloseTime, " +
             "s.storeIsActivity, s.storeSido, s.storeSigugun, " +
-            "COALESCE(GROUP_CONCAT(l.lottoname  ORDER BY l.lottoname ASC SEPARATOR ', '),'') AS lottonames, "+
+            "SUM(CASE WHEN w.winRank = 1 THEN 1 ELSE 0 END) AS win1stCount, " +
+            "SUM(CASE WHEN w.winRank = 2 THEN 1 ELSE 0 END) AS win2stCount," +
+            "(SELECT COALESCE(GROUP_CONCAT(l.lottoname ORDER BY l.lottoname ASC SEPARATOR ', '),'') AS lottonames " +
+            "FROM lotto_type_handle lh JOIN lotto_type l ON l.lottoid=lh.lottoid " +
+            "WHERE lh.storeuuid=s.storeuuid) AS lottonames, "+
             "COALESCE(GROUP_CONCAT(DISTINCT sa.saved_file_name ORDER BY sa.saved_file_name ASC SEPARATOR ', '), '') AS saved_file_names " +
-            "FROM store s join lotto_type_handle lh on s.storeuuid=lh.storeuuid "+
-            "join lotto_type l on l.lottoid=lh.lottoid "+
-            "left join store_attachment sa on s.storeuuid=sa.storeuuid\n"+
-            "where s.storeuuid=?";
+            "FROM store s " +
+            "JOIN win_history w ON s.storeUuid = w.storeUuid " +
+            "JOIN lotto_type_handle lh ON s.storeuuid = lh.storeuuid " +
+            "JOIN lotto_type l on l.lottoid=lh.lottoid "+
+            "LEFT JOIN store_attachment sa ON s.storeUuid = sa.storeUuid " +
+            "WHERE s.storeUuid=?";
     public static final String getStoreInfoWithWinCountBySidoSigugun =
             "SELECT s.storeUuid, s.storeName, s.storeaddress, \n" +
             "SUM(CASE WHEN w.winRank = 1 THEN 1 ELSE 0 END) AS win1stCount, \n" +
