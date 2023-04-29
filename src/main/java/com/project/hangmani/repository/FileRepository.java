@@ -30,6 +30,7 @@ public class FileRepository {
     private final String sql = "select * from store_attachment where storeuuid=?";
 
     public FileRepository(DataSource dataSource, Util util) {
+        log.info("FileRepository={}", dataSource);
         this.template = new JdbcTemplate(dataSource);
         this.convertData = new ConvertData();
         this.util = util;
