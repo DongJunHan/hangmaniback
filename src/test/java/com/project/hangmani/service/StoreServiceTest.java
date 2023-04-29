@@ -1,6 +1,6 @@
 package com.project.hangmani.service;
 
-import com.project.hangmani.dto.StoreDTO;
+import com.project.hangmani.config.WebClientConfig;
 import com.project.hangmani.dto.StoreDTO.*;
 import com.project.hangmani.exception.AlreadyExistStore;
 import com.project.hangmani.repository.FileRepository;
@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.sql.DataSource;
 import java.util.*;
@@ -45,7 +46,10 @@ class StoreServiceTest {
         StoreRepository storeRepository() {
             return new StoreRepository(dataSource, this.util);
         }
-        FileService fileService() {return new FileService(fileRepository(), this.util);}
+        WebClientConfig webClient() {
+            return new WebClientConfig();
+        }
+        FileService fileService() {return new FileService(fileRepository(), storeRepository(), webClient(), this.util);}
         @Bean
         StoreService StoreServiceV1() {
             return new StoreService(storeRepository(),fileService());
