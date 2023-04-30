@@ -69,6 +69,7 @@ public class FileService {
         return null;
     }
     private void getImageAndSave(Double latitude, Double Longitude) {
-        webClient.webClient();
+        WebClient wc = webClient.webClient();
+
     }
 }
