@@ -13,5 +13,8 @@ public class OAuthConst {
     public static final String LOGIN_URL = "/oauth/authorize?client_id="+CLIENT_ID+"&response_type=code&redirect_uri="+LOGIN_REDIRECT_URI+"&scope=";
     public static final String HTTPS = "https://";
     public static final String KAKAO_SCOPE = "account_email,gender,age_range,birthday,talk_message";
+    public static final String MARKER_API_URL = "naveropenapi.apigw.ntruss.com";
+    public static final String MARKER_API_URI = "/map-static/v2/raster";
+
 
 }
