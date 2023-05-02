@@ -31,11 +31,6 @@ public class ConvertData {
 
     }
 
-    public java.sql.Date getSqlDate() {
-        Date date = new Date();
-        long time = date.getTime();
-        return new java.sql.Date(time);
-    }
     public java.sql.Date addSecondsCurrentDate(long seconds) {
         Date date = new Date();
         long futureTime = date.getTime() + (seconds * 1000);

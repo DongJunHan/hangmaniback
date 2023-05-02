@@ -1,29 +1,33 @@
 package com.project.hangmani.util;
 
+import com.project.hangmani.exception.FileIOException;
 import com.project.hangmani.exception.IO;
 import com.project.hangmani.exception.InvalidKeySpec;
 import com.project.hangmani.exception.NoSuchAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.*;
+import java.nio.file.attribute.PosixFilePermission;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import static com.project.hangmani.config.SecurityConst.*;
 @Slf4j
 @Component
 public class Util {
     @Value("${file.upload-dir}")
-    private String uploadDir;
+    public String uploadDir;
 
     @Value("${file.upload.domain}")
     private String DOMAIN;
@@ -105,20 +109,59 @@ public class Util {
     public String generateFileUrl(String savedFileName) {
         return DOMAIN + savedFileName;
     }
-    public void savedMultipartFile(MultipartFile file, String fileName) {
-        Path path = Paths.get(uploadDir + fileName);
-        log.info("upload={}", uploadDir);
-        log.info("sad={}", path.getFileName());
-        log.info("asd={}", path.toAbsolutePath());
-        File dest = path.toFile();
-        try {
-            file.transferTo(dest);
-        } catch (IOException e) {
-            throw new IO(e);
-        } catch (IllegalStateException e) {
-            throw new RuntimeException(e);
+    public boolean checkDirectory(Path path) throws FileIOException {
+        Set<PosixFilePermission> perms = new HashSet<>();
+        perms.add(PosixFilePermission.OWNER_READ);
+        perms.add(PosixFilePermission.OWNER_WRITE);
+
+        File file = path.toFile();
+        if (!file.exists()) {
+            String[] splitPath = uploadDir.split("/");
+            String addPath = "";
+            for (String subPath :
+                    splitPath) {
+                if (subPath.length() == 0)
+                    continue;
+                addPath =addPath+ "/" + subPath;
+                File f = new File(addPath);
+                log.info("add={}", addPath);
+                Path of = Path.of(addPath);
+                try {
+                    if (!f.exists()) {
+                        log.info("create directory and add permissions");
+                        Files.createDirectories(of);
+                        Files.setPosixFilePermissions(of, perms);
+                    }else{
+                        log.info("add permissions");
+                        Files.setPosixFilePermissions(of, perms);
+                    }
+                } catch (AccessDeniedException e){
+                    throw new FileIOException("directory access denied", e);
+                } catch (IOException ex) {
+                    throw new FileIOException("sub mkdir fail", ex);
+                }
+            }
         }
+        return true;
     }
+    public CompletableFuture<Void> savedAttachmentFile(InputStream inputStream, String savedFileName) {
+        Path path = Paths.get(uploadDir);
+        checkDirectory(path);
+        Path filePath = Paths.get(uploadDir + savedFileName);
+        CompletableFuture<Void> future = CompletableFuture.runAsync(()->{
+            try (OutputStream outputStream = Files.newOutputStream(filePath, StandardOpenOption.CREATE_NEW)) {
+                byte[] chunk = new byte[4096];
+                int len;
+                while ((len = inputStream.read(chunk)) > 0) {
+                    outputStream.write(chunk, 0, len);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return future;
+    }
+
     public static Double getDistance(Double userLatitude, Double userLongitude, Double targetLatitude, Double targetLongitude) {
         Double earthRadius = 6371.;
         Double dLat = Math.toRadians(targetLatitude - userLatitude);
@@ -130,6 +173,12 @@ public class Util {
         Double centralAngle = (2 * Math.atan2(Math.sqrt(alpha), Math.sqrt(1-alpha)));
 
         return earthRadius * centralAngle;
+    }
+
+    public java.sql.Date getSqlDate() {
+        java.util.Date date = new java.util.Date();
+        long time = date.getTime();
+        return new java.sql.Date(time);
     }
 
 }
