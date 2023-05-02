@@ -15,6 +15,14 @@ public class FileDTO {
     public static class RequestStoreFileDTO {
         private List<MultipartFile> filesData;
         private String storeUUID;
-        private String fileUrl;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ResponseStoreFileDTO {
+        private List<String> domainUrls;
+        private String storeUUID;
     }
 }

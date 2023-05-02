@@ -1,5 +1,7 @@
 package com.project.hangmani.controller;
 
+import com.project.hangmani.dto.FileDTO;
+import com.project.hangmani.dto.FileDTO.ResponseStoreFileDTO;
 import com.project.hangmani.dto.ResponseDTO;
 import com.project.hangmani.dto.StoreDTO;
 import com.project.hangmani.service.FileService;
@@ -7,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,12 +43,13 @@ public class FileController {
                 .contentLength(resource.contentLength())
                 .body(resource);
     }
-//    TODO naver api에 static map받아오기. 저장된 지도이미지 없으면 api호출 아니면 디비에서 가져오기.
     @GetMapping("/{storeUuid}")
-    public ResponseDTO<Object> getStoreAttachmentUrl(@PathVariable("storeUuid") String storeUuid) {
-        log.info("uuid={}", storeUuid);
-        fileService.getAttachmentUrls(storeUuid);
-        return null;
+    public ResponseDTO<ResponseStoreFileDTO> getStoreAttachmentUrl(@PathVariable("storeUuid") String storeUuid) {
+        return ResponseDTO.<ResponseStoreFileDTO>builder()
+                .data(fileService.getMapAttachmentUrls(storeUuid))
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .build();
 
 
     }

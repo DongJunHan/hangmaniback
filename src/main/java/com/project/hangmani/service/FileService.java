@@ -1,23 +1,20 @@
 package com.project.hangmani.service;
 
-import com.ibm.jvm.trace.format.api.ByteStream;
 import com.project.hangmani.config.WebClientConfig;
 import com.project.hangmani.convert.RequestConvert;
 import com.project.hangmani.domain.Store;
 import com.project.hangmani.domain.StoreAttachment;
 import com.project.hangmani.dto.FileDTO.RequestStoreFileDTO;
+import com.project.hangmani.dto.FileDTO.ResponseStoreFileDTO;
 import com.project.hangmani.exception.FailInsertData;
-import com.project.hangmani.exception.IO;
 import com.project.hangmani.exception.NotFoundUser;
 import com.project.hangmani.repository.FileRepository;
 import com.project.hangmani.repository.StoreRepository;
 import com.project.hangmani.util.ConvertData;
 import com.project.hangmani.util.Util;
 import io.netty.handler.codec.http.HttpScheme;
-import jakarta.websocket.Decoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,12 +22,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -47,6 +40,8 @@ public class FileService {
     private final Util util;
     @Value("${file.upload-dir}")
     private String uploadDir;
+    @Value("${file.upload.domain}")
+    private String domain;
     private int height = 300;
     private int width = 288;
 
@@ -94,14 +89,16 @@ public class FileService {
         return fileRepository.getAttachmentsByUuid(storeUuid);
     }
     @Transactional
-    public List<String> getAttachmentUrls(String storeUuid) {
+    public ResponseStoreFileDTO getMapAttachmentUrls(String storeUuid) {
         List<StoreAttachment> urls = getAttachmentsByUuid(storeUuid);
+        List<String> ret = new ArrayList<>();
         boolean flag = false;
         if (urls.size() > 0){
             for (StoreAttachment st :
                     urls) {
                 if (st.getSavedFileName().indexOf(storeUuid) > -1){
                    flag = true;
+                   ret.add(domain + st.getSavedFileName());
                 }
             }
         }
@@ -110,11 +107,19 @@ public class FileService {
             if (storeInfo == null) {
                 throw new NotFoundUser();
             }
-            getImageAndSave(storeInfo.getStoreLatitude(), storeInfo.getStoreLongitude(), storeUuid);
+            StoreAttachment save = getImageAndSave(storeInfo.getStoreLatitude(),
+                    storeInfo.getStoreLongitude(),
+                    storeUuid);
+            fileRepository.insertAttachment(save);
+            ret.add(domain + save.getSavedFileName());
         }
-        return null;
+
+        return ResponseStoreFileDTO.builder()
+                .domainUrls(ret)
+                .storeUUID(storeUuid)
+                .build();
     }
-    private String getImageAndSave(Double latitude, Double longitude, String storeUuid) {
+    private StoreAttachment getImageAndSave(Double latitude, Double longitude, String storeUuid) {
         String param_markers = "type:d|size:mid|pos:"+longitude+" "+latitude;
         WebClient wc = webClient.webClient();
 
@@ -132,20 +137,20 @@ public class FileService {
                 .block()
                 .bodyToMono(byte[].class)
                 .block();
-        String savedFileName = util.getRenameWithDate(util.getSqlDate(), this.util.getRandomValue(), storeUuid+".jpg");
+        Date sqlDate = util.getSqlDate();
+        String savedFileName = util.getRenameWithDate(sqlDate, this.util.getRandomValue(), ".jpg");
+        savedFileName = storeUuid + "_" + savedFileName;
         CompletableFuture<Void> ret = this.util.savedAttachmentFile(
                 new ByteArrayInputStream(responseBody),
                 savedFileName);
         ret.join();
-        return savedFileName;
-//        Path path = Paths.get("/home/IMG_0339.jpg");
-//        byte[] bytes = null;
-//        try {
-//            bytes = Files.readAllBytes(path);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        InputStream is = new ByteArrayInputStream(bytes);
-//        this.util.savedAttachmentFile(is, path.getFileName().toString());
+
+        return StoreAttachment.builder()
+                .originalFileName(storeUuid + ".jpg")
+                .uploadDate(sqlDate)
+                .storeUuid(storeUuid)
+                .fileSize(responseBody.length)
+                .savedFileName(savedFileName)
+                .build();
     }
 }
