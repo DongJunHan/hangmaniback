@@ -114,7 +114,7 @@ public class StoreDTO {
 
         private String storeOpenTime;
         private String storeCloseTime;
-        private MultipartFile fileData;
+        private List<MultipartFile> filesData;
     }
 
     @Getter

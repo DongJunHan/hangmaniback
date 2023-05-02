@@ -2,12 +2,14 @@ package com.project.hangmani.convert;
 
 import com.project.hangmani.domain.Board;
 import com.project.hangmani.domain.Store;
+import com.project.hangmani.domain.StoreAttachment;
 import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
 import com.project.hangmani.dto.FileDTO.RequestStoreFileDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoreInsertDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoreUpdateDTO;
 import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
 import com.project.hangmani.util.ConvertData;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Date;
 import java.util.Map;
@@ -71,10 +73,18 @@ public class RequestConvert {
 
     public RequestStoreFileDTO convertDTO(RequestStoreInsertDTO insertDTO, String uuid) {
         return RequestStoreFileDTO.builder()
-                .fileData(insertDTO.getFileData())
-                .fileSize(insertDTO.getFileData().getSize())
-                .originalFileName(insertDTO.getFileData().getOriginalFilename())
+                .filesData(insertDTO.getFilesData())
                 .storeUUID(uuid)
+                .build();
+    }
+
+    public StoreAttachment convertDTO(MultipartFile file, String savedFileName, String storeUuid, Date uploadTime){
+        return StoreAttachment.builder()
+                .storeUuid(storeUuid)
+                .savedFileName(savedFileName)
+                .originalFileName(file.getOriginalFilename())
+                .uploadDate(uploadTime)
+                .fileSize(file.getSize())
                 .build();
     }
 }

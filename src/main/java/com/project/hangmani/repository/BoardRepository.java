@@ -2,7 +2,7 @@ package com.project.hangmani.repository;
 
 import com.project.hangmani.connection.CustomFunctionConfig;
 import com.project.hangmani.domain.Board;
-import com.project.hangmani.util.ConvertData;
+import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -22,10 +22,10 @@ public class BoardRepository {
     private final String findByIdSql = "select * from board where boardno=?";
     private final String deleteByNo = "update board set isdelete = 1 where boardno=?";
     private JdbcTemplate template;
-    private ConvertData convertData;
+    private Util util;
     private CustomFunctionConfig customFunctionConfig;
     public BoardRepository(DataSource dataSource) {
-        this.convertData = new ConvertData();
+        this.util = new Util();
         this.template = new JdbcTemplate(dataSource);
         this.customFunctionConfig = new CustomFunctionConfig(this.template, "");
     }
@@ -39,7 +39,7 @@ public class BoardRepository {
     }
     public int insertBoard(Board board) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(template);
-        Date createAt = convertData.getSqlDate();
+        Date createAt = util.getSqlDate();
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("boardwriter", board.getBoardWriter())
                 .addValue("boardcontent", board.getBoardContent())

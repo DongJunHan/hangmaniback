@@ -6,6 +6,7 @@ import java.sql.Date;
 @Getter
 @Setter
 @ToString
+@Builder
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor

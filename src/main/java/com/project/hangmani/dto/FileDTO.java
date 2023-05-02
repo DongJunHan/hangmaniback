@@ -3,7 +3,7 @@ package com.project.hangmani.dto;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.sql.Date;
+import java.util.List;
 
 public class FileDTO {
 
@@ -13,12 +13,8 @@ public class FileDTO {
     @NoArgsConstructor
     @Builder
     public static class RequestStoreFileDTO {
-        private MultipartFile fileData;
-        private long fileSize;
-        private String originalFileName;
-        private String savedFileName;
+        private List<MultipartFile> filesData;
         private String storeUUID;
-        private Date uploadTime;
         private String fileUrl;
     }
 }

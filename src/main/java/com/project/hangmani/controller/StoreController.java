@@ -75,9 +75,6 @@ public class StoreController {
     @PostMapping
     @ResponseBody
     public ResponseDTO<ResponseStoreDTO>  insertStore(@ModelAttribute @Valid RequestStoreInsertDTO requestStoreDTO) {
-        log.info("requestStoreDTO={}", requestStoreDTO.toString());
-        log.info("filename={}",requestStoreDTO.getFileData().getOriginalFilename());
-
         return ResponseDTO.<ResponseStoreDTO>builder()
                 .data(storeService.insertStoreInfo(requestStoreDTO))
                 .status(HttpStatus.OK.value())

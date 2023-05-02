@@ -20,15 +20,16 @@ import java.nio.file.Paths;
 
 @RestController
 @Slf4j
-@RequestMapping("/file")
+@RequestMapping("/api/v1/file")
 public class FileController {
     @Value("${file.upload-dir}")
     private String uploadDir;
     private FileService fileService;
     public FileController(FileService fileService){
+        log.info("FileContoller init");
         this.fileService = fileService;
     }
-    @GetMapping("/{fileName:.+}")
+    @GetMapping("/img/{fileName:.+}")
     public ResponseEntity<Resource> getImage(@PathVariable("fileName") String fileName) throws IOException {
         log.info("start");
         Path filePath = Paths.get(uploadDir, fileName);
@@ -39,9 +40,10 @@ public class FileController {
                 .contentLength(resource.contentLength())
                 .body(resource);
     }
-    //TODO naver api에 static map받아오기. 저장된 지도이미지 없으면 api호출 아니면 디비에서 가져오기.
+//    TODO naver api에 static map받아오기. 저장된 지도이미지 없으면 api호출 아니면 디비에서 가져오기.
     @GetMapping("/{storeUuid}")
     public ResponseDTO<Object> getStoreAttachmentUrl(@PathVariable("storeUuid") String storeUuid) {
+        log.info("uuid={}", storeUuid);
         fileService.getAttachmentUrls(storeUuid);
         return null;
 

@@ -36,7 +36,7 @@ public class FileRepository {
         this.util = util;
     }
 
-    public int insertAttachment(RequestStoreFileDTO requestDTO) {
+    public int insertAttachment(StoreAttachment requestDTO) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         int ret = template.update(con -> {
@@ -44,8 +44,8 @@ public class FileRepository {
             pstmt.setString(1, requestDTO.getOriginalFileName());
             pstmt.setString(2, requestDTO.getSavedFileName());
             pstmt.setLong(3, requestDTO.getFileSize());
-            pstmt.setDate(4, requestDTO.getUploadTime());
-            pstmt.setString(5, requestDTO.getStoreUUID());
+            pstmt.setDate(4, requestDTO.getUploadDate());
+            pstmt.setString(5, requestDTO.getStoreUuid());
             return pstmt;
         }, keyHolder);
         if (ret == 0)
