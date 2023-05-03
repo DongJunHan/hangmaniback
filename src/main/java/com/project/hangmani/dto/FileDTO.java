@@ -15,7 +15,11 @@ public class FileDTO {
     public static class RequestStoreFileDTO {
         private List<MultipartFile> filesData;
         private String storeUUID;
+        private List<String> savedFileNames;
+        private Double storeLatitude;
+        private Double storeLongitude;
     }
+
 
     @Getter
     @Builder

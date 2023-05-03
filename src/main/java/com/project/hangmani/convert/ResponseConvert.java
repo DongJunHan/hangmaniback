@@ -10,6 +10,7 @@ import com.project.hangmani.dto.StoreDTO.ResponseStoreFilterDTO;
 import com.project.hangmani.util.Util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ResponseConvert {
@@ -34,21 +35,15 @@ public class ResponseConvert {
     }
     public ResponseStoreDTO convertResponseDTO(Store store) {
         String savedFileNames = store.getSavedFileNames();
-        String[] split = null;
         List<String> fileUrls = new ArrayList<>();
         List<String> lottoType = new ArrayList<>();
         if (savedFileNames != null) {
-            split = savedFileNames.split(",");
-            for (String s : split) {
-                fileUrls.add(this.util.generateFileUrl(s));
-            }
+            String[]  split = savedFileNames.split(",");
+            Collections.addAll(fileUrls, split);
         }
-        split = null;
         if (store.getLottoName() != null){
-            split = store.getLottoName().split(",");
-            for (String s : split) {
-                lottoType.add(s);
-            }
+            String[] split = store.getLottoName().split(",");
+            Collections.addAll(lottoType, split);
         }
         return ResponseStoreDTO.builder()
                 .storeUuid(store.getStoreUuid())

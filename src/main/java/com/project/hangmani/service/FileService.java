@@ -7,6 +7,8 @@ import com.project.hangmani.domain.StoreAttachment;
 import com.project.hangmani.dto.FileDTO.RequestStoreFileDTO;
 import com.project.hangmani.dto.FileDTO.ResponseStoreFileDTO;
 import com.project.hangmani.exception.FailInsertData;
+import com.project.hangmani.exception.NotFoundAttachment;
+import com.project.hangmani.exception.NotFoundStore;
 import com.project.hangmani.exception.NotFoundUser;
 import com.project.hangmani.repository.FileRepository;
 import com.project.hangmani.repository.StoreRepository;
@@ -15,6 +17,8 @@ import com.project.hangmani.util.Util;
 import io.netty.handler.codec.http.HttpScheme;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +26,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +47,6 @@ public class FileService {
     private final Util util;
     @Value("${file.upload-dir}")
     private String uploadDir;
-    @Value("${file.upload.domain}")
-    private String domain;
     private int height = 300;
     private int width = 288;
 
@@ -88,35 +93,41 @@ public class FileService {
     public List<StoreAttachment> getAttachmentsByUuid(String storeUuid) {
         return fileRepository.getAttachmentsByUuid(storeUuid);
     }
+
     @Transactional
-    public ResponseStoreFileDTO getMapAttachmentUrls(String storeUuid) {
-        List<StoreAttachment> urls = getAttachmentsByUuid(storeUuid);
+    public ResponseStoreFileDTO getMapAttachmentUrls(RequestStoreFileDTO dto) {
+//        List<StoreAttachment> urls = getAttachmentsByUuid(dto.getStoreUUID());
+        List<String> savedFileNames = dto.getSavedFileNames();
         List<String> ret = new ArrayList<>();
         boolean flag = false;
-        if (urls.size() > 0){
-            for (StoreAttachment st :
-                    urls) {
-                if (st.getSavedFileName().indexOf(storeUuid) > -1){
+        if (savedFileNames != null && savedFileNames.size() > 0){
+            for (String st :
+                    savedFileNames) {
+                if (st.indexOf(dto.getStoreUUID()) > -1){
                    flag = true;
-                   ret.add(domain + st.getSavedFileName());
+                   ret.add(st);
                 }
             }
         }
         if(!flag) {
-            Store storeInfo = storeRepository.getStoreInfoByUuid(storeUuid);
-            if (storeInfo == null) {
-                throw new NotFoundUser();
+            if (dto.getStoreLongitude() == 0 || dto.getStoreLatitude() == 0) {
+                Store storeInfo = storeRepository.getStoreInfoByUuid(dto.getStoreUUID());
+                if (storeInfo.getStoreUuid() == null) {
+                    throw new NotFoundStore();
+                }
+                dto.setStoreLatitude(storeInfo.getStoreLatitude());
+                dto.setStoreLongitude(storeInfo.getStoreLongitude());
             }
-            StoreAttachment save = getImageAndSave(storeInfo.getStoreLatitude(),
-                    storeInfo.getStoreLongitude(),
-                    storeUuid);
+            StoreAttachment save = getImageAndSave(dto.getStoreLatitude(),
+                    dto.getStoreLongitude(),
+                    dto.getStoreUUID());
             fileRepository.insertAttachment(save);
-            ret.add(domain + save.getSavedFileName());
+            ret.add(save.getSavedFileName());
         }
 
         return ResponseStoreFileDTO.builder()
                 .domainUrls(ret)
-                .storeUUID(storeUuid)
+                .storeUUID(dto.getStoreUUID())
                 .build();
     }
     private StoreAttachment getImageAndSave(Double latitude, Double longitude, String storeUuid) {
@@ -152,5 +163,19 @@ public class FileService {
                 .fileSize(responseBody.length)
                 .savedFileName(savedFileName)
                 .build();
+    }
+    public Resource getImg(String fileName){
+        Path filePath = Paths.get(uploadDir, fileName);
+        try {
+            UrlResource resource = new UrlResource(filePath.toUri());
+            if (resource.contentLength() > 0)
+                return resource;
+            else
+                throw new NotFoundAttachment();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e){
+            throw new NotFoundAttachment();
+        }
     }
 }

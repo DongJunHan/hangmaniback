@@ -3,10 +3,10 @@ package com.project.hangmani.service;
 import com.project.hangmani.convert.RequestConvert;
 import com.project.hangmani.convert.ResponseConvert;
 import com.project.hangmani.domain.Store;
-import com.project.hangmani.dto.StoreDTO;
+import com.project.hangmani.dto.FileDTO.RequestStoreFileDTO;
+import com.project.hangmani.dto.FileDTO.ResponseStoreFileDTO;
 import com.project.hangmani.dto.StoreDTO.*;
 import com.project.hangmani.exception.AlreadyExistStore;
-import com.project.hangmani.exception.FailInsertData;
 import com.project.hangmani.exception.FailUpdateStore;
 import com.project.hangmani.exception.NotFoundStore;
 import com.project.hangmani.repository.StoreRepository;
@@ -41,9 +41,24 @@ public class StoreService {
     }
 
     public ResponseStoreDTO getStoreInfo(String storeUuid) {
-        return responseConvert.convertResponseDTO(
-                storeRepository.getStoreInfoByUuid(
-                        storeUuid));
+        Store store = storeRepository.getStoreInfoByUuid(storeUuid);
+        if(store.getStoreUuid() == null)
+            throw new NotFoundStore();
+
+        if (store.getSavedFileNames().indexOf(storeUuid) == -1) {
+            ResponseStoreFileDTO urls = fileService.getMapAttachmentUrls(
+                    RequestStoreFileDTO.builder()
+                            .savedFileNames(null)
+                            .storeUUID(storeUuid)
+                            .storeLatitude(store.getStoreLatitude())
+                            .storeLongitude(store.getStoreLongitude())
+                            .build());
+            for (String url :
+                    urls.getDomainUrls()) {
+                store.setSavedFileNames(store.getSavedFileNames() + "," + url);
+            }
+        }
+        return responseConvert.convertResponseDTO(store);
     }
     @Transactional
     public ResponseStoreDTO updateStoreInfo(String storeUuid, RequestStoreUpdateDTO requestStoreUpdateDTO) {

@@ -44,19 +44,17 @@ public class FileRepository {
             pstmt.setString(1, requestDTO.getOriginalFileName());
             pstmt.setString(2, requestDTO.getSavedFileName());
             pstmt.setLong(3, requestDTO.getFileSize());
-            pstmt.setDate(4, requestDTO.getUploadDate());
-            pstmt.setString(5, requestDTO.getStoreUuid());
+            pstmt.setString(4, requestDTO.getStoreUuid());
             return pstmt;
         }, keyHolder);
         if (ret == 0)
             throw new FailInsertData();
-        List<Map<String, Object>> keyList = keyHolder.getKeyList();
-        if (keyList != null && keyList.size() > 0) {
-            Number attachmentNo = (Number) keyList.get(0).get("attachment_no");
-            return attachmentNo.intValue();
-        }else{
-            throw  new FailInsertData();
+        Number attachmentNo = keyHolder.getKey();
+        if (attachmentNo == null) {
+            throw new FailInsertData();
         }
+
+        return attachmentNo.intValue();
 
     }
 

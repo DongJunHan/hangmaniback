@@ -73,8 +73,8 @@ public class StoreQueryConst {
             "storebizno,storetelnum, STOREMOBILENUM, STOREOPENTIME,STORECLOSETIME,STORESIDO,STORESIGUGUN) " +
             "values(?,?,?,?,?,?,?,?,?,?,?,?); insert into ";
 
-    public static final String insertStoreAttachment = "insert into store_attachment(original_file_name, SAVED_FILE_NAME, FILE_SIZE, UPLOAD_TIME, storeuuid)" +
-            " values(?,?,?,?,?)";
+    public static final String insertStoreAttachment = "insert into store_attachment(original_file_name, SAVED_FILE_NAME, FILE_SIZE, storeuuid)" +
+            " values(?,?,?,?)";
     public static final String deleteStoreInfoByUuid = "UPDATE  store SET STOREISACTIVITY=1 where storeuuid=?";
     public static final String findBySidoSigugun = "SELECT * from store WHERE storesido=? and storesigugun=?";
     public static final String deleteStoreInfoByLatiLongi = "UPDATE  store SET STOREISACTIVITY=1 where storelatitude=? and storelongitude=?";
