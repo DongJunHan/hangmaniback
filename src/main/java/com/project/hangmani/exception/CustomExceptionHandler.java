@@ -44,6 +44,17 @@ public class CustomExceptionHandler {
                 .build();
     }
 
+    @ExceptionHandler(NotFoundAttachment.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseDTO NotFoundAttachmentException(RuntimeException e) {
+        log.error("NotFoundAttachment", e);
+        return ResponseDTO.builder()
+                .data(null)
+                .status(HttpStatus.NOT_FOUND.value())
+                .message(e.getMessage())
+                .build();
+    }
+
     @ExceptionHandler(FailInsertData.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseDTO InsertException(RuntimeException e) {
