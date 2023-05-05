@@ -66,13 +66,13 @@ public class StoreRepository {
     public List<Store> getStoreInfoWithWinCountBySidoSigugun(RequestStoreFilterDTO requestDTO) {
         String sqlQuery;
         if (requestDTO.getFilter().equals("2st"))
-            sqlQuery = getStoreInfoWithWinCountBySidoSigugun + orderBy2st;
+            sqlQuery = getStoreInfoWithWinCountBySidoSigugun + orderBy2st + LIMIT;
         else if (requestDTO.getFilter().equals("1st"))
-            sqlQuery = getStoreInfoWithWinCountBySidoSigugun + orderBy1st;
+            sqlQuery = getStoreInfoWithWinCountBySidoSigugun + orderBy1st + LIMIT;
         else
-            sqlQuery = getStoreInfoWithWinCountBySidoSigugun + orderByDistance;
+            sqlQuery = getStoreInfoWithWinCountBySidoSigugun + orderByDistance + LIMIT;
         return template.query(sqlQuery, new Object[]{ requestDTO.getUserLatitude(), requestDTO.getUserLongitude(),
-                        requestDTO.getSido(), requestDTO.getSigugun(), requestDTO.getLottoID()},
+                        requestDTO.getSido(), requestDTO.getSigugun(), requestDTO.getLottoID(), requestDTO.getLimit()},
                 storeWithWinCountLottoNameRowMapper());
     }
 
@@ -86,7 +86,7 @@ public class StoreRepository {
             sqlQuery = getStoreInfoWithWinCountByLatitudeLongitude + orderByDistance;
         return template.query(sqlQuery, new Object[]{requestDTO.getUserLatitude(), requestDTO.getUserLongitude(),
                         requestDTO.getStartLatitude(), requestDTO.getEndLatitude(), requestDTO.getStartLongitude(),
-                        requestDTO.getEndLongitude(), requestDTO.getLottoID()},
+                        requestDTO.getEndLongitude(), requestDTO.getLottoID(), requestDTO.getLimit()},
                 storeWithWinCountLottoNameRowMapper());
     }
     public int updateStoreInfo(String StoreUuid, RequestStoreUpdateDTO requestStoreUpdateDTO) {

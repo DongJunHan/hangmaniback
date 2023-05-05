@@ -28,9 +28,9 @@ public class StoreDTO {
         private Double endLongitude;
         private int lottoID;
         private String filter;
+        private int limit;
     }
     @Getter
-    @Setter
     @ToString
     @AllArgsConstructor
     @NoArgsConstructor
@@ -47,7 +47,6 @@ public class StoreDTO {
         private int limit;
     }
     @Getter
-    @Setter
     @ToString
     @AllArgsConstructor
     @NoArgsConstructor
@@ -58,7 +57,6 @@ public class StoreDTO {
         private Double longitude;
     }
     @Getter
-    @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class RequestStoreChangeDTO {
@@ -69,7 +67,6 @@ public class StoreDTO {
     }
 
     @Getter
-    @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class RequestStoreUpdateDTO {
@@ -96,7 +93,6 @@ public class StoreDTO {
     }
 
     @Getter
-    @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class RequestStoreInsertDTO {
@@ -154,7 +150,7 @@ public class StoreDTO {
     @Builder
     @ToString
     public static class ResponseStoreFilterDTO {
-        private String storeUUID;
+        private String storeUuid;
         private String storeName;
         private String storeAddress;
         private Double distance;

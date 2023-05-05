@@ -1,9 +1,7 @@
 package com.project.hangmani.controller;
 
-import com.project.hangmani.convert.RequestConvert;
 import com.project.hangmani.dto.ResponseDTO;
 import com.project.hangmani.dto.StoreDTO.*;
-import com.project.hangmani.service.FileService;
 import com.project.hangmani.service.StoreService;
 import com.project.hangmani.util.ConvertData;
 import jakarta.validation.Valid;
@@ -19,12 +17,10 @@ import java.util.List;
 @Slf4j
 public class StoreController {
     private final StoreService storeService;
-    private final FileService fileService;
     private final ConvertData convertData;
 
-    public StoreController(StoreService storeService, FileService fileService) {
+    public StoreController(StoreService storeService) {
         this.storeService = storeService;
-        this.fileService = fileService;
         this.convertData = new ConvertData();
     }
     @GetMapping("/all")
