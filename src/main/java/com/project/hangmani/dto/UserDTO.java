@@ -8,10 +8,10 @@ import java.sql.Date;
 public class UserDTO {
 
     @Getter
-    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    @Setter
     @ToString
     public static class RequestInsertUserDTO {
         private String id;
@@ -19,13 +19,12 @@ public class UserDTO {
         private Date refreshTokenExpire;
         private String email;
         private String age;
-        private String  gender;
+        private String gender;
         private String oAuthType;
         private String oAuthID;
     }
 
     @Getter
-    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
