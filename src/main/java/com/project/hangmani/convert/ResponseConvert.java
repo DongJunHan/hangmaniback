@@ -4,7 +4,6 @@ import com.project.hangmani.domain.Board;
 import com.project.hangmani.domain.Store;
 import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
 import com.project.hangmani.dto.BoardDTO.ResponseDeleteDTO;
-import com.project.hangmani.dto.StoreDTO;
 import com.project.hangmani.dto.StoreDTO.ResponseStoreDTO;
 import com.project.hangmani.dto.StoreDTO.ResponseStoreFilterDTO;
 import com.project.hangmani.util.Util;
@@ -92,7 +91,7 @@ public class ResponseConvert {
                 lottoTypeList.add(l.trim());
             }
             result.add(ResponseStoreFilterDTO.builder()
-                    .storeUUID(storeInfo.getStoreUuid())
+                    .storeUuid(storeInfo.getStoreUuid())
                     .storeName(storeInfo.getStoreName())
                     .storeAddress(storeInfo.getStoreAddress())
                     .distance(storeInfo.getDistance())
