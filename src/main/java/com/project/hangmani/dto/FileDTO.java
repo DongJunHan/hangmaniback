@@ -8,7 +8,6 @@ import java.util.List;
 public class FileDTO {
 
     @Getter
-    @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
