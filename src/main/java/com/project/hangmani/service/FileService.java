@@ -9,7 +9,6 @@ import com.project.hangmani.dto.FileDTO.ResponseStoreFileDTO;
 import com.project.hangmani.exception.FailInsertData;
 import com.project.hangmani.exception.NotFoundAttachment;
 import com.project.hangmani.exception.NotFoundStore;
-import com.project.hangmani.exception.NotFoundUser;
 import com.project.hangmani.repository.FileRepository;
 import com.project.hangmani.repository.StoreRepository;
 import com.project.hangmani.util.ConvertData;
@@ -110,16 +109,19 @@ public class FileService {
             }
         }
         if(!flag) {
+            Double latitude = 0.;
+            Double longitude = 0.;
+
             if (dto.getStoreLongitude() == 0 || dto.getStoreLatitude() == 0) {
                 Store storeInfo = storeRepository.getStoreInfoByUuid(dto.getStoreUUID());
                 if (storeInfo.getStoreUuid() == null) {
                     throw new NotFoundStore();
                 }
-                dto.setStoreLatitude(storeInfo.getStoreLatitude());
-                dto.setStoreLongitude(storeInfo.getStoreLongitude());
+                latitude = storeInfo.getStoreLatitude();
+                longitude = storeInfo.getStoreLongitude();
             }
-            StoreAttachment save = getImageAndSave(dto.getStoreLatitude(),
-                    dto.getStoreLongitude(),
+            StoreAttachment save = getImageAndSave(latitude,
+                    longitude,
                     dto.getStoreUUID());
             fileRepository.insertAttachment(save);
             ret.add(save.getSavedFileName());
