@@ -3,7 +3,7 @@ package com.project.hangmani.convert;
 import com.project.hangmani.domain.Board;
 import com.project.hangmani.domain.Store;
 import com.project.hangmani.domain.StoreAttachment;
-import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
+import com.project.hangmani.dto.BoardDTO.RequestBoardInsertDTO;
 import com.project.hangmani.dto.FileDTO.RequestStoreFileDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoreInsertDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoreUpdateDTO;
@@ -25,7 +25,7 @@ public class RequestConvert {
      * @param boardDTO
      * @return
      */
-    public Board convertEntity(RequestBoardDTO boardDTO) {
+    public Board convertEntity(RequestBoardInsertDTO boardDTO) {
         String boardWriter = boardDTO.getBoardWriter();
         String content = boardDTO.getBoardContent();
         String title = boardDTO.getBoardTitle();
@@ -74,7 +74,7 @@ public class RequestConvert {
     public RequestStoreFileDTO convertDTO(RequestStoreInsertDTO insertDTO, String uuid) {
         return RequestStoreFileDTO.builder()
                 .filesData(insertDTO.getFilesData())
-                .storeUUID(uuid)
+                .storeUuid(uuid)
                 .build();
     }
 
