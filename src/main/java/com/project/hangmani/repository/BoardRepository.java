@@ -2,6 +2,7 @@ package com.project.hangmani.repository;
 
 import com.project.hangmani.connection.CustomFunctionConfig;
 import com.project.hangmani.domain.Board;
+import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
 import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,7 +20,11 @@ import java.util.Optional;
 @Repository
 @Slf4j
 public class BoardRepository {
-    private final String findByIdSql = "select * from board where boardno=?";
+    private final String BY_BOARDNO = " WHERE boardno=?";
+    private final String BY_WRITER = " WHERE boardWriter=?";
+    private final String SELECT_QUERY = "SELECT * FROM BOARD";
+
+    private final String LIMIT = " LIMIT ?,?";
     private final String deleteByNo = "update board set isdelete = 1 where boardno=?";
     private JdbcTemplate template;
     private Util util;
@@ -31,8 +36,16 @@ public class BoardRepository {
     }
 
     public Optional<Board> findByNo(int no) {
-        List<Board> list = template.query(findByIdSql, boardRowMapper(), no);
+        List<Board> list = template.query(SELECT_QUERY+BY_BOARDNO+LIMIT, boardRowMapper(), no);
         return list.stream().findAny();
+    }
+
+    public List<Board> getBoards(RequestBoardDTO boardDTO) {
+        return template.query(SELECT_QUERY + LIMIT, new Object[]{boardDTO.getOffset(), boardDTO.getLimit()},boardRowMapper());
+    }
+    public List<Board> getBoardsByWriter(RequestBoardDTO boardDTO) {
+        return template.query(SELECT_QUERY + BY_WRITER + LIMIT,
+                new Object[]{boardDTO.getBoardWriter(), boardDTO.getOffset(), boardDTO.getLimit()}, boardRowMapper());
     }
     public int deleteByNo(int boardNo) {
         return template.update(deleteByNo,boardNo);

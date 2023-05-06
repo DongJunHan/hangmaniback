@@ -2,20 +2,22 @@ package com.project.hangmani.service;
 
 import com.project.hangmani.convert.ResponseConvert;
 import com.project.hangmani.domain.Board;
-import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
-import com.project.hangmani.dto.BoardDTO.RequestDeleteDTO;
-import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
-import com.project.hangmani.dto.BoardDTO.ResponseDeleteDTO;
+import com.project.hangmani.dto.BoardDTO;
+import com.project.hangmani.dto.BoardDTO.*;
 import com.project.hangmani.exception.FailDeleteData;
+import com.project.hangmani.exception.NotFoundException;
 import com.project.hangmani.exception.NotFoundUser;
 import com.project.hangmani.repository.BoardRepository;
 import com.project.hangmani.repository.UserRepository;
 import com.project.hangmani.convert.RequestConvert;
 import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -42,7 +44,7 @@ public class BoardService {
      * @return ResponseBoardDTO
      */
     @Transactional
-    public ResponseBoardDTO createBoard(RequestBoardDTO boardDTO) {
+    public ResponseBoardDTO createBoard(RequestBoardInsertDTO boardDTO) {
         //check id
         checkID(boardDTO.getBoardWriter());
 
@@ -53,6 +55,52 @@ public class BoardService {
 
         return responseConvert.convertResponseDTO(resultBoard);
 
+    }
+
+    public List<ResponseBoardDTO> getBoards(RequestBoardDTO boardDTO) {
+        List<ResponseBoardDTO> ret = new ArrayList<>();
+
+        List<Board> boards = boardRepository.getBoards(RequestBoardDTO.builder()
+                .limit(boardDTO.getLimit())
+                .offset(boardDTO.getOffset())
+                .build());
+        if (boards.size() == 0)
+            throw new NotFoundException();
+        for (Board b:
+             boards) {
+            ret.add(ResponseBoardDTO.builder()
+                    .boardContent(b.getBoardContent())
+                    .boardTitle(b.getBoardTitle())
+                    .boardNo(b.getBoardNo())
+                    .updateAt(b.getUpdateAt())
+                    .createAt(b.getCreateAt())
+                    .boardWriter(b.getBoardWriter())
+                    .build());
+        }
+        return ret;
+    }
+
+    public List<ResponseBoardDTO> getBoardsByWriter(RequestBoardDTO boardDTO) {
+        List<Board> boards = boardRepository.getBoardsByWriter(RequestBoardDTO.builder()
+                .boardWriter(boardDTO.getBoardWriter())
+                .limit(boardDTO.getLimit())
+                .offset(boardDTO.getOffset())
+                .build());
+        if (boards.size() == 0)
+            throw new NotFoundException();
+        List<ResponseBoardDTO> ret = new ArrayList<>();
+        for (Board b:
+                boards) {
+            ret.add(ResponseBoardDTO.builder()
+                    .boardContent(b.getBoardContent())
+                    .boardTitle(b.getBoardTitle())
+                    .boardNo(b.getBoardNo())
+                    .updateAt(b.getUpdateAt())
+                    .createAt(b.getCreateAt())
+                    .boardWriter(b.getBoardWriter())
+                    .build());
+        }
+        return ret;
     }
 
     /**

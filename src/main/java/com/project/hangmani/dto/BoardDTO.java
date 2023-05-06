@@ -2,18 +2,16 @@ package com.project.hangmani.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.sql.Date;
 
 public class BoardDTO {
     @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RequestBoardDTO {
+    public static class RequestBoardInsertDTO {
         @NotBlank(message = "boardTitle insert")
         private String boardTitle;
         @NotNull(message = "boardContent insert")
@@ -21,6 +19,17 @@ public class BoardDTO {
         @NotNull(message = "boardWriter insert")
         private String boardWriter;
 
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RequestBoardDTO{
+        private int boardNo;
+        private String boardWriter;
+        private int limit;
+        private int offset;
     }
 
     @Getter

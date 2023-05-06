@@ -1,9 +1,7 @@
 package com.project.hangmani.controller;
 
-import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
-import com.project.hangmani.dto.BoardDTO.RequestDeleteDTO;
-import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
-import com.project.hangmani.dto.BoardDTO.ResponseDeleteDTO;
+import com.project.hangmani.dto.BoardDTO;
+import com.project.hangmani.dto.BoardDTO.*;
 import com.project.hangmani.dto.ResponseDTO;
 import com.project.hangmani.service.BoardService;
 import jakarta.validation.Valid;
@@ -11,6 +9,8 @@ import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/board")
@@ -23,7 +23,7 @@ public class BoardController {
     }
     @PostMapping
     @ResponseBody
-    public ResponseDTO<ResponseBoardDTO> createBoard(@RequestBody @Valid RequestBoardDTO boardDTO) {
+    public ResponseDTO<ResponseBoardDTO> createBoard(@RequestBody @Valid RequestBoardInsertDTO boardDTO) {
         ResponseBoardDTO responseBoardDTO = boardService.createBoard(boardDTO);
 
         return ResponseDTO.<ResponseBoardDTO>builder()
@@ -45,6 +45,24 @@ public class BoardController {
                 .build();
     }
 
-    //TODO. read board list
+    @GetMapping
+    @ResponseBody
+    public ResponseDTO<List<ResponseBoardDTO>> getBoards(@ModelAttribute RequestBoardDTO boardDTO) {
+        return ResponseDTO.<List<ResponseBoardDTO>>builder()
+                .data(boardService.getBoards(boardDTO))
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .build();
+
+    }
+    @GetMapping("/writer")
+    @ResponseBody
+    public ResponseDTO<List<ResponseBoardDTO>> getBoardsByWriter(@ModelAttribute RequestBoardDTO boardDTO) {
+        return ResponseDTO.<List<ResponseBoardDTO>>builder()
+                .data(boardService.getBoardsByWriter(boardDTO))
+                .status(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .build();
+    }
 
 }
