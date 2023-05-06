@@ -44,12 +44,13 @@ public class StoreService {
         Store store = storeRepository.getStoreInfoByUuid(storeUuid);
         if(store.getStoreUuid() == null)
             throw new NotFoundStore();
-
+        log.info("Before store win {},{}, {}, {}", store.getWin1stCount(), store.getWin2stCount(), store.getStoreLatitude(), store.getStoreLongitude());
         if (store.getSavedFileNames().indexOf(storeUuid) == -1) {
+            log.info("there is no map marker");
             ResponseStoreFileDTO urls = fileService.getMapAttachmentUrls(
                     RequestStoreFileDTO.builder()
                             .savedFileNames(null)
-                            .storeUUID(storeUuid)
+                            .storeUuid(storeUuid)
                             .storeLatitude(store.getStoreLatitude())
                             .storeLongitude(store.getStoreLongitude())
                             .build());
@@ -58,6 +59,7 @@ public class StoreService {
                 store.setSavedFileNames(store.getSavedFileNames() + "," + url);
             }
         }
+        log.info("After store win {},{}", store.getWin1stCount(), store.getWin2stCount());
         return responseConvert.convertResponseDTO(store);
     }
     @Transactional

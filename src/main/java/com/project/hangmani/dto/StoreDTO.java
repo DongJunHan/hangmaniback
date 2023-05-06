@@ -16,9 +16,7 @@ public class StoreDTO {
     @NoArgsConstructor
     @Builder
     public static class RequestStoreFilterDTO {
-        @NotNull
         private String sido;
-        @NotNull
         private String sigugun;
         private Double userLatitude;
         private Double userLongitude;
@@ -29,6 +27,7 @@ public class StoreDTO {
         private int lottoID;
         private String filter;
         private int limit;
+        private int offset;
     }
     @Getter
     @ToString
@@ -45,6 +44,7 @@ public class StoreDTO {
         @NotNull
         private Double endLongitude;
         private int limit;
+        private int offset;
     }
     @Getter
     @ToString
