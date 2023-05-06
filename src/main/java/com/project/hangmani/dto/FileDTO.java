@@ -13,7 +13,7 @@ public class FileDTO {
     @Builder
     public static class RequestStoreFileDTO {
         private List<MultipartFile> filesData;
-        private String storeUUID;
+        private String storeUuid;
         private List<String> savedFileNames;
         private Double storeLatitude;
         private Double storeLongitude;
@@ -26,6 +26,6 @@ public class FileDTO {
     @NoArgsConstructor
     public static class ResponseStoreFileDTO {
         private List<String> domainUrls;
-        private String storeUUID;
+        private String storeUuid;
     }
 }

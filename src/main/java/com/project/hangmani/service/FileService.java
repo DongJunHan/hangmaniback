@@ -72,7 +72,7 @@ public class FileService {
             String savedFileName = this.util.getRenameWithDate(uploadTime, this.util.getRandomValue(),
                     file.getOriginalFilename());
             StoreAttachment storeAttachment = requestConvert.convertDTO
-                    (file, savedFileName, requestDTO.getStoreUUID(), uploadTime);
+                    (file, savedFileName, requestDTO.getStoreUuid(), uploadTime);
 
             int i = fileRepository.insertAttachment(storeAttachment);
             if (i == 0)
@@ -102,18 +102,18 @@ public class FileService {
         if (savedFileNames != null && savedFileNames.size() > 0){
             for (String st :
                     savedFileNames) {
-                if (st.indexOf(dto.getStoreUUID()) > -1){
+                if (st.indexOf(dto.getStoreUuid()) > -1){
                    flag = true;
                    ret.add(st);
                 }
             }
         }
         if(!flag) {
-            Double latitude = 0.;
-            Double longitude = 0.;
+            Double latitude = dto.getStoreLatitude();
+            Double longitude = dto.getStoreLongitude();
 
-            if (dto.getStoreLongitude() == 0 || dto.getStoreLatitude() == 0) {
-                Store storeInfo = storeRepository.getStoreInfoByUuid(dto.getStoreUUID());
+            if (latitude == 0 || longitude == 0) {
+                Store storeInfo = storeRepository.getStoreInfoByUuid(dto.getStoreUuid());
                 if (storeInfo.getStoreUuid() == null) {
                     throw new NotFoundStore();
                 }
@@ -122,14 +122,13 @@ public class FileService {
             }
             StoreAttachment save = getImageAndSave(latitude,
                     longitude,
-                    dto.getStoreUUID());
+                    dto.getStoreUuid());
             fileRepository.insertAttachment(save);
             ret.add(save.getSavedFileName());
         }
-
         return ResponseStoreFileDTO.builder()
                 .domainUrls(ret)
-                .storeUUID(dto.getStoreUUID())
+                .storeUuid(dto.getStoreUuid())
                 .build();
     }
     private StoreAttachment getImageAndSave(Double latitude, Double longitude, String storeUuid) {
@@ -157,7 +156,6 @@ public class FileService {
                 new ByteArrayInputStream(responseBody),
                 savedFileName);
         ret.join();
-
         return StoreAttachment.builder()
                 .originalFileName(storeUuid + ".jpg")
                 .uploadDate(sqlDate)
