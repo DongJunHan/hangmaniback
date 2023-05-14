@@ -121,8 +121,12 @@ order by l.lottoname, win1stcount, win2stcount desc;
      */
     public List<ResponseStoreFilterDTO> getStoreInfo(RequestStoreFilterDTO requestDTO) {
         List<Store> storeInfos;
-        if (requestDTO.getStartLatitude() == null
+        if (requestDTO.getStartLatitude() == 0
+                || requestDTO.getEndLatitude() == 0
+                || requestDTO.getStartLongitude() == 0
+                || requestDTO.getEndLongitude() == 0
                 || requestDTO.getStartLatitude() == null
+                || requestDTO.getEndLatitude() == null
                 || requestDTO.getStartLongitude() == null
                 || requestDTO.getEndLongitude() == null) {
             storeInfos = storeRepository.getStoreInfoWithWinCountBySidoSigugun(requestDTO);
