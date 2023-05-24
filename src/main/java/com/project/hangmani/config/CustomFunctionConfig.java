@@ -1,4 +1,4 @@
-package com.project.hangmani.connection;
+package com.project.hangmani.config;
 
 import com.project.hangmani.util.Util;
 import jakarta.annotation.PostConstruct;

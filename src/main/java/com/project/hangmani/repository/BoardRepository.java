@@ -1,6 +1,6 @@
 package com.project.hangmani.repository;
 
-import com.project.hangmani.connection.CustomFunctionConfig;
+import com.project.hangmani.config.CustomFunctionConfig;
 import com.project.hangmani.domain.Board;
 import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
 import com.project.hangmani.util.Util;
