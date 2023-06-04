@@ -33,9 +33,6 @@ public class AES implements TwoWayEncryptionInterface {
     }
     @Override
     public void init() {
-        log.info("start");
-//        if (this.key != null)
-//            return;
         this.key = getKeyFromFile();
 
         if(this.key == null) {
