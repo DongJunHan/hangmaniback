@@ -31,7 +31,7 @@ public class StoreQueryConst {
             "FROM store s " +
             "JOIN lotto_type_handle lh ON s.storeuuid = lh.storeuuid\n" +
             "JOIN lotto_type l on l.lottoid=lh.lottoid "+
-            "JOIN store_attachment sa ON s.storeUuid = sa.storeUuid " +
+            "LEFT JOIN store_attachment sa ON s.storeUuid = sa.storeUuid " +
             "WHERE s.storesido=? and s.storesigugun=? and l.lottoid=?\n" +
             "GROUP BY s.storeUuid, s.storeName, s.storeaddress, l.lottoname, s.storelatitude, s.storelongitude\n";
     public static final String getStoreInfoWithWinCountByLatitudeLongitude =
@@ -47,7 +47,7 @@ public class StoreQueryConst {
             "FROM store s " +
             "JOIN lotto_type_handle lh ON s.storeuuid = lh.storeuuid\n" +
             "JOIN lotto_type l on l.lottoid=lh.lottoid "+
-            "JOIN store_attachment sa ON s.storeUuid = sa.storeUuid " +
+            "LEFT JOIN store_attachment sa ON s.storeUuid = sa.storeUuid " +
             "WHERE (? < storelatitude and storelatitude < ?) and (? < storelongitude and storelongitude < ?) and l.lottoid=? " +
             "GROUP BY s.storeUuid, s.storeName, s.storeaddress, l.lottoname, s.storelatitude, s.storelongitude\n";
     public static final String getLottoTypeHandleBySidoSigugun =
