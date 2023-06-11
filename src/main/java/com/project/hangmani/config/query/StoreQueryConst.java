@@ -17,7 +17,7 @@ public class StoreQueryConst {
             "COALESCE(GROUP_CONCAT(DISTINCT sa.saved_file_name ORDER BY sa.saved_file_name ASC SEPARATOR ','), '') AS saved_file_names " +
             "FROM store s " +
             "JOIN store_attachment sa ON s.storeUuid = sa.storeUuid " +
-            "WHERE s.storeUuid=?";
+            "WHERE s.storeUuid=? GROUP BY s.storeuuid; ";
     public static final String getStoreInfoWithWinCountBySidoSigugun =
             "SELECT s.storeUuid, s.storeName, s.storeaddress, \n" +
             "(SELECT COUNT(*) FROM win_history WHERE storeuuid = s.storeuuid AND winRank = 1) AS win1stCount, " +
