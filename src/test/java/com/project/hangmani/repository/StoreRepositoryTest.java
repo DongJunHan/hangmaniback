@@ -83,7 +83,7 @@ class StoreRepositoryTest {
         Assertions.assertThat(testStoreUuid).isEqualTo(store.getStoreUuid());
     }
     @Test
-    void failStoreInfoByUuid() {
+    void notExistStoreInfoByUuid() {
         assertThrows(EmptyResultDataAccessException.class, () -> storeRepository.getStoreInfoByUuid(failStoreUuid));
     }
 
@@ -106,6 +106,47 @@ class StoreRepositoryTest {
         log.info("result: {}", result);
         //then
         Assertions.assertThat(result.size()).isPositive();
+    }
+
+    @Test
+    void notExistSidoStoreInfoWinCountBySidoSigugun() {
+        //given
+        RequestStoreFilterDTO requestDTO = RequestStoreFilterDTO.builder()
+                .sido("인천광역시")
+                .sigugun("부평구")
+                .filter("1st")
+                .lottoID(1)
+                .offset(0)
+                .limit(10)
+                .userLatitude(37.39130205)
+                .userLongitude(127.077625)
+                .build();
+        //when
+        List<Store> result = storeRepository.getStoreInfoWithWinCountBySidoSigugun(requestDTO);
+        log.info("result: {}", result);
+        //then
+        Assertions.assertThat(result.size()).isZero();
+    }
+    @Test
+    void unNormalOffsetStoreInfoWinCountBySidoSigugun() {
+        //given
+        RequestStoreFilterDTO requestDTO = RequestStoreFilterDTO.builder()
+                .sido("인천")
+                .sigugun("부평구")
+                .filter("1st")
+                .lottoID(1)
+                .offset(5)
+                .limit(10)
+                .userLatitude(37.39130205)
+                .userLongitude(127.077625)
+                .build();
+        log.info("offset: {}", requestDTO.getOffset());
+        log.info("limit: {}", requestDTO.getLimit());
+        //when
+        List<Store> result = storeRepository.getStoreInfoWithWinCountBySidoSigugun(requestDTO);
+        log.info("result: {}", result);
+        //then
+        Assertions.assertThat(result.size()).isNotZero();
     }
 
     @Test
