@@ -64,7 +64,7 @@ public class StoreQueryConst {
             "storelatitude like CONCAT(?, '%') and storelongitude like CONCAT(?, '%');";
     public static final String insertStoreInfo = "insert into store(storeuuid, storename, storeaddress,storelatitude, storelongitude," +
             "storebizno,storetelnum, STOREMOBILENUM, STOREOPENTIME,STORECLOSETIME,STORESIDO,STORESIGUGUN) " +
-            "values(?,?,?,?,?,?,?,?,?,?,?,?); insert into ";
+            "values(?,?,?,?,?,?,?,?,?,?,?,?);";
 
     public static final String insertStoreAttachment = "insert into store_attachment(original_file_name, SAVED_FILE_NAME, FILE_SIZE, storeuuid)" +
             " values(?,?,?,?)";
