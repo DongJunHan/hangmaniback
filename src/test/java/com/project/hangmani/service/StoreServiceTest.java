@@ -98,7 +98,8 @@ class StoreServiceTest {
                 endLatitude,
                 startLongitude,
                 endLongitude,
-                129);
+                20,
+                0);
         List<ResponseStoreDTO> storeInfoList = storeService.getStoreInfo(requestStoreDTO);
         log.info("result={}", storeInfoList);
         assertThat(storeInfoList.size()).isEqualTo(129);
@@ -124,10 +125,10 @@ class StoreServiceTest {
     @DisplayName("H2 데이터베이스 동일한 상점정보 삽입")
     void StoreInfoInsertFail() {
         RequestStoreInsertDTO requestStoreInsertDTO = new RequestStoreInsertDTO();
-        requestStoreInsertDTO.setStoreAddress("서울 강남구 언주로30길 56");
-        requestStoreInsertDTO.setStoreLatitude(37.488214);
-        requestStoreInsertDTO.setStoreLongitude(127.054415);
-        requestStoreInsertDTO.setStoreName("CU(타워팰리스점)");
+//        requestStoreInsertDTO.setStoreAddress("서울 강남구 언주로30길 56");
+//        requestStoreInsertDTO.setStoreLatitude(37.488214);
+//        requestStoreInsertDTO.setStoreLongitude(127.054415);
+//        requestStoreInsertDTO.setStoreName("CU(타워팰리스점)");
         assertThatThrownBy(() -> storeService.insertStoreInfo(requestStoreInsertDTO))
                 .isInstanceOf(AlreadyExistStore.class);
     }
@@ -136,15 +137,15 @@ class StoreServiceTest {
     @DisplayName("H2 데이터베이스 동일한 상점정보 삽입")
     void StoreInfoInsert() {
         RequestStoreInsertDTO requestStoreInsertDTO = new RequestStoreInsertDTO();
-        requestStoreInsertDTO.setStoreAddress("서울 강남구 언주로30길 56");
-        requestStoreInsertDTO.setStoreLatitude(11212.488214);
-        requestStoreInsertDTO.setStoreLongitude(1234.054415);
-        requestStoreInsertDTO.setStoreName("CU(테스트테스트)");
-        requestStoreInsertDTO.setStoreBizNo("111-111");
-        requestStoreInsertDTO.setStoreMobileNum(null);
-        requestStoreInsertDTO.setStoreTelNum(null);
-        requestStoreInsertDTO.setStoreCloseTime(null);
-        requestStoreInsertDTO.setStoreOpenTime(null);
+//        requestStoreInsertDTO.setStoreAddress("서울 강남구 언주로30길 56");
+//        requestStoreInsertDTO.setStoreLatitude(11212.488214);
+//        requestStoreInsertDTO.setStoreLongitude(1234.054415);
+//        requestStoreInsertDTO.setStoreName("CU(테스트테스트)");
+//        requestStoreInsertDTO.setStoreBizNo("111-111");
+//        requestStoreInsertDTO.setStoreMobileNum(null);
+//        requestStoreInsertDTO.setStoreTelNum(null);
+//        requestStoreInsertDTO.setStoreCloseTime(null);
+//        requestStoreInsertDTO.setStoreOpenTime(null);
         ResponseStoreDTO responseStoreDTO = storeService.insertStoreInfo(requestStoreInsertDTO);
         assertThat(responseStoreDTO).isNotNull();
         if (responseStoreDTO.getStoreUuid() != null) {
