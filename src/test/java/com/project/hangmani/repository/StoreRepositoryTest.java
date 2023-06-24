@@ -77,7 +77,6 @@ class StoreRepositoryTest {
     @Test
     void getStoreInfoByUuid() {
         //given
-
         //when
         Store store = storeRepository.getStoreInfoByUuid(testStoreUuid);
         //then
