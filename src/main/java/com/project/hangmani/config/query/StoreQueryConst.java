@@ -8,7 +8,13 @@ public class StoreQueryConst {
             " where (? < s.storelatitude and s.storelatitude < ?) and (? < s.storelongitude and s.storelongitude < ?);";
     public static final String getStoreInfoByUuid = "SELECT s.storeUuid, s.storeName, s.storeAddress, s.storeLatitude, s.storeLongitude, " +
             "s.storeBizNo, s.storeTelNum, s.storeMobileNum, s.storeOpenTime, s.storeCloseTime, " +
-            "s.storeIsActivity, s.storeSido, s.storeSigugun, " +
+            "s.storeIsActivity, s.storeSido, s.storeSigugun, w.winround, w.winrank " +
+            "FROM store s " +
+            "LEFT JOIN win_history w ON s.storeUuid = w.storeUuid ";
+    // GROUP BY s.storeuuid
+    public static final String getStoreInfoByUuidTest = "SELECT s.storeUuid, s.storeName, s.storeAddress, s.storeLatitude, s.storeLongitude, " +
+            "s.storeBizNo, s.storeTelNum, s.storeMobileNum, s.storeOpenTime, s.storeCloseTime, " +
+            "s.storeIsActivity, s.storeSido, s.storeSigugun,  " +
             "(SELECT COUNT(*) FROM win_history WHERE storeuuid = s.storeuuid AND winRank = 1) AS win1stCount, " +
             "(SELECT COUNT(*) FROM win_history WHERE storeuuid = s.storeuuid AND winRank = 2) AS win2stCount, " +
             "(SELECT COALESCE(GROUP_CONCAT(l.lottoname ORDER BY l.lottoname ASC SEPARATOR ','),'') AS lottonames " +
@@ -16,25 +22,24 @@ public class StoreQueryConst {
             "WHERE lh.storeuuid=s.storeuuid) AS lottonames, "+
             "COALESCE(GROUP_CONCAT(DISTINCT sa.saved_file_name ORDER BY sa.saved_file_name ASC SEPARATOR ','), '') AS saved_file_names " +
             "FROM store s " +
-            "JOIN store_attachment sa ON s.storeUuid = sa.storeUuid " +
-            "WHERE s.storeUuid=?; ";
-    // GROUP BY s.storeuuid
-    public static final String getStoreInfoWithWinCountBySidoSigugun =
-            "SELECT s.storeUuid, s.storeName, s.storeaddress, \n" +
-            "(SELECT COUNT(*) FROM win_history WHERE storeuuid = s.storeuuid AND winRank = 1) AS win1stCount, " +
-            "(SELECT COUNT(*) FROM win_history WHERE storeuuid = s.storeuuid AND winRank = 2) AS win2stCount, " +
-            "s.storelatitude, s.storelongitude, \n" +
-            "(SELECT COALESCE(GROUP_CONCAT(l.lottoname ORDER BY l.lottoname ASC SEPARATOR ','),'') AS lottonames " +
-                "FROM lotto_type_handle lh JOIN lotto_type l ON l.lottoid=lh.lottoid " +
-                "WHERE lh.storeuuid=s.storeuuid) AS lottonames, "+
-            "COALESCE(GROUP_CONCAT(DISTINCT sa.saved_file_name ORDER BY sa.saved_file_name ASC SEPARATOR ','), '') AS saved_file_names, \n" +
-            "get_distance(?, ?, s.storelatitude, s.storelongitude) AS distance \n"+
-            "FROM store s " +
-            "JOIN lotto_type_handle lh ON s.storeuuid = lh.storeuuid\n" +
-            "JOIN lotto_type l on l.lottoid=lh.lottoid "+
-            "LEFT JOIN store_attachment sa ON s.storeUuid = sa.storeUuid " +
-            "WHERE s.storesido=? and s.storesigugun=? and l.lottoid=?\n" +
-            "GROUP BY s.storeUuid, s.storeName, s.storeaddress, l.lottoname, s.storelatitude, s.storelongitude\n";
+            "LEFT JOIN store_attachment sa ON s.storeUuid = sa.storeUuid WHERE s.storeuuid=?";
+
+    public static final String getStoreInfoWithWinHistory =
+                    "SELECT s.storeUuid, s.storeName, s.storeaddress," +
+                    "get_distance(?, ?, s.storelatitude, s.storelongitude) AS distance , w.winround, w.winrank, " +
+                    "s.storelatitude, s.storelongitude " +
+                    "FROM store s LEFT JOIN win_history w ON s.storeUuid = w.storeUuid ";
+    public static final String whereSidoSigugunLottoId = "WHERE s.storesido=? and s.storesigugun=? and l.lottoid=? ";
+    public static final String whereSidoSigugun = "WHERE s.storesido=? and s.storesigugun=? ";
+    public static final String whereStoreUuid = "WHERE s.storeuuid=? ";
+    public static final String whereLatitudeLongitude = "WHERE (? < storelatitude and storelatitude < ?) and (? < storelongitude and storelongitude < ?) ";
+    public static final String orderByFirstDesc = "ORDER BY 1 desc ";
+
+    public static final String orderByFirst = "ORDER BY 1";
+    public static final String getLottoName = "select s.storeuuid, l.lottoname, l.lottoid \n" +
+            "from store s LEFT JOIN lotto_type_handle lh ON s.storeuuid=lh.storeuuid JOIN lotto_type l ON lh.lottoid=l.lottoid \n";
+    public static final String getStoreAttachment =  "select s.storeuuid, sa.saved_file_name " +
+            "FROM store s LEFT JOIN store_attachment sa ON s.storeuuid=sa.storeuuid ";
     public static final String getStoreInfoWithWinCountByLatitudeLongitude =
             "SELECT s.storeUuid, s.storeName, s.storeaddress, " +
             "(SELECT COUNT(*) FROM win_history WHERE storeuuid = s.storeuuid AND winRank = 1) AS win1stCount, " +
