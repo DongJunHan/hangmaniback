@@ -95,6 +95,7 @@ public class StoreDTO {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     public static class RequestStoreInsertDTO {
         @NotBlank
         private String storeName;
