@@ -109,7 +109,7 @@ public class Util {
     public String generateFileUrl(String savedFileName) {
         return DOMAIN + savedFileName;
     }
-    public boolean checkDirectory(Path path) throws FileIOException {
+    public boolean checkDirectory(Path path) throws FileIOException, IOException {
         Set<PosixFilePermission> perms = new HashSet<>();
         perms.add(PosixFilePermission.OWNER_READ);
         perms.add(PosixFilePermission.OWNER_WRITE);
@@ -137,8 +137,8 @@ public class Util {
                     }
                 } catch (AccessDeniedException e){
                     throw new FileIOException("directory access denied", e);
-                } catch (IOException ex) {
-                    throw new FileIOException("sub mkdir fail", ex);
+//                } catch (IOException ex) {
+//                    throw new FileIOException("sub mkdir fail", ex);
                 }
             }
         }
@@ -146,7 +146,13 @@ public class Util {
     }
     public CompletableFuture<Void> savedAttachmentFile(InputStream inputStream, String savedFileName) {
         Path path = Paths.get(uploadDir);
-        checkDirectory(path);
+        try {
+            checkDirectory(path);
+        } catch (IOException e) {
+            log.error("FileSystemException ", e);
+            return null;
+//            throw new RuntimeException(e);
+        }
         Path filePath = Paths.get(uploadDir + savedFileName);
         CompletableFuture<Void> future = CompletableFuture.runAsync(()->{
             try (OutputStream outputStream = Files.newOutputStream(filePath, StandardOpenOption.CREATE_NEW)) {
