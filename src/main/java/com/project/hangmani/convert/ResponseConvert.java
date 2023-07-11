@@ -80,13 +80,19 @@ public class ResponseConvert {
         for (Store storeInfo:storeInfos) {
             //split saved file name
             List<String> savedFileList = new ArrayList<>();
-            String[] savedFiles = storeInfo.getSavedFileNames().split(",");
+            String[] savedFiles = {};
+            //store attachment null check
+            if (null != storeInfo.getSavedFileNames())
+                savedFiles  = storeInfo.getSavedFileNames().split(",");
             for(String s: savedFiles){
                 savedFileList.add(s.trim());
             }
             //split lotto type
             List<String> lottoTypeList = new ArrayList<>();
-            String[] lottoTypes = storeInfo.getLottoName().split(",");
+            String[] lottoTypes = {};
+            //lotto type null check
+            if (null != storeInfo.getLottoName())
+                lottoTypes = storeInfo.getLottoName().split(",");
             for(String l: lottoTypes){
                 lottoTypeList.add(l.trim());
             }
