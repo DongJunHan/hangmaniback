@@ -6,7 +6,7 @@ public class StoreQueryConst {
             "       s.storeIsActivity, s.storeSido, s.storeSigugun, COALESCE(GROUP_CONCAT(DISTINCT sa.saved_file_name ORDER BY sa.saved_file_name ASC SEPARATOR ', '), '') AS saved_file_names\n" +
             " FROM store s join store_attachment sa on s.storeuuid=sa.storeuuid " +
             " where (? < s.storelatitude and s.storelatitude < ?) and (? < s.storelongitude and s.storelongitude < ?);";
-    public static final String getStoreInfoByUuid = "SELECT s.storeUuid, s.storeName, s.storeAddress, s.storeLatitude, s.storeLongitude, " +
+    public static final String getStoreInfoWithWinHistory = "SELECT s.storeUuid, s.storeName, s.storeAddress, s.storeLatitude, s.storeLongitude, " +
             "s.storeBizNo, s.storeTelNum, s.storeMobileNum, s.storeOpenTime, s.storeCloseTime, " +
             "s.storeIsActivity, s.storeSido, s.storeSigugun, w.winround, w.winrank " +
             "FROM store s " +
@@ -23,22 +23,23 @@ public class StoreQueryConst {
             "COALESCE(GROUP_CONCAT(DISTINCT sa.saved_file_name ORDER BY sa.saved_file_name ASC SEPARATOR ','), '') AS saved_file_names " +
             "FROM store s " +
             "LEFT JOIN store_attachment sa ON s.storeUuid = sa.storeUuid WHERE s.storeuuid=?";
-
-    public static final String getStoreInfoWithWinHistory =
+    public static final String getStoreInfoWithWinHistoryDistance =
                     "SELECT s.storeUuid, s.storeName, s.storeaddress," +
                     "get_distance(?, ?, s.storelatitude, s.storelongitude) AS distance , w.winround, w.winrank, " +
                     "s.storelatitude, s.storelongitude " +
                     "FROM store s LEFT JOIN win_history w ON s.storeUuid = w.storeUuid ";
-    public static final String whereSidoSigugunLottoId = "WHERE s.storesido=? and s.storesigugun=? and l.lottoid=? ";
-    public static final String whereSidoSigugun = "WHERE s.storesido=? and s.storesigugun=? ";
-    public static final String whereStoreUuid = "WHERE s.storeuuid=? ";
-    public static final String whereLatitudeLongitude = "WHERE (? < storelatitude and storelatitude < ?) and (? < storelongitude and storelongitude < ?) ";
+    public static final String whereSidoSigugunLottoId = "WHERE s.storesido=? and s.storesigugun=? and l.lottoid=? and s.storeIsActivity=0 ";
+    public static final String whereSidoSigugun = "WHERE s.storesido=? and s.storesigugun=? and s.storeIsActivity=0 ";
+    public static final String whereSido = "WHERE s.storesido=? and s.storeIsActivity=0 ";
+    public static final String whereStoreUuid = "WHERE s.storeuuid=? and s.storeIsActivity=0 ";
+    public static final String whereLatitudeLongitude = "WHERE (? < s.storelatitude and s.storelatitude < ?) " +
+            "and (? < s.storelongitude and s.storelongitude < ?) and s.storeIsActivity=0 ";
     public static final String orderByFirstDesc = "ORDER BY 1 desc ";
 
     public static final String orderByFirst = "ORDER BY 1";
-    public static final String getLottoName = "select s.storeuuid, l.lottoname, l.lottoid \n" +
-            "from store s LEFT JOIN lotto_type_handle lh ON s.storeuuid=lh.storeuuid JOIN lotto_type l ON lh.lottoid=l.lottoid \n";
-    public static final String getStoreAttachment =  "select s.storeuuid, sa.saved_file_name " +
+    public static final String getLottoName = "SELECT s.storeuuid, l.lottoname, l.lottoid " +
+            "FROM store s LEFT JOIN lotto_type_handle lh ON s.storeuuid=lh.storeuuid JOIN lotto_type l ON lh.lottoid=l.lottoid \n";
+    public static final String getStoreAttachment =  "SELECT s.storeuuid, sa.saved_file_name " +
             "FROM store s LEFT JOIN store_attachment sa ON s.storeuuid=sa.storeuuid ";
     public static final String getStoreInfoWithWinCountByLatitudeLongitude =
             "SELECT s.storeUuid, s.storeName, s.storeaddress, " +
@@ -74,8 +75,7 @@ public class StoreQueryConst {
 
     public static final String insertStoreAttachment = "insert into store_attachment(original_file_name, SAVED_FILE_NAME, FILE_SIZE, storeuuid)" +
             " values(?,?,?,?)";
-    public static final String deleteStoreInfoByUuid = "UPDATE  store SET STOREISACTIVITY=1 where storeuuid=?";
-    public static final String findBySidoSigugun = "SELECT * from store WHERE storesido=? and storesigugun=?";
-    public static final String deleteStoreInfoByLatiLongi = "UPDATE  store SET STOREISACTIVITY=1 where storelatitude=? and storelongitude=?";
+    public static final String deleteStoreInfoByUuid = "UPDATE  store SET storeIsActivity=1 where storeuuid=?";
+    public static final String deleteStoreInfoByLatiLongi = "UPDATE  store SET storeIsActivity=1 where storelatitude=? and storelongitude=?";
     public static final String LIMIT = " LIMIT ?,?;";
 }
