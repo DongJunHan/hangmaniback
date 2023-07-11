@@ -76,13 +76,6 @@ public class StoreRepository {
         return template.query(getStoreInfoByLatitudeLongitudeSql, new Object[]{startLatitude, endLatitude
                 , startLongitude, endLongitude, limit}, storesRowMapper());
     }
-    //TODO 카밋시 삭제해야할 함수
-    public Store getStoreInfoTest(String storeUuid) {
-        List<Store> stores = template.query(getStoreInfoByUuidTest, new Object[]{storeUuid}, storeRowMapper());
-        if (stores.isEmpty())
-            throw new EmptyResultDataAccessException(1);
-        return stores.get(0);
-    }
     public List<Store> getStoreInfoByUuid(String storeUuid) {
         log.info("sql={}, uuid={}", getStoreInfoWithWinHistory + whereStoreUuid, storeUuid);
         return template.query(getStoreInfoWithWinHistory + whereStoreUuid , new Object[]{storeUuid}, storeWinRankRowMapper());
