@@ -47,7 +47,9 @@ public class UserRepository {
     }
 
     public Optional<User> findById(String userID) {
+        log.info("find id query: {}", getUserByIDSql);
         List<User> user = template.query(getUserByIDSql, userRowMapper(), userID);
+        log.info("result: {}", user);
         return user.stream().findAny();
     }
 
