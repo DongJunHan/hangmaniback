@@ -1,5 +1,6 @@
 package com.project.hangmani.repository;
 
+import com.project.hangmani.config.DatabaseInit;
 import com.project.hangmani.domain.Store;
 import com.project.hangmani.dto.StoreDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoreFilterDTO;
@@ -7,52 +8,33 @@ import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 class StoreRepositoryTest {
-    private static StoreRepository storeRepository;
-    private static DataSource dataSource;
-    private static Util utilMock;
-    private static JdbcTemplate template;
-    private String testStoreUuid= "8c31ad72-ac2c-11ed-9b15-12ebd169e012";
+    private StoreRepository storeRepository;
+    private DataSource dataSource;
+    private Util utilMock;
+    private JdbcTemplate template;
+    private String testStoreUuid= "8c354eaa-ac2c-11ed-9b15-12ebd169e012";
     private String failStoreUuid = "c31ad72-ac2c-11ed-9b15-12ebd169e012";
-    @BeforeAll
-    static void preDB() {
-        dataSource = new DriverManagerDataSource("jdbc:h2:mem:test","sa","");
+    @BeforeEach
+    void TestConfig() {
+        DatabaseInit dbInit = new DatabaseInit();
+        dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE", "sa", "");
+        template = dbInit.loadJdbcTemplate(dataSource);
+        dbInit.loadScript(template);
+
         utilMock = new Util();//Mockito.mock(Util.class);
         storeRepository = new StoreRepository(dataSource, utilMock);
-
-        template = new JdbcTemplate(dataSource);
-        Resource schema = new ClassPathResource("schema.sql");
-        Resource data = new ClassPathResource("data.sql");
-        try {
-            ScriptUtils.executeSqlScript(template.getDataSource().getConnection(), schema);
-            ScriptUtils.executeSqlScript(template.getDataSource().getConnection(), data);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        String packageName = Util.class.getPackage().getName();
-        String className = Util.class.getSimpleName();
-        String qualifiedClassName = packageName + "." + className;
-
-        // 사용자 정의 함수 등록
-        template.execute("CREATE ALIAS IF NOT EXISTS get_distance FOR \"" + qualifiedClassName + ".getDistance\";");
     }
     @AfterEach
     void afterDB() {
@@ -68,7 +50,8 @@ class StoreRepositoryTest {
                 tableList) {
             for (String a :
                     t) {
-                log.info("value: {}", a);
+                System.out.println("DB table = " + a);
+//                log.info("value: {}", a);
             }
         }
         Assertions.assertThat(tableList.size()).isPositive();
@@ -78,13 +61,14 @@ class StoreRepositoryTest {
     void getStoreInfoByUuid() {
         //given
         //when
-        Store store = storeRepository.getStoreInfoByUuid(testStoreUuid);
+        List<Store> stores = storeRepository.getStoreInfoByUuid(testStoreUuid);
         //then
-        Assertions.assertThat(testStoreUuid).isEqualTo(store.getStoreUuid());
+        Assertions.assertThat(testStoreUuid).isEqualTo(stores.get(0).getStoreUuid());
     }
     @Test
     void notExistStoreInfoByUuid() {
-        assertThrows(EmptyResultDataAccessException.class, () -> storeRepository.getStoreInfoByUuid(failStoreUuid));
+        List<Store> stores = storeRepository.getStoreInfoByUuid(failStoreUuid);
+        Assertions.assertThat(stores.size()).isZero();
     }
 
     @Test
@@ -102,14 +86,14 @@ class StoreRepositoryTest {
                 .build();
 
         //when
-        List<Store> result = storeRepository.getStoreInfoWithWinCountBySidoSigugun(requestDTO);
-        log.info("result: {}", result);
+        List<Store> storeInfoTest = storeRepository.getStoreInfoWithWinRankBySidoSigugun(requestDTO);
+//        log.info("result: {}", storeInfoTest);
         //then
-        Assertions.assertThat(result.size()).isPositive();
+       Assertions.assertThat(storeInfoTest.size()).isPositive();
     }
 
     @Test
-    void notExistSidoStoreInfoWinCountBySidoSigugun() {
+    void wrongSidoStoreInfoWithWinCount() {
         //given
         RequestStoreFilterDTO requestDTO = RequestStoreFilterDTO.builder()
                 .sido("인천광역시")
@@ -122,13 +106,16 @@ class StoreRepositoryTest {
                 .userLongitude(127.077625)
                 .build();
         //when
-        List<Store> result = storeRepository.getStoreInfoWithWinCountBySidoSigugun(requestDTO);
-        log.info("result: {}", result);
+        List<Store> storeInfoTest = storeRepository.getStoreInfoWithWinRankBySidoSigugun(requestDTO);
         //then
-        Assertions.assertThat(result.size()).isZero();
+        Assertions.assertThat(storeInfoTest.size()).isZero();
     }
+
+    /**
+     * repository에서는 limit,offset관련된 작업을 하지 않기 때문에 영향을 받지 않아야한다.
+     */
     @Test
-    void unNormalOffsetStoreInfoWinCountBySidoSigugun() {
+    void unNormalOffsetStoreInfoWinRankBySidoSigugun() {
         int offset = 5;
         int limit = 1;
         //given
@@ -143,10 +130,10 @@ class StoreRepositoryTest {
                 .userLongitude(127.077625)
                 .build();
         //when
-        List<Store> result = storeRepository.getStoreInfoWithWinCountBySidoSigugun(requestDTO);
-        log.info("result: {}", result);
+        List<Store> storeInfoTest = storeRepository.getStoreInfoWithWinRankBySidoSigugun(requestDTO);
+
         //then
-        Assertions.assertThat(result.size()).isNotZero();
+        Assertions.assertThat(storeInfoTest.size()).isNotZero();
     }
 
     @Test
@@ -162,7 +149,7 @@ class StoreRepositoryTest {
                 .endLongitude(126.7735)
                 .build();
         //when
-        List<Store> result = storeRepository.getStoreInfoWithWinCountByLatitudeLongitude(requestDTO);
+        List<Store> result = storeRepository.getStoreInfoWithWinRankByLatitudeLongitude(requestDTO);
 
         //then
         Assertions.assertThat(result.size()).isPositive();
@@ -197,11 +184,9 @@ class StoreRepositoryTest {
 
         //when
         String storeUuid = storeRepository.insertStoreInfo(requestDTO);
-        log.info("uuid={}", storeUuid);
-        Store store = storeRepository.getStoreInfoByUuid(storeUuid);
-        log.info("store={}", store);
+        List<Store> stores = storeRepository.getStoreInfoByUuid(storeUuid);
         //then
-        Assertions.assertThat(storeUuid).isNotNull();
+        Assertions.assertThat(storeUuid).isEqualTo(stores.get(0).getStoreUuid());
     }
     @Test
     void failInsertStoreInfo() {

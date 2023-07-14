@@ -19,14 +19,16 @@ class AESTest {
     Util util;
     @BeforeEach
     void beforeEach() {
-        ConfigurableApplicationContext ac = new AnnotationConfigApplicationContext(AES.class);
-        ConfigurableApplicationContext utilac = new AnnotationConfigApplicationContext(Util.class);
+
+        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
+        ac.register(AES.class);
+        ac.register(Util.class);
+        ac.refresh();
         AES = ac.getBean(AES.class);
-        util = utilac.getBean(Util.class);
+        util = ac.getBean(Util.class);
     }
     @AfterEach
     void afterEach() {
-        log.info("end!");
 //        File file = new File(KEY_FILE_PATH);
 //        if (file.exists()){
 //            file.delete();
@@ -39,8 +41,6 @@ class AESTest {
         ConvertData convertData = new ConvertData();
         String base64 = convertData.byteToBase64(testTexts);
 
-        log.info("base64={}", base64);
-        log.info("encrypt={}", testTexts);
         assertThat(base64).isEqualTo("iN4DKYNOzYNc4l4Jm3xJwg==");
     }
 
@@ -51,7 +51,5 @@ class AESTest {
         byte[] bytes = convertData.base64ToByte(base64);
         String ret = convertData.byteToString(AES.decryptData(bytes), StandardCharsets.UTF_8);
         assertThat(ret).isEqualTo("testText");
-
-
     }
 }

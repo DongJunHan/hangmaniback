@@ -1,60 +1,50 @@
 package com.project.hangmani.service;
 
+import com.project.hangmani.config.DatabaseInit;
 import com.project.hangmani.config.WebClientConfig;
 import com.project.hangmani.dto.StoreDTO.*;
 import com.project.hangmani.exception.AlreadyExistStore;
+import com.project.hangmani.exception.NotFoundStore;
 import com.project.hangmani.repository.FileRepository;
 import com.project.hangmani.repository.StoreRepository;
 import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.sql.DataSource;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
-@SpringBootTest
 class StoreServiceTest {
-    @Autowired
     private StoreService storeService;
-    @Autowired
     private JdbcTemplate template;
+    private DataSource dataSource;
+    @BeforeEach
+    void TestConfig() {
+        DatabaseInit dbInit = new DatabaseInit();
+        dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE", "sa", "");
+        template = dbInit.loadJdbcTemplate(dataSource);
+        dbInit.loadScript(template);
+        Util util = new Util();
 
+        StoreRepository storeRepository = new StoreRepository(dataSource, util);
+        FileRepository fileRepository = new FileRepository(dataSource, util);
+        WebClientConfig webClient = new WebClientConfig();
+        FileService fileService = new FileService(fileRepository, storeRepository, webClient, util);
+        storeService = new StoreService(storeRepository, fileService);
 
-    @TestConfiguration
-    static class TestConfig {
-        private final DataSource dataSource;
-        private final Util util;
-        TestConfig(DataSource dataSource, Util util) {
-            this.dataSource = dataSource;
-            this.util = util;
-
-        }
-        FileRepository fileRepository() {
-            return new FileRepository(dataSource,new Util());}
-        StoreRepository storeRepository() {
-            return new StoreRepository(dataSource, this.util);
-        }
-        WebClientConfig webClient() {
-            return new WebClientConfig();
-        }
-        FileService fileService() {return new FileService(fileRepository(), storeRepository(), webClient(), this.util);}
-        @Bean
-        StoreService StoreServiceV1() {
-            return new StoreService(storeRepository(),fileService());
-        }
-
+//        String packageName = Util.class.getPackage().getName();
+//        String className = Util.class.getSimpleName();
+//        String qualifiedClassName = packageName + "." + className;
+        // 사용자 정의 함수 등록
+//        template.execute("CREATE ALIAS IF NOT EXISTS get_distance FOR \"" + qualifiedClassName + ".getDistance\";");
     }
 //    @AfterEach
     void afterEach() {
@@ -63,100 +53,86 @@ class StoreServiceTest {
     }
 
     @Test
-    @DisplayName("H2 데이터베이스 조건별 상점데이터 확인")
+    @DisplayName("시군/시구군으로 상점데이터 확인")
     void filterStoreInfoTest() {
         Double userLatitude = 37.3914817;
         Double userLongitude = 127.0777273;
 
-
         List<ResponseStoreFilterDTO> storeInfo =
                 storeService.getStoreInfo(new RequestStoreFilterDTO().builder()
-                .filter("2st")
+                .filter("1st")
                 .userLatitude(userLatitude)
                 .userLongitude(userLongitude)
                 .sido("인천")
                 .sigugun("부평구")
-                .lottoID(1)
                 .build());
-        for(ResponseStoreFilterDTO f:storeInfo){
-            log.info("TEST={}", f);
-        }
-        assertThat(storeInfo).isNotNull();
+        assertThat(storeInfo.size()).isPositive();
 
     }
 
     @Test
-    @DisplayName("H2 데이터베이스 상점 데이터 확인")
-    void StoresInfoTest() {
+    @DisplayName("위도/경도 밤위로 상점 데이터 확인")
+    void storesInfoTest() {
+        //given
+        Double startLatitude = 37.469443;
+        Double endLatitude = 37.523216;
+        Double startLongitude = 126.688536;
+        Double endLongitude = 126.746722;
 
-        Double startLatitude = 37.463;
-        Double endLatitude = 37.528;
-        Double startLongitude = 127.019;
-        Double endLongitude = 127.107;
-        RequestStoresDTO requestStoreDTO = new RequestStoresDTO(
-                startLatitude,
-                endLatitude,
-                startLongitude,
-                endLongitude,
-                20,
-                0);
-        List<ResponseStoreDTO> storeInfoList = storeService.getStoreInfo(requestStoreDTO);
-        log.info("result={}", storeInfoList);
-        assertThat(storeInfoList.size()).isEqualTo(129);
+        Double userLatitude = 37.3914817;
+        Double userLongitude = 127.0777273;
+        RequestStoreFilterDTO requestStoreDTO = new RequestStoreFilterDTO().builder()
+                .startLatitude(startLatitude)
+                .endLatitude(endLatitude)
+                .startLongitude(startLongitude)
+                .endLongitude(endLongitude)
+                .limit(20)
+                .userLatitude(userLatitude)
+                .userLongitude(userLongitude)
+                .build();
+        //when
+        List<ResponseStoreFilterDTO> storeInfoList = storeService.getStoreInfo(requestStoreDTO);
+        //then
+        assertThat(storeInfoList.size()).isPositive();
     }
 
     @Test
-    @DisplayName("H2 데이터베이스 하나의 상점 데이터 확인")
-    void StoreInfoTest(){
-        String storeUuid = "4d1054b8-ac2c-11ed-9b15-12ebd169e012";
+    @DisplayName("UUID를 가지고 하나의 상점 데이터 확인")
+    void storeInfoTest(){
+        //given
+        String storeUuid = "8c354eaa-ac2c-11ed-9b15-12ebd169e012";
+//        String storeUuid = "4d128918-ac2c-11ed-9b15-12ebd169e012";
+        //when
         ResponseStoreDTO storeInfo = storeService.getStoreInfo(storeUuid);
+        //then
         assertThat(storeInfo).isInstanceOf(ResponseStoreDTO.class);
     }
-
-//    @Test
-//    @DisplayName("H2 데이터베이스 상점정보 수정")
-//    void StoreInfoUpdate() {
-//        String storeUuid = "4d1054b8-ac2c-11ed-9b15-12ebd169e012";
-//        RequestStoreUpdateDTO requestStoreUpdateDTO = new RequestStoreUpdateDTO();
-//        requestStoreUpdateDTO.setStoreName();
-//    }
-
     @Test
-    @DisplayName("H2 데이터베이스 동일한 상점정보 삽입")
-    void StoreInfoInsertFail() {
-        RequestStoreInsertDTO requestStoreInsertDTO = new RequestStoreInsertDTO();
-//        requestStoreInsertDTO.setStoreAddress("서울 강남구 언주로30길 56");
-//        requestStoreInsertDTO.setStoreLatitude(37.488214);
-//        requestStoreInsertDTO.setStoreLongitude(127.054415);
-//        requestStoreInsertDTO.setStoreName("CU(타워팰리스점)");
+    @DisplayName("잘못된 UUID로 에러 확인")
+    void failStoreInfoTest(){
+        //given
+        String storeUuid = "4d128918-ac2c-11ed-9b15-12ebd169e011";
+        //when
+        assertThrows(NotFoundStore.class, () -> storeService.getStoreInfo(storeUuid));
+
+
+    }
+    @Test
+    @DisplayName("동일한 상점정보 삽입")
+    void storeInfoInsertFail() {
+        RequestStoreInsertDTO requestStoreInsertDTO = RequestStoreInsertDTO.builder()
+                .storeAddress("인천 부평구 신촌로7번길 3 1층")
+                .storeLatitude(37.484812)
+                .storeLongitude(126.708757)
+                .storeName("찬스센타백운점")
+                .build();
         assertThatThrownBy(() -> storeService.insertStoreInfo(requestStoreInsertDTO))
                 .isInstanceOf(AlreadyExistStore.class);
     }
 
     @Test
-    @DisplayName("H2 데이터베이스 동일한 상점정보 삽입")
-    void StoreInfoInsert() {
-        RequestStoreInsertDTO requestStoreInsertDTO = new RequestStoreInsertDTO();
-//        requestStoreInsertDTO.setStoreAddress("서울 강남구 언주로30길 56");
-//        requestStoreInsertDTO.setStoreLatitude(11212.488214);
-//        requestStoreInsertDTO.setStoreLongitude(1234.054415);
-//        requestStoreInsertDTO.setStoreName("CU(테스트테스트)");
-//        requestStoreInsertDTO.setStoreBizNo("111-111");
-//        requestStoreInsertDTO.setStoreMobileNum(null);
-//        requestStoreInsertDTO.setStoreTelNum(null);
-//        requestStoreInsertDTO.setStoreCloseTime(null);
-//        requestStoreInsertDTO.setStoreOpenTime(null);
-        ResponseStoreDTO responseStoreDTO = storeService.insertStoreInfo(requestStoreInsertDTO);
-        assertThat(responseStoreDTO).isNotNull();
-        if (responseStoreDTO.getStoreUuid() != null) {
-            Assumptions.assumeTrue(true);
-        }
-
-    }
-
-    @Test
     @DisplayName("주소에서 시/도, 시/구/군 파싱하는 테스트")
-    void AddressParsing() {
+    void addressParsing() {
         //ex. 서울 강남구(서울 강남구 테헤란로63길 12 LG선릉에클라트 B동 107호),
         // 경기 성남시(경기 성남시 분당구 양현로94번길 21 구두28호점), 경남 창원시 마산합포구(경남 창원시 마산합포구 해안대로 58 1층)
 
@@ -180,12 +156,10 @@ class StoreServiceTest {
             if (splitAddress[0].equals("세종")){
                 ret[0] = splitAddress[0];
                 ret[1] = null;
-                log.info("sido={}", ret[0]);
             }
         }
 
         ret[0] = splitAddress[0];
-        log.info("sido={}", ret[0]);
         int firstLength = splitAddress[1].length();
         int secondLength = splitAddress[2].length();
         if (splitAddress[1].substring(firstLength - 1, firstLength).equals("시") &&
@@ -193,33 +167,6 @@ class StoreServiceTest {
             ret[1] = splitAddress[1] + " " + splitAddress[2];
         else
             ret[1] = splitAddress[1];
-        log.info("sigugun={}", ret[1]);
-        }
-        @Test
-        @DisplayName("algorithm")
-        void solution(){
-//            String today = "2020.01.01";
-//            String[] privacies = {"2019.01.01 D", "2019.11.15 Z", "2019.08.02 D", "2019.07.01 D", "2018.12.28 Z"};
-//            String[] terms = {"Z 3", "D 5"};
-
-            String today = "2022.05.19";
-            String[] terms = {"A 6", "B 12", "C 3"};
-            String[] privacies = {"2021.05.02 A", "2021.07.01 B", "2022.02.19 C", "2022.02.20 C", "2022.02.19 C","2021.05.02 A", "2021.07.01 B", "2022.02.19 C", "2022.02.20 C","2021.05.02 A", "2021.07.01 B", "2022.02.19 C", "2022.02.20 C","2021.05.02 A", "2021.07.01 B", "2022.02.19 C", "2022.02.20 C"};
-            List<Integer> answer = new ArrayList<>();
-            int[] t_today = Arrays.stream(today.split("\\.")).mapToInt(Integer::parseInt).toArray();
-            int s_today = (t_today[0]*12*28)+(t_today[1]*28)+t_today[2];
-            Map<String, Integer> a = new HashMap<>();
-            for (String t: terms) {
-                Object[] z = Arrays.stream(t.split(" ")).toArray();
-                a.put((String)z[0], s_today - (Integer.parseInt((String)z[1])) * 28);
-            }
-            for (int i=0; i < privacies.length; i++) {
-                Object[] privace = Arrays.stream(privacies[i].split(" ")).toArray();
-                int[] t_date = Arrays.stream(((String)privace[0]).split("\\.")).mapToInt(Integer::parseInt).toArray();
-                int date = (t_date[0]*12*28)+(t_date[1]*28)+t_date[2];
-                if (date <= a.get((String)privace[1])) answer.add(i+1);
-            }
-        }
-
+    }
 
 }
