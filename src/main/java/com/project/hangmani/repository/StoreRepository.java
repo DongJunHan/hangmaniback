@@ -7,11 +7,9 @@ import com.project.hangmani.domain.StoreAttachment;
 import com.project.hangmani.domain.WinHistory;
 import com.project.hangmani.dto.StoreDTO.*;
 import com.project.hangmani.exception.FailInsertData;
-import com.project.hangmani.exception.NotFoundStore;
 import com.project.hangmani.util.ConvertData;
 import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -94,20 +92,25 @@ public class StoreRepository {
     }
     public List<Store> getStoreInfoWithWinRankBySidoSigugun(RequestStoreFilterDTO requestDTO) {
         return template.query(getStoreInfoWithWinHistoryDistance + whereSidoSigugun + orderByFirstDesc,
-                        new Object[]{ requestDTO.getUserLatitude(), requestDTO.getUserLongitude(),
-                        requestDTO.getSido(), requestDTO.getSigugun(), requestDTO.getLottoID()},
+                        new Object[]{requestDTO.getUserLatitude(), requestDTO.getUserLongitude()
+                                ,requestDTO.getSido(), requestDTO.getSigugun()},
                 storeFilterRowMapper());
 
     }
     public List<LottoType> getLottoNameBySidoSigugun(RequestStoreFilterDTO requestDTO) {
         String sqlQuery;
-        if (null == requestDTO.getSigugun())
+        if (null == requestDTO.getSigugun()) {
             sqlQuery = getLottoName + whereSido + orderByFirst;
-        else
+            return template.query(sqlQuery, new Object[]{
+                            requestDTO.getSido()},
+                    lottoTypeRowMapper());
+        }
+        else{
             sqlQuery = getLottoName + whereSidoSigugun + orderByFirst;
-        return template.query(sqlQuery, new Object[]{
+            return template.query(sqlQuery, new Object[]{
                 requestDTO.getSido(), requestDTO.getSigugun()},
                 lottoTypeRowMapper());
+        }
     }
     private RowMapper<LottoType> lottoTypeRowMapper() {
         return (rs, rowNum) -> {
@@ -121,14 +124,18 @@ public class StoreRepository {
 
     public List<StoreAttachment> getStoreAttachmentBySidoSigugun(RequestStoreFilterDTO requestDTO) {
         String sqlQuery;
-        if (null == requestDTO.getSigugun())
+        if (null == requestDTO.getSigugun()) {
             sqlQuery = getStoreAttachment + whereSido + orderByFirst;
-        else
+            return template.query(sqlQuery, new Object[]{
+                            requestDTO.getSido()},
+                    storeAttachmentRowMapper());
+        }
+        else {
             sqlQuery = getStoreAttachment + whereSidoSigugun + orderByFirst;
-        return template.query(sqlQuery, new Object[]{
-                requestDTO.getSido(), requestDTO.getSigugun()},
-                storeAttachmentRowMapper());
-
+            return template.query(sqlQuery, new Object[]{
+                            requestDTO.getSido(), requestDTO.getSigugun()},
+                    storeAttachmentRowMapper());
+        }
     }
     private RowMapper<StoreAttachment> storeAttachmentRowMapper() {
         return (rs, rowNum) -> {
@@ -162,7 +169,7 @@ public class StoreRepository {
 
         List<Store> query = template.query(getStoreInfoByName,
                 new Object[]{storeName, storeLatitude, storeLongitude},
-                storeRowMapper());
+                storeTableMapper());
         if (query.size() == 0)
             return null;
         else
@@ -197,8 +204,6 @@ public class StoreRepository {
         if (ret == 0){
             throw new FailInsertData();
         }
-        List<Store> retList = template.query(getStoreInfoWithWinHistory, new Object[]{uuid.toString()}, storeRowMapper());
-        log.info("list={}", retList);
         return uuid.toString();
     }
 
@@ -242,6 +247,7 @@ public class StoreRepository {
             store.setStoreLatitude(rs.getDouble("storeLatitude"));
             store.setStoreLongitude(rs.getDouble("storeLongitude"));
             store.setDistance(rs.getDouble("distance"));
+            store.setStoreIsActivity(rs.getBoolean("storeIsActivity"));
             store.setWinRank(rs.getInt("winRank"));
             store.setWinRound(rs.getInt("winRound"));
             return store;
@@ -281,6 +287,7 @@ public class StoreRepository {
         };
     }
 
+
     private RowMapper<Store> storesRowMapper(){
         return (rs, rowNum) -> {
             Store store = new Store();
@@ -319,6 +326,26 @@ public class StoreRepository {
             store.setStoreSigugun(rs.getString("storesigugun"));
             store.setWinRank(rs.getInt("winRank"));
             store.setWinRound(rs.getInt("winRound"));
+            return store;
+        };
+    }
+
+    private RowMapper<Store> storeTableMapper() {
+        return (rs, rowNum) -> {
+            Store store = new Store();
+            store.setStoreUuid(rs.getString("storeuuid"));
+            store.setStoreName(rs.getString("storename"));
+            store.setStoreAddress(rs.getString("storeaddress"));
+            store.setStoreLatitude(rs.getDouble("storelatitude"));
+            store.setStoreLongitude(rs.getDouble("storelongitude"));
+            store.setStoreBizNo(rs.getString("storebizno"));
+            store.setStoreTelNum(rs.getString("storetelnum"));
+            store.setStoreMobileNum(rs.getString("storemobilenum"));
+            store.setStoreOpenTime(rs.getString("storeopentime"));
+            store.setStoreCloseTime(rs.getString("storeclosetime"));
+            store.setStoreIsActivity(rs.getBoolean("storeisactivity"));
+            store.setStoreSido(rs.getString("storesido"));
+            store.setStoreSigugun(rs.getString("storesigugun"));
             return store;
         };
     }

@@ -26,17 +26,17 @@ public class StoreQueryConst {
     public static final String getStoreInfoWithWinHistoryDistance =
                     "SELECT s.storeUuid, s.storeName, s.storeaddress," +
                     "get_distance(?, ?, s.storelatitude, s.storelongitude) AS distance , w.winround, w.winrank, " +
-                    "s.storelatitude, s.storelongitude " +
+                    "s.storelatitude, s.storelongitude, s.storeisActivity " +
                     "FROM store s LEFT JOIN win_history w ON s.storeUuid = w.storeUuid ";
-    public static final String whereSidoSigugunLottoId = "WHERE s.storesido=? and s.storesigugun=? and l.lottoid=? and s.storeIsActivity=0 ";
-    public static final String whereSidoSigugun = "WHERE s.storesido=? and s.storesigugun=? and s.storeIsActivity=0 ";
-    public static final String whereSido = "WHERE s.storesido=? and s.storeIsActivity=0 ";
-    public static final String whereStoreUuid = "WHERE s.storeuuid=? and s.storeIsActivity=0 ";
+    public static final String whereSidoSigugunLottoId = "WHERE s.storesido=? and s.storesigugun=? and l.lottoid=? and s.storeIsActivity=false ";
+    public static final String whereSidoSigugun = "WHERE s.storesido=? and s.storesigugun=? ";
+    public static final String whereSido = "WHERE s.storesido=? ";
+    public static final String whereStoreUuid = "WHERE s.storeuuid=? ";
     public static final String whereLatitudeLongitude = "WHERE (? < s.storelatitude and s.storelatitude < ?) " +
-            "and (? < s.storelongitude and s.storelongitude < ?) and s.storeIsActivity=0 ";
-    public static final String orderByFirstDesc = "ORDER BY 1 desc ";
+            "and (? < s.storelongitude and s.storelongitude < ?) ";
+    public static final String orderByFirstDesc = "ORDER BY s.storeUuid desc; ";
 
-    public static final String orderByFirst = "ORDER BY 1";
+    public static final String orderByFirst = "ORDER BY s.storeUuid; ";
     public static final String getLottoName = "SELECT s.storeuuid, l.lottoname, l.lottoid " +
             "FROM store s LEFT JOIN lotto_type_handle lh ON s.storeuuid=lh.storeuuid JOIN lotto_type l ON lh.lottoid=l.lottoid \n";
     public static final String getStoreAttachment =  "SELECT s.storeuuid, sa.saved_file_name " +

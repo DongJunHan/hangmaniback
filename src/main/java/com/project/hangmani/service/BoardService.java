@@ -2,7 +2,6 @@ package com.project.hangmani.service;
 
 import com.project.hangmani.convert.ResponseConvert;
 import com.project.hangmani.domain.Board;
-import com.project.hangmani.dto.BoardDTO;
 import com.project.hangmani.dto.BoardDTO.*;
 import com.project.hangmani.exception.FailDeleteData;
 import com.project.hangmani.exception.NotFoundException;
@@ -12,7 +11,6 @@ import com.project.hangmani.repository.UserRepository;
 import com.project.hangmani.convert.RequestConvert;
 import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,9 +47,8 @@ public class BoardService {
         checkID(boardDTO.getBoardWriter());
 
         Board board = requestConvert.convertEntity(boardDTO);
-
         int no = boardRepository.insertBoard(board);
-        Board resultBoard = boardRepository.findByNo(no).get();
+        Board resultBoard = boardRepository.findByNo(no, 0, 1).get();
 
         return responseConvert.convertResponseDTO(resultBoard);
 
@@ -125,7 +122,7 @@ public class BoardService {
         checkID(dto.getBoardWriter());
 
         //check already delete
-        Optional<Board> byNo = boardRepository.findByNo(dto.getBoardNo());
+        Optional<Board> byNo = boardRepository.findByNo(dto.getBoardNo(),0,1);
         Board board = byNo.get();
         if (board.isDelete()){
             throw new FailDeleteData();

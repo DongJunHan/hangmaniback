@@ -113,16 +113,17 @@ public class FileService {
             Double longitude = dto.getStoreLongitude();
 
             if (latitude == 0 || longitude == 0) {
-                Store storeInfo = storeRepository.getStoreInfoByUuid(dto.getStoreUuid());
+                List<Store> stores = storeRepository.getStoreInfoByUuid(dto.getStoreUuid());
+                Store storeInfo = stores.get(0);
                 if (storeInfo.getStoreUuid() == null) {
                     throw new NotFoundStore();
                 }
                 latitude = storeInfo.getStoreLatitude();
                 longitude = storeInfo.getStoreLongitude();
             }
-            StoreAttachment save = getImageAndSave(latitude,
-                    longitude,
-                    dto.getStoreUuid());
+            StoreAttachment save = getImageAndSave(latitude,  longitude, dto.getStoreUuid());
+            if (null == save)
+                return null;
             fileRepository.insertAttachment(save);
             ret.add(save.getSavedFileName());
         }
@@ -155,7 +156,12 @@ public class FileService {
         CompletableFuture<Void> ret = this.util.savedAttachmentFile(
                 new ByteArrayInputStream(responseBody),
                 savedFileName);
-        ret.join();
+        if (ret != null)
+            ret.join();
+        else {
+            log.info("ERROR");
+            return null;
+        }
         return StoreAttachment.builder()
                 .originalFileName(storeUuid + ".jpg")
                 .uploadDate(sqlDate)

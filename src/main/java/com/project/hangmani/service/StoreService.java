@@ -54,6 +54,8 @@ public class StoreService {
         Store store;
         List<Store> stores = storeRepository.getStoreInfoByUuid(storeUuid);
         stores = processStoreFilterData(stores);
+        if (stores.isEmpty())
+            throw new NotFoundStore("상점정보를 찾을 수 없습니다.");
         List<LottoType> lottoTypes = storeRepository.getLottoNameByUuid(storeUuid);
         stores = processStoreFilterData(lottoTypes, stores);
         List<StoreAttachment> storeAttachments = storeRepository.getStoreAttachmentByUuid(storeUuid);
@@ -174,6 +176,9 @@ order by l.lottoname, win1stcount, win2stcount desc;
             List<StoreAttachment> storeAttachments = storeRepository.getStoreAttachmentBySidoSigugun(requestDTO);
             storeInfos = processStoreAttachmentData(storeAttachments, storeInfos);
         }
+        //check storeIsActivity
+        storeInfos = removeClosedStore(storeInfos);
+        //sort
         if (requestDTO.getFilter().equals("2st")) {
             Comparator<Store> second = Comparator.comparingInt(Store::getWin2stCount);
             Collections.sort(storeInfos, second.reversed());
@@ -331,6 +336,14 @@ order by l.lottoname, win1stcount, win2stcount desc;
         for(int i=0; i < stores.size(); i++){
             stores.get(i).setDistance(Util.getDistance(userLatitude, userLongitude,
                     stores.get(i).getStoreLatitude(), stores.get(i).getStoreLongitude()));
+        }
+        return stores;
+    }
+
+    private List<Store> removeClosedStore(List<Store> stores) {
+        for(int i = 0; i < stores.size(); i++) {
+            if (null!= stores.get(i).getStoreIsActivity() && stores.get(i).getStoreIsActivity() == true)
+                stores.remove(i);
         }
         return stores;
     }

@@ -35,8 +35,8 @@ public class BoardRepository {
         this.customFunctionConfig = new CustomFunctionConfig(this.template, "");
     }
 
-    public Optional<Board> findByNo(int no) {
-        List<Board> list = template.query(SELECT_QUERY+BY_BOARDNO+LIMIT, boardRowMapper(), no);
+    public Optional<Board> findByNo(int no, int offset, int limit) {
+        List<Board> list = template.query(SELECT_QUERY+BY_BOARDNO+LIMIT,new Object[]{no, offset, limit}, boardRowMapper());
         return list.stream().findAny();
     }
 
@@ -54,29 +54,29 @@ public class BoardRepository {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(template);
         Date createAt = util.getSqlDate();
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("boardwriter", board.getBoardWriter())
-                .addValue("boardcontent", board.getBoardContent())
-                .addValue("boardtitle", board.getBoardTitle())
-                .addValue("createat", createAt)
-                .addValue("updateat", createAt);
+                .addValue("boardWriter", board.getBoardWriter())
+                .addValue("content", board.getBoardContent())
+                .addValue("title", board.getBoardTitle())
+                .addValue("createAt", createAt)
+                .addValue("updateAt", createAt);
 
         KeyHolder key = jdbcInsert
                 .withTableName("BOARD")
                 .usingGeneratedKeyColumns("BOARDNO")
-//                .usingColumns("boardwriter","content","title", "createat","updateat")
-//                .withoutTableColumnMetaDataAccess()
+                .usingColumns("boardWriter","content","title", "createAt","updateAt")
+                .withoutTableColumnMetaDataAccess()
                 .executeAndReturnKeyHolder(params);
         return key.getKey().intValue();
     }
     private RowMapper<Board> boardRowMapper() {
         return (rs, rowNum) -> {
             Board board = new Board();
-            board.setBoardNo(rs.getInt("boardno"));
-            board.setBoardContent(rs.getString("boardcontent"));
-            board.setBoardTitle(rs.getString("boardtitle"));
-            board.setUpdateAt(rs.getDate("updateat"));
-            board.setCreateAt(rs.getDate("createat"));
-            board.setBoardWriter(rs.getString("boardwriter"));
+            board.setBoardNo(rs.getInt("boardNo"));
+            board.setBoardContent(rs.getString("content"));
+            board.setBoardTitle(rs.getString("title"));
+            board.setUpdateAt(rs.getDate("updateAt"));
+            board.setCreateAt(rs.getDate("createAt"));
+            board.setBoardWriter(rs.getString("boardWriter"));
             board.setDelete(rs.getBoolean("isdelete"));
             return board;
         };

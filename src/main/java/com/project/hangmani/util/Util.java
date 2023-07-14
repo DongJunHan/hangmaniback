@@ -145,6 +145,8 @@ public class Util {
         return true;
     }
     public CompletableFuture<Void> savedAttachmentFile(InputStream inputStream, String savedFileName) {
+        if (null == uploadDir)
+            return null;
         Path path = Paths.get(uploadDir);
         try {
             checkDirectory(path);
