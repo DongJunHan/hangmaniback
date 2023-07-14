@@ -15,9 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 @Slf4j
 class StoreRepositoryTest {
     private StoreRepository storeRepository;

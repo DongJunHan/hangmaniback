@@ -7,14 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
 @Slf4j
 class FileRepositoryTest {
     FileRepository fileRepository;
@@ -41,7 +40,7 @@ class FileRepositoryTest {
         List<StoreAttachment> attachmentsByUuid = fileRepository.getAttachmentsByUuid(storeUuid);
         for (StoreAttachment st:attachmentsByUuid
              ) {
-            Assertions.assertThat(storeUuid).isEqualTo(st.getStoreUuid());
+            assertThat(storeUuid).isEqualTo(st.getStoreUuid());
         }
 
     }

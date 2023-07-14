@@ -1,5 +1,6 @@
 package com.project.hangmani.service;
 
+import com.project.hangmani.config.DatabaseInit;
 import com.project.hangmani.dto.BoardDTO.RequestBoardInsertDTO;
 import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
 import com.project.hangmani.exception.NotFoundUser;
@@ -8,47 +9,48 @@ import com.project.hangmani.repository.UserRepository;
 import com.project.hangmani.security.AES;
 import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 
 import javax.sql.DataSource;
+
+import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
-@SpringBootTest
+//@SpringBootTest
 class BoardServiceTest {
-    @Autowired
     private BoardService boardService;
+    private JdbcTemplate template;
+    private DataSource dataSource;
 
-    @TestConfiguration
-    static class TestConfig {
-        private final DataSource dataSource;
-        private final Util util;
-        private final AES aes;
-        TestConfig(DataSource dataSource, Util util, AES aes) {
-            this.dataSource = dataSource;
-            this.util = util;
-            this.aes = aes;
-        }
+    @BeforeEach
+    void TestConfig() {
+        //;MODE=MySQL;DATABASE_TO_LOWER=TRUE
+        DatabaseInit dbInit = new DatabaseInit();
+        dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE", "sa", "");
+        template = dbInit.loadJdbcTemplate(dataSource);
+        dbInit.loadScript(template);
 
-        BoardRepository boardRepository() {
-            return new BoardRepository(dataSource);
-        }
+        Util util = new Util();
+        AES aes = new AES(util);
 
-        UserRepository userRepository() {
-            return new UserRepository(dataSource, util, aes);
-        }
-
-        @Bean
-        BoardService BoardService1() {
-            return new BoardService(boardRepository(), userRepository(),this.util);
-        }
+        BoardRepository boardRepository = new BoardRepository(dataSource);
+        UserRepository userRepository = new UserRepository(dataSource, util, aes);
+        boardService = new BoardService(boardRepository, userRepository, util);
     }
 
 //    @BeforeEach
@@ -57,16 +59,15 @@ class BoardServiceTest {
 //    }
 
     @Test
-    @DisplayName("H2 데이터베이스 게시물 삽입 성공")
+    @DisplayName("게시물 삽입 성공")
     void BoardInsertTestSuccess() {
         RequestBoardInsertDTO requestBoardDTO = new RequestBoardInsertDTO("공지사항12", "안녕하십니까 공지사항입니다^& </li>", "id1");
         ResponseBoardDTO response = boardService.createBoard(requestBoardDTO);
-        log.info("result={}", response);
         assertThat(response.getBoardContent()).isEqualTo(requestBoardDTO.getBoardContent());
     }
 
     @Test
-    @DisplayName("H2 데이터베이스 게시물 존재하지 않는 사용자")
+    @DisplayName("게시물 존재하지 않는 사용자")
     void BoardInsertTestFail() {
         RequestBoardInsertDTO requestBoardDTO = new RequestBoardInsertDTO("공지사항12", "안녕하십니까 공지사항입니다^& </li>", "string");
         assertThatThrownBy(() -> boardService.createBoard(requestBoardDTO))
