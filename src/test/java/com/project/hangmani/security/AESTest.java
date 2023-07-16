@@ -22,14 +22,6 @@ class AESTest {
         AES = ac.getBean(AES.class);
         util = ac.getBean(Util.class);
     }
-//    @AfterEach
-//    void afterEach() {
-//        File file = new File(KEY_FILE_PATH);
-//        if (file.exists()){
-//            file.delete();
-//            log.info("file delete={}", file.exists());
-//        }
-//    }
     @Test
     @DisplayName("Decrypt to Encrypt")
     void encryptData(TestReporter testReporter) {
