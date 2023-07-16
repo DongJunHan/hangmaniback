@@ -4,7 +4,6 @@ import com.project.hangmani.config.DatabaseInit;
 import com.project.hangmani.domain.StoreAttachment;
 import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
