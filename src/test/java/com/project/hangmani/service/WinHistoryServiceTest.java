@@ -16,7 +16,6 @@ import javax.sql.DataSource;
 
 import java.util.List;
 
-@Slf4j
 class WinHistoryServiceTest {
     private final String sido = "인천";
     private final String sigugun = "부평구";
@@ -31,22 +30,6 @@ class WinHistoryServiceTest {
         dbInit.loadScript(template);
         WinHistoryRepository winHistoryRepository = new WinHistoryRepository(dataSource);
         winHistoryService = new WinHistoryService(winHistoryRepository);
-    }
-    @TestConfiguration
-    static class TestConfig {
-        private final DataSource dataSource;
-        TestConfig(DataSource dataSource) {
-            this.dataSource = dataSource;
-        }
-
-        WinHistoryRepository winHistoryRepository() {
-            return new WinHistoryRepository(dataSource);
-        }
-        @Bean
-        WinHistoryService winHistoryServiceV1() {
-            return new WinHistoryService(winHistoryRepository());
-        }
-
     }
     @Test
     @DisplayName("H2 데이터베이스 당첨내역 데이터 확인")
