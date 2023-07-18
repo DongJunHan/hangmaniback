@@ -79,7 +79,6 @@ public class StoreService {
                 }
             }
         }
-        log.info("After store {}", store);
         return responseConvert.convertResponseDTO(store);
     }
     @Transactional
@@ -111,7 +110,6 @@ public class StoreService {
     public ResponseStoreDTO insertStoreInfo(RequestStoreInsertDTO requestStoreDTO) {
         //check already exist
         Store findStore = storeRepository.getStoreByNameLatiLongi(requestStoreDTO);
-        log.info("store={}", findStore);
         if (findStore != null) {
             throw new AlreadyExistStore();
         }
@@ -150,7 +148,7 @@ GROUP BY
 order by l.lottoname, win1stcount, win2stcount desc;
 
      */
-    @Transactional
+
     public List<ResponseStoreFilterDTO> getStoreInfo(RequestStoreFilterDTO requestDTO) {
         requestDTO = checkFilterValid(requestDTO);
         List<Store> storeInfos;

@@ -75,17 +75,14 @@ public class StoreRepository {
                 , startLongitude, endLongitude, limit}, storesRowMapper());
     }
     public List<Store> getStoreInfoByUuid(String storeUuid) {
-        log.info("sql={}, uuid={}", getStoreInfoWithWinHistory + whereStoreUuid, storeUuid);
         return template.query(getStoreInfoWithWinHistory + whereStoreUuid , new Object[]{storeUuid}, storeWinRankRowMapper());
     }
     public List<LottoType> getLottoNameByUuid(String storeUuid) {
-        log.info("sql={}, uuid={}", getLottoName + whereStoreUuid, storeUuid);
         return template.query(getLottoName + whereStoreUuid, new Object[]{
                         storeUuid},
                 lottoTypeRowMapper());
     }
     public List<StoreAttachment> getStoreAttachmentByUuid(String storeUuid) {
-        log.info("sql={}, uuid={}", getStoreAttachment + whereStoreUuid, storeUuid);
         return template.query(getStoreAttachment + whereStoreUuid, new Object[]{
                         storeUuid},
                 storeAttachmentRowMapper());
