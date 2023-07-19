@@ -59,17 +59,17 @@
 
 <script>
     const client_id = "eec30559b1482179d83dd69beb47a816";
-    // const redirect_uri = "http://localhost:8080/user";
-    const logout_uri = "http://localhost:8080/user/logout"
+    // const redirect_uri = "http://localhost:9090/user";
+    const logout_uri = "http://localhost:9090/user/logout"
     // const adminKey = "c200e2b5c60b9b328adad0269005e146";
     //&scope=account_email,gender,age_range,birthday,talk_message
     // const handleClick = (e) => location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code&scope=account_email,gender,age_range,birthday,talk_message`;
-    const handleClick = (e) => location.href = `http://localhost:8080/user/kakao`;
+    const handleClick = (e) => location.href = `http://localhost:9090/user/kakao`;
     const handleLogOutClick = (e) => location.href = `https://kauth.kakao.com/oauth/logout?client_id=${client_id}&logout_redirect_uri=${logout_uri}`;
 
-    const handleStore = (e) => location.href = `http://localhost:8080/api/v1/store?sido=인천&sigugun=부평구&userLatitude=37.3914817&userLongitude=127.0777273&startLatitude=&endLatitude=&startLongitude=&endLongitude=&lottoType=lotto645&filter=1st`;
+    const handleStore = (e) => location.href = `http://localhost:9090/api/v1/store?sido=인천&sigugun=부평구&userLatitude=37.3914817&userLongitude=127.0777273&startLatitude=&endLatitude=&startLongitude=&endLongitude=&lottoType=lotto645&filter=1st`;
     function handleWithDrawClick() {
-        fetch('http://localhost:8080/user/withdraw', {
+        fetch('http://localhost:9090/user/withdraw', {
             method: 'DELETE'
         })
             .then(response => {

@@ -10,7 +10,7 @@
 <script>
     // const accessToken = document.querySelector('p[name="token"]').innerText;
     const client_id = "eec30559b1482179d83dd69beb47a816";
-    const logout_uri = "http://localhost:8080/user/logout";
+    const logout_uri = "http://localhost:9090/user/logout";
     const handleLogOutClick = (e) => location.href = `https://kauth.kakao.com/oauth/logout?client_id=${client_id}&logout_redirect_uri=${logout_uri}`;
     function handleUnlinkClick() {
         var xhr = new XMLHttpRequest();
