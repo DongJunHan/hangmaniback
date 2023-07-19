@@ -43,19 +43,18 @@ public class UserService {
                     .oAuthType(user.getOAuthType())
                     .build();
         }
-        log.info("restDTO={}",requestInsertUserDTO.toString());
 
         //insert user
         String userID = userRepository.insertUser(requestInsertUserDTO);
         if (userID.isBlank())
             throw new FailInsertData();
-
         //check user data
         Optional<User> findUser = userRepository.findById(userID);
         if (findUser.isEmpty())
             throw new FailInsertData();
 
         User user = findUser.get();
+        log.info("login user: {}", user);
         return ResponseUserDTO.builder()
                 .id(user.getId())
                 .refreshToken(requestInsertUserDTO.getRefreshToken())
