@@ -50,7 +50,6 @@ public class OAuthService implements OAuthInterface{
                 .block()
                 .bodyToMono(String.class)
                 .block();
-        log.info("response={}", responseBody);
         Map<String, Object> respTable = convertData.JsonToMap(responseBody);
         if (respTable.containsKey("error")) {
             if (respTable.get("error_code") == "KOE310"){
@@ -65,7 +64,6 @@ public class OAuthService implements OAuthInterface{
 
     @Override
     public Map<String, Object> getUserInfo(Map<String, Object> tokenInfos) {
-        log.info("access_token={}",tokenInfos.get("access_token"));
         String responseBody = webClient.get()
                 .uri(builder -> builder.scheme("https")
                         .host(KAPI_HOST)
@@ -80,8 +78,8 @@ public class OAuthService implements OAuthInterface{
     }
 
     @Override
-    public String getAuthorizationUrl(String host, String scope) {
-        return HTTPS + host + LOGIN_URL + scope;
+    public String getAuthorizationUrl() {
+        return HTTPS + KAUTH_HOST + LOGIN_URL + KAKAO_SCOPE;
     }
 
     @Override
