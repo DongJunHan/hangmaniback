@@ -2,6 +2,8 @@ package com.project.hangmani.repository;
 
 import com.project.hangmani.domain.User;
 import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
+import com.project.hangmani.exception.FailInsertData;
+import com.project.hangmani.exception.FailInsertUser;
 import com.project.hangmani.security.AES;
 import com.project.hangmani.util.ConvertData;
 import com.project.hangmani.util.Util;
@@ -20,10 +22,6 @@ import static com.project.hangmani.config.query.UserQueryConst.*;
 @Repository
 @Slf4j
 public class UserRepository {
-
-//    private final String insertUserSql = "insert into user(REFRESHTOKEN, REFRESHTOKENEXPIRE, id) values(?,?,?);";
-//    private final String insertScopeSql = "insert into scope(id, email, age, gender) values(?,?,?,?);";
-//    private final String insertOAuthSql = "insert into oauth(id, oauthtype) values(?,?);";
     private final String updateRefreshTokenSql = "update user set from age=?, email=?, gender=? where id=?";
     private JdbcTemplate template;
     private Util util;
@@ -47,7 +45,6 @@ public class UserRepository {
     }
 
     public Optional<User> findById(String userID) {
-        log.info("find id query: {}", getUserByIDSql);
         List<User> user = template.query(getUserByIDSql, userRowMapper(), userID);
         log.info("result: {}", user);
         return user.stream().findAny();
@@ -67,10 +64,12 @@ public class UserRepository {
         String base64Token = this.convertData.byteToBase64(encryptToken);
         //set refresh token
         requestDTO.setRefreshToken(base64Token);
-
         int ret = template.update(insertUserSql, new Object[]{ requestDTO.getEmail(),
-                requestDTO.getAge(), requestDTO.getGender(), requestDTO.getId(),
+                requestDTO.getAge(), requestDTO.getGender(), requestDTO.getId()});
+        ret += template.update(insertOAuthSql, new Object[]{
                 requestDTO.getId(), requestDTO.getOAuthType(), requestDTO.getOAuthID()});
+        if (ret != 2)
+            throw new FailInsertUser();
         return userID;
     }
     private RowMapper<User> userRowMapper() {
