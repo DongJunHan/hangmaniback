@@ -2,6 +2,7 @@ package com.project.hangmani.repository;
 
 import com.project.hangmani.domain.User;
 import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
+import com.project.hangmani.exception.FailDeleteData;
 import com.project.hangmani.exception.FailInsertData;
 import com.project.hangmani.exception.FailInsertUser;
 import com.project.hangmani.security.AES;
@@ -22,7 +23,6 @@ import static com.project.hangmani.config.query.UserQueryConst.*;
 @Repository
 @Slf4j
 public class UserRepository {
-    private final String updateRefreshTokenSql = "update user set from age=?, email=?, gender=? where id=?";
     private JdbcTemplate template;
     private Util util;
     private AES aes;
@@ -53,9 +53,13 @@ public class UserRepository {
     public String insertUser(RequestInsertUserDTO requestDTO) {
         String userID = this.util.getUUID().toString();
         requestDTO.setId(userID);
-        //encrypt, encoding oauth ID
-        byte[] encryptOAuthID = this.aes.encryptData(requestDTO.getOAuthID(), StandardCharsets.UTF_8);
-        String base64OAuthID = this.convertData.byteToBase64(encryptOAuthID);
+
+        String base64OAuthID = requestDTO.getOAuthID();
+        if (!this.util.isBase64(requestDTO.getOAuthID())) {
+            //encrypt, encoding oauth ID
+            byte[] encryptOAuthID = this.aes.encryptData(requestDTO.getOAuthID(), StandardCharsets.UTF_8);
+            base64OAuthID = this.convertData.byteToBase64(encryptOAuthID);
+        }
         //set oauth id
         requestDTO.setOAuthID(base64OAuthID);
 
@@ -84,17 +88,11 @@ public class UserRepository {
             return user;
         };
     }
-
-//    public int insertScope(RequestInsertScopeDTO requestDTO) {
-//        return template.update(insertScopeSql, new Object[]{requestDTO.getId(),
-//                requestDTO.getEmail(), requestDTO.getAge(), requestDTO.getGender()});
-//    }
-//
-//    public int insertOAuthType(RequestInsertOAuthDTO requestDTO) {
-//        return template.update(insertOAuthSql, new Object[]{requestDTO.getId(), requestDTO.getOAuthType()});
-//    }
-
-    public int deleteUser(String userID) {
-        return template.update(deleteUserSql, new Object[]{userID, userID});
+    public int deleteUserById(String userID) {
+        int ret = template.update(deleteOAuthSql, new Object[]{userID});
+        ret += template.update(deleteUserSql, new Object[]{userID});
+        if (ret != 2)
+            throw new FailDeleteData();
+        return ret;
     }
 }
