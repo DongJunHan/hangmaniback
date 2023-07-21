@@ -3,7 +3,6 @@ package com.project.hangmani.repository;
 import com.project.hangmani.domain.User;
 import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
 import com.project.hangmani.exception.FailDeleteData;
-import com.project.hangmani.exception.FailInsertData;
 import com.project.hangmani.exception.FailInsertUser;
 import com.project.hangmani.security.AES;
 import com.project.hangmani.util.ConvertData;
@@ -85,6 +84,7 @@ public class UserRepository {
             user.setAge(rs.getString("age"));
             user.setOAuthType(rs.getString("oauthtype"));
             user.setOAuthID(rs.getString("oauthid"));
+            user.setRefreshToken("refreshToken");
             return user;
         };
     }

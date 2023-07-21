@@ -39,7 +39,7 @@ public class UserService {
             User user = users.get();
             return ResponseUserDTO.builder()
                     .id(user.getId())
-                    .refreshToken(requestInsertUserDTO.getRefreshToken())
+                    .refreshToken(user.getRefreshToken())
                     .oAuthType(user.getOAuthType())
                     .build();
         }
@@ -71,9 +71,9 @@ public class UserService {
         }
         User user = usersByID.get();
         //delete db
-        int ret = userRepository.deleteUser(user.getId());
+        int ret = userRepository.deleteUserById(user.getId());
         log.error("ret={}",ret);
-        if (ret != 1) {
+        if (ret != 2) {
             throw new FailInsertData();
         }
     }
