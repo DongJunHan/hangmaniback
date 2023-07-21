@@ -18,7 +18,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-@Slf4j
 public class UserServiceTest {
     private static UserService userService;
     private ConvertData convertData = new ConvertData();
@@ -41,11 +40,7 @@ public class UserServiceTest {
         userService = new UserService(userRepository, aes);
         List<String> tables = template.queryForList
                 ("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'hangmani'", String.class);
-        log.info("table: {}", tables);
 //        List<String> tables = template.queryForList("SHOW ALL TABLES", String.class);
-        for (String t : tables) {
-            log.info("tables: {}", t);
-        }
 //        String packageName = Util.class.getPackage().getName();
 //        String className = Util.class.getSimpleName();
 //        String qualifiedClassName = packageName + "." + className;
