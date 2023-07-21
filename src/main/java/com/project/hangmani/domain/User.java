@@ -17,4 +17,5 @@ public class User {
     private String oAuthType;
     private String age;
     private String oAuthID;
+    private String refreshToken;
 }
