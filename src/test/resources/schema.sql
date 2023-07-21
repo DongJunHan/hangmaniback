@@ -51,7 +51,7 @@ create table IF NOT EXISTS USER(
 create table IF NOT EXISTS OAUTH (
   ID varchar(200),
   oauthtype varchar(30),
-  oauthid varchar(200) not null,
+  oauthid varchar(200) unique ,
   foreign key (ID) references USER(ID)
 );
 -- DROP TABLE IF EXISTS STORE_ATTACHMENT;
