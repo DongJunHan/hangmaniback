@@ -7,7 +7,6 @@ import com.project.hangmani.repository.UserRepository;
 import com.project.hangmani.security.AES;
 import com.project.hangmani.util.ConvertData;
 import com.project.hangmani.util.Util;
-import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
