@@ -5,7 +5,6 @@ import com.project.hangmani.domain.User;
 import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
 import com.project.hangmani.exception.FailDeleteData;
 import com.project.hangmani.security.AES;
-import com.project.hangmani.util.ConvertData;
 import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +16,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,20 +24,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Slf4j
 class UserRepositoryTest {
     private UserRepository userRepository;
-    private static AES aes;
-    private ConvertData convertData = new ConvertData();
-    private DataSource dataSource;
-    private Util utilMock;
-    private JdbcTemplate template;
     @BeforeEach
     void TestConfig() {
         ApplicationContext ac = new AnnotationConfigApplicationContext(Util.class);
-        utilMock = ac.getBean(Util.class);
+        Util utilMock = ac.getBean(Util.class);
         DatabaseInit dbInit = new DatabaseInit();
-        dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE", "sa", "");
-        template = dbInit.loadJdbcTemplate(dataSource);
+        DataSource dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE", "sa", "");
+        JdbcTemplate template = dbInit.loadJdbcTemplate(dataSource);
         dbInit.loadScript(template);
-        aes = new AES(utilMock);
+        AES aes = new AES(utilMock);
         userRepository = new UserRepository(dataSource, utilMock, aes);
 
     }
@@ -63,7 +56,7 @@ class UserRepositoryTest {
         //when
         Optional<User> users = userRepository.findByoAuthId(id);
         //then
-        assertThrows(NoSuchElementException.class, () -> users.get().getOAuthID());
+        assertThat(users.isEmpty()).isTrue();
     }
     @Test
     @DisplayName("정상적인 user id를 요청할 때")
