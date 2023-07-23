@@ -16,10 +16,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 public class UserServiceTest {
     private static UserService userService;
-    private ConvertData convertData = new ConvertData();
+    private final ConvertData convertData = new ConvertData();
     private AES aes;
     @BeforeEach
     void TestConfig() {
@@ -37,9 +36,6 @@ public class UserServiceTest {
 
         UserRepository userRepository = new UserRepository(dataSource, util, aes);
         userService = new UserService(userRepository, aes);
-        List<String> tables = template.queryForList
-                ("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'hangmani'", String.class);
-//        List<String> tables = template.queryForList("SHOW ALL TABLES", String.class);
 //        String packageName = Util.class.getPackage().getName();
 //        String className = Util.class.getSimpleName();
 //        String qualifiedClassName = packageName + "." + className;
