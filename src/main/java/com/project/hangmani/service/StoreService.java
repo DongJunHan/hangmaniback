@@ -189,9 +189,13 @@ order by l.lottoname, win1stcount, win2stcount desc;
         }
         // limit
         if (requestDTO.getLimit() > 0) {
+            if (storeInfos.size() < requestDTO.getLimit())
+                requestDTO.setLimit(storeInfos.size());
             storeInfos = storeInfos.stream().limit(requestDTO.getLimit()).collect(Collectors.toList());
         }
         if (requestDTO.getOffset() > 0){
+            if (storeInfos.size() < requestDTO.getOffset())
+                requestDTO.setOffset(storeInfos.size());
             for (int i = (storeInfos.size() - requestDTO.getOffset()); i < requestDTO.getLimit(); i++){
                 storeInfos.remove(0);
             }
