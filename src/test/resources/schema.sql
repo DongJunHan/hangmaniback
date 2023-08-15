@@ -26,7 +26,6 @@ create table IF NOT EXISTS WIN_HISTORY(
     lottoid        int,
     winround   int,
     winrank     int,
-    INDEX win_history_index (storeuuid, lottoid, winround, winrank),
     foreign key (storeuuid) REFERENCES STORE(storeuuid),
     foreign key (lottoid) REFERENCES LOTTO_TYPE(lottoid)
 );
