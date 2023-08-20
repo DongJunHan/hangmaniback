@@ -109,6 +109,14 @@ public class StoreRepository {
                 lottoTypeRowMapper());
         }
     }
+
+    public List<LottoType> getLottoNameByLatitudeLongitude(RequestStoreFilterDTO requestDTO) {
+        final String sqlQuery = getLottoName + whereLatitudeLongitude + orderByFirst;
+        return template.query(sqlQuery, new Object[]{
+                        requestDTO.getStartLatitude(), requestDTO.getEndLatitude(),
+                        requestDTO.getStartLongitude(), requestDTO.getEndLongitude()},
+                lottoTypeRowMapper());
+    }
     private RowMapper<LottoType> lottoTypeRowMapper() {
         return (rs, rowNum) -> {
             LottoType l = new LottoType();

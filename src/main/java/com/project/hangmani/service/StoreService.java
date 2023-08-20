@@ -169,7 +169,7 @@ order by l.lottoname, win1stcount, win2stcount desc;
         } else{
             storeInfos = storeRepository.getStoreInfoWithWinRankByLatitudeLongitude(requestDTO);
             storeInfos = processStoreFilterData(storeInfos);
-            List<LottoType> lottoTypes = storeRepository.getLottoNameBySidoSigugun(requestDTO);
+            List<LottoType> lottoTypes = storeRepository.getLottoNameByLatitudeLongitude(requestDTO);
             storeInfos = processStoreFilterData(lottoTypes, storeInfos);
             List<StoreAttachment> storeAttachments = storeRepository.getStoreAttachmentBySidoSigugun(requestDTO);
             storeInfos = processStoreAttachmentData(storeAttachments, storeInfos);
