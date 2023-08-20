@@ -1,5 +1,6 @@
 package com.project.hangmani.service;
 
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.convert.ResponseConvert;
 import com.project.hangmani.domain.Board;
 import com.project.hangmani.dto.BoardDTO.*;
@@ -24,16 +25,16 @@ import java.util.Optional;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
-    private final RequestConvert requestConvert;
-    private final ResponseConvert responseConvert;
-    private final Util util;
+    private RequestConvert requestConvert;
+    private ResponseConvert responseConvert;
+    private Util util;
 
-    public BoardService(BoardRepository boardRepository, UserRepository userRepository, Util util) {
+    public BoardService(BoardRepository boardRepository, UserRepository userRepository, PropertiesValues propertiesValues) {
         this.userRepository = userRepository;
         this.boardRepository = boardRepository;
-        this.requestConvert = new RequestConvert();
-        this.util = util;
-        this.responseConvert = new ResponseConvert(this.util);
+        this.requestConvert = new RequestConvert(propertiesValues);
+        this.util = new Util(propertiesValues);
+        this.responseConvert = new ResponseConvert(propertiesValues);
     }
 
     /**

@@ -1,10 +1,12 @@
 package com.project.hangmani.repository;
 
 import com.project.hangmani.config.DatabaseInit;
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.domain.User;
 import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
 import com.project.hangmani.exception.FailDeleteData;
 import com.project.hangmani.security.AES;
+import com.project.hangmani.util.ConvertData;
 import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,14 +28,20 @@ class UserRepositoryTest {
     private UserRepository userRepository;
     @BeforeEach
     void TestConfig() {
-        ApplicationContext ac = new AnnotationConfigApplicationContext(Util.class);
-        Util utilMock = ac.getBean(Util.class);
+        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
+        ac.register(AES.class);
+        ac.register(PropertiesValues.class);
+        ac.refresh();
+        PropertiesValues propertiesValues = ac.getBean(PropertiesValues.class);
+
         DatabaseInit dbInit = new DatabaseInit();
-        DataSource dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE", "sa", "");
+        DataSource dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1",
+                "sa", "");
         JdbcTemplate template = dbInit.loadJdbcTemplate(dataSource);
         dbInit.loadScript(template);
-        AES aes = new AES(utilMock);
-        userRepository = new UserRepository(dataSource, utilMock, aes);
+
+        AES aes = new AES(propertiesValues);
+        userRepository = new UserRepository(dataSource, aes, propertiesValues);
 
     }
     @Test

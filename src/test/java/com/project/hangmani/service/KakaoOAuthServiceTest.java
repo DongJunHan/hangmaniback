@@ -1,5 +1,6 @@
 package com.project.hangmani.service;
 
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.security.AES;
 import com.project.hangmani.util.ConvertData;
 import com.project.hangmani.util.Util;
@@ -16,15 +17,17 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 class OAuthServiceTest {
     @Autowired
     private OAuthService oAuthService;
-    private ConvertData convertData = new ConvertData();
-    AES aes;
+    private ConvertData convertData;
+    private AES aes;
     @BeforeEach
     void beforeEach() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
         ac.register(AES.class);
-        ac.register(Util.class);
+        ac.register(PropertiesValues.class);
         ac.refresh();
         this.aes = ac.getBean(AES.class);
+        PropertiesValues propertiesValues = ac.getBean(PropertiesValues.class);
+        convertData = new ConvertData(propertiesValues);
     }
     @Test
     @DisplayName("OAuth Insert")

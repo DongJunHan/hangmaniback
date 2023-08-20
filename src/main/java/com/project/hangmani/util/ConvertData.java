@@ -3,16 +3,22 @@ package com.project.hangmani.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.exception.StringToJsonException;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
-
 public class ConvertData {
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private Util util;
+
+    public ConvertData(PropertiesValues propertiesValues) {
+        this.util = new Util(propertiesValues);
+    }
 
     public String DAOToJson(Object dto) {
         try {
@@ -55,9 +61,8 @@ public class ConvertData {
     }
 
     public byte[] base64ToByte(String base64) {
-        Util util = new Util();
         //check input data
-        if (!util.isBase64(base64))
+        if (!this.util.isBase64(base64))
             return null;
 
         // Convert decrypt base64 to byte[]

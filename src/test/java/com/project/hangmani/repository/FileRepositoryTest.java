@@ -1,11 +1,13 @@
 package com.project.hangmani.repository;
 
 import com.project.hangmani.config.DatabaseInit;
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.domain.StoreAttachment;
 import com.project.hangmani.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -21,13 +23,18 @@ class FileRepositoryTest {
     private Util util;
     @BeforeEach
     void TestConfig() {
+        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
+        ac.register(PropertiesValues.class);
+        ac.refresh();
+        PropertiesValues propertiesValues = ac.getBean(PropertiesValues.class);
         DatabaseInit dbInit = new DatabaseInit();
-        dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE", "sa", "");
+        dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1",
+                "sa", "");
         template = dbInit.loadJdbcTemplate(dataSource);
         dbInit.loadScript(template);
 
-        util = new Util();//Mockito.mock(Util.class);
-        fileRepository = new FileRepository(dataSource, util);
+        util = new Util(propertiesValues);//Mockito.mock(Util.class);
+        fileRepository = new FileRepository(dataSource, propertiesValues);
     }
     @Test
     void insertAttachment() {

@@ -1,8 +1,13 @@
 package com.project.hangmani.util;
 
-import lombok.extern.slf4j.Slf4j;
+import com.project.hangmani.config.PropertiesValues;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,15 +18,26 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
-@Slf4j
+@SpringBootTest
+@Import({PropertiesValues.class, Util.class})
+@TestPropertySource(locations = {
+        "file:/Users/handongjun/workspace/team_project/hangmani_config/application-local.properties",
+        "classpath:application.properties"
+})
 class UtilTest {
-    private Util util = new Util();
-
-
+    private Util util;
+    @Autowired
+    private PropertiesValues propertiesValues;
+    @BeforeEach
+    void UtilCLassInit() {
+        util = new Util(propertiesValues);
+    }
     @Test
     void savedAttachmentFile() {
+        String url = util.generateFileUrl("src/test/resources/attachment/HTTP.pngs");
+        System.out.println("@@url = " + url);
         Path path = Paths.get("src/test/resources/attachment/HTTP.png");
-        byte[] bytes = null;
+        byte[] bytes;
         try {
             bytes = Files.readAllBytes(path);
         } catch (IOException e) {

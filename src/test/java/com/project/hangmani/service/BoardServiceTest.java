@@ -1,6 +1,7 @@
 package com.project.hangmani.service;
 
 import com.project.hangmani.config.DatabaseInit;
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.dto.BoardDTO.RequestBoardInsertDTO;
 import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
 import com.project.hangmani.exception.NotFoundUser;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -39,18 +41,23 @@ class BoardServiceTest {
 
     @BeforeEach
     void TestConfig() {
+        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
+        ac.register(PropertiesValues.class);
+        ac.register(AES.class);
+        ac.refresh();
+        PropertiesValues propertiesValues = ac.getBean(PropertiesValues.class);
+        AES aes = ac.getBean(AES.class);
+
+
         //;MODE=MySQL;DATABASE_TO_LOWER=TRUE
         DatabaseInit dbInit = new DatabaseInit();
-        dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE", "sa", "");
+        dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1", "sa", "");
         template = dbInit.loadJdbcTemplate(dataSource);
         dbInit.loadScript(template);
 
-        Util util = new Util();
-        AES aes = new AES(util);
-
-        BoardRepository boardRepository = new BoardRepository(dataSource);
-        UserRepository userRepository = new UserRepository(dataSource, util, aes);
-        boardService = new BoardService(boardRepository, userRepository, util);
+        UserRepository userRepository = new UserRepository(dataSource, aes, propertiesValues);
+        BoardRepository boardRepository = new BoardRepository(dataSource, propertiesValues);
+        boardService = new BoardService(boardRepository, userRepository, propertiesValues);
     }
 
 //    @BeforeEach

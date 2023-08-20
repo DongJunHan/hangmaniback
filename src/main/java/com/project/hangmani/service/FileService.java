@@ -1,5 +1,6 @@
 package com.project.hangmani.service;
 
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.config.WebClientConfig;
 import com.project.hangmani.convert.RequestConvert;
 import com.project.hangmani.domain.Store;
@@ -40,25 +41,23 @@ import static com.project.hangmani.config.OAuthConst.*;
 public class FileService {
     private final FileRepository fileRepository;
     private final StoreRepository storeRepository;
-    private final ConvertData convertData;
     private final WebClientConfig webClient;
-    private final RequestConvert requestConvert;
-    private final Util util;
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+    private final PropertiesValues propertiesValues;
+    private Util util;
+    private RequestConvert requestConvert;
     private int height = 300;
     private int width = 288;
 
     public FileService(FileRepository fileRepository,
                        StoreRepository storeRepository,
                        WebClientConfig webClient,
-                       Util util) {
+                       PropertiesValues propertiesValues) {
         this.fileRepository = fileRepository;
         this.storeRepository = storeRepository;
         this.webClient = webClient;
-        this.convertData = new ConvertData();
-        this.requestConvert = new RequestConvert();
-        this.util = util;
+        this.requestConvert = new RequestConvert(propertiesValues);
+        this.util = new Util(propertiesValues);
+        this.propertiesValues = propertiesValues;
     }
     @Transactional
     public void insertAttachment(RequestStoreFileDTO requestDTO) {
@@ -171,7 +170,7 @@ public class FileService {
                 .build();
     }
     public Resource getImg(String fileName){
-        Path filePath = Paths.get(uploadDir, fileName);
+        Path filePath = Paths.get(propertiesValues.getUploadDir(), fileName);
         try {
             UrlResource resource = new UrlResource(filePath.toUri());
             if (resource.contentLength() > 0)

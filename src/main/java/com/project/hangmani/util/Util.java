@@ -1,5 +1,6 @@
 package com.project.hangmani.util;
 
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.exception.FileIOException;
 import com.project.hangmani.exception.IO;
 import com.project.hangmani.exception.InvalidKeySpec;
@@ -24,13 +25,14 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.project.hangmani.config.SecurityConst.*;
 @Slf4j
-@Component
 public class Util {
-    @Value("${file.upload-dir}")
-    public String uploadDir;
+    PropertiesValues propertiesValues;
 
-    @Value("${file.upload.domain}")
-    private String DOMAIN;
+    public Util(PropertiesValues propertiesValues) {
+        this.propertiesValues = propertiesValues;
+        log.info("upload: {}", propertiesValues.getUploadDir());
+        log.info("domain: {}", propertiesValues.getDomain());
+    }
 
     public PublicKey getPublicKeyFromFile() {
         try {
@@ -107,7 +109,7 @@ public class Util {
     }
 
     public String generateFileUrl(String savedFileName) {
-        return DOMAIN + savedFileName;
+        return propertiesValues.getDomain() + savedFileName;
     }
     public boolean checkDirectory(Path path) throws FileIOException, IOException {
         Set<PosixFilePermission> perms = new HashSet<>();
@@ -116,7 +118,7 @@ public class Util {
 
         File file = path.toFile();
         if (!file.exists()) {
-            String[] splitPath = uploadDir.split("/");
+            String[] splitPath = propertiesValues.getUploadDir().split("/");
             String addPath = "";
             for (String subPath :
                     splitPath) {
@@ -145,9 +147,10 @@ public class Util {
         return true;
     }
     public CompletableFuture<Void> savedAttachmentFile(InputStream inputStream, String savedFileName) {
-        if (null == uploadDir)
+        if (null == propertiesValues.getUploadDir())
             return null;
-        Path path = Paths.get(uploadDir);
+        Path path = Paths.get(propertiesValues.getUploadDir());
+        log.info("file name: {}", path.getFileName());
         try {
             checkDirectory(path);
         } catch (IOException e) {
@@ -155,7 +158,7 @@ public class Util {
             return null;
 //            throw new RuntimeException(e);
         }
-        Path filePath = Paths.get(uploadDir + savedFileName);
+        Path filePath = Paths.get(propertiesValues.getUploadDir() + savedFileName);
         CompletableFuture<Void> future = CompletableFuture.runAsync(()->{
             try (OutputStream outputStream = Files.newOutputStream(filePath, StandardOpenOption.CREATE_NEW)) {
                 byte[] chunk = new byte[4096];

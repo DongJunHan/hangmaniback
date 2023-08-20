@@ -1,5 +1,6 @@
 package com.project.hangmani.controller;
 
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.convert.RequestConvert;
 import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
 import com.project.hangmani.dto.UserDTO.ResponseUserDTO;
@@ -27,8 +28,8 @@ public class UserController {
     private final UserService userService;
     private String oauthType;
 
-    public UserController(OAuthService oAuthService, UserService userService) {
-        this.requestConvert = new RequestConvert();
+    public UserController(OAuthService oAuthService, UserService userService, PropertiesValues propertiesValues) {
+        this.requestConvert = new RequestConvert(propertiesValues);
         this.userService = userService;
         oauthMap = new HashMap<>();
         oauthMap.put("kakao", oAuthService);

@@ -1,6 +1,7 @@
 package com.project.hangmani.service;
 
 import com.project.hangmani.config.DatabaseInit;
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.dto.UserDTO;
 import com.project.hangmani.dto.UserDTO.ResponseUserDTO;
 import com.project.hangmani.repository.UserRepository;
@@ -11,31 +12,36 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
+@SpringBootTest
+
 public class UserServiceTest {
     private static UserService userService;
-    private final ConvertData convertData = new ConvertData();
+    private ConvertData convertData;
     private AES aes;
     @BeforeEach
     void TestConfig() {
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
-        ac.register(Util.class);
         ac.register(AES.class);
+        ac.register(PropertiesValues.class);
         ac.refresh();
 
-        Util util = ac.getBean(Util.class);
         aes = ac.getBean(AES.class);
+        PropertiesValues propertiesValues = ac.getBean(PropertiesValues.class);
+        convertData = new ConvertData(propertiesValues);
         DatabaseInit dbInit = new DatabaseInit();
-        DataSource dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE", "sa", "");
+        DataSource dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1",
+                "sa", "");
         JdbcTemplate template = dbInit.loadJdbcTemplate(dataSource);
         dbInit.loadScript(template);
 
-        UserRepository userRepository = new UserRepository(dataSource, util, aes);
-        userService = new UserService(userRepository, aes);
+        UserRepository userRepository = new UserRepository(dataSource, aes, propertiesValues);
+        userService = new UserService(userRepository, aes, propertiesValues);
 //        String packageName = Util.class.getPackage().getName();
 //        String className = Util.class.getSimpleName();
 //        String qualifiedClassName = packageName + "." + className;

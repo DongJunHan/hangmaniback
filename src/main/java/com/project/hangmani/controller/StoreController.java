@@ -17,11 +17,9 @@ import java.util.List;
 @Slf4j
 public class StoreController {
     private final StoreService storeService;
-    private final ConvertData convertData;
 
     public StoreController(StoreService storeService) {
         this.storeService = storeService;
-        this.convertData = new ConvertData();
     }
     @GetMapping("/all")
     @ResponseBody

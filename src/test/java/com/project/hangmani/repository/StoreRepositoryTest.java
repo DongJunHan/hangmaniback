@@ -1,6 +1,7 @@
 package com.project.hangmani.repository;
 
 import com.project.hangmani.config.DatabaseInit;
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.domain.Store;
 import com.project.hangmani.dto.StoreDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoreFilterDTO;
@@ -10,6 +11,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,13 +27,19 @@ class StoreRepositoryTest {
     private String failStoreUuid = "c31ad72-ac2c-11ed-9b15-12ebd169e012";
     @BeforeEach
     void TestConfig() {
+        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
+        ac.register(PropertiesValues.class);
+        ac.refresh();
+        PropertiesValues propertiesValues = ac.getBean(PropertiesValues.class);
+
         DatabaseInit dbInit = new DatabaseInit();
-        dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE", "sa", "");
+        dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1",
+                "sa", "");
         template = dbInit.loadJdbcTemplate(dataSource);
         dbInit.loadScript(template);
 
-        utilMock = new Util();//Mockito.mock(Util.class);
-        storeRepository = new StoreRepository(dataSource, utilMock);
+        utilMock = new Util(propertiesValues);//Mockito.mock(Util.class);
+        storeRepository = new StoreRepository(dataSource, propertiesValues);
     }
     @AfterEach
     void afterDB() {

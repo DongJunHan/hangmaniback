@@ -1,5 +1,6 @@
 package com.project.hangmani.service;
 
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.convert.RequestConvert;
 import com.project.hangmani.convert.ResponseConvert;
 import com.project.hangmani.domain.LottoType;
@@ -27,13 +28,13 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final FileService fileService;
 
-    private final ResponseConvert responseConvert;
-    private final RequestConvert requestConvert;
+    private ResponseConvert responseConvert;
+    private RequestConvert requestConvert;
 
-    public StoreService(StoreRepository storeRepository, FileService fileService) {
-        this.responseConvert = new ResponseConvert(new Util());
+    public StoreService(StoreRepository storeRepository, FileService fileService, PropertiesValues propertiesValues) {
+        this.responseConvert = new ResponseConvert(propertiesValues);
         this.storeRepository = storeRepository;
-        this.requestConvert = new RequestConvert();
+        this.requestConvert = new RequestConvert(propertiesValues);
         this.fileService = fileService;
     }
 

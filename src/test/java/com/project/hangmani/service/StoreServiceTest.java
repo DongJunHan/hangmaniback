@@ -1,17 +1,19 @@
 package com.project.hangmani.service;
 
 import com.project.hangmani.config.DatabaseInit;
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.config.WebClientConfig;
 import com.project.hangmani.dto.StoreDTO.*;
 import com.project.hangmani.exception.AlreadyExistStore;
 import com.project.hangmani.exception.NotFoundStore;
 import com.project.hangmani.repository.FileRepository;
 import com.project.hangmani.repository.StoreRepository;
-import com.project.hangmani.util.Util;
+import com.project.hangmani.security.AES;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -28,17 +30,25 @@ class StoreServiceTest {
     private DataSource dataSource;
     @BeforeEach
     void TestConfig() {
+        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
+        ac.register(AES.class);
+        ac.register(PropertiesValues.class);
+        ac.refresh();
+        PropertiesValues propertiesValues = ac.getBean(PropertiesValues.class);
+
         DatabaseInit dbInit = new DatabaseInit();
-        dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE", "sa", "");
+        dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1",
+                "sa", "");
         template = dbInit.loadJdbcTemplate(dataSource);
         dbInit.loadScript(template);
-        Util util = new Util();
 
-        StoreRepository storeRepository = new StoreRepository(dataSource, util);
-        FileRepository fileRepository = new FileRepository(dataSource, util);
+
+        StoreRepository storeRepository = new StoreRepository(dataSource, propertiesValues);
+        FileRepository fileRepository = new FileRepository(dataSource, propertiesValues);
         WebClientConfig webClient = new WebClientConfig();
-        FileService fileService = new FileService(fileRepository, storeRepository, webClient, util);
-        storeService = new StoreService(storeRepository, fileService);
+        FileService fileService = new FileService(fileRepository, storeRepository,
+                webClient, propertiesValues);
+        storeService = new StoreService(storeRepository, fileService, propertiesValues);
 
 //        String packageName = Util.class.getPackage().getName();
 //        String className = Util.class.getSimpleName();

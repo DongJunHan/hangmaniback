@@ -1,5 +1,6 @@
 package com.project.hangmani.service;
 
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.domain.User;
 import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
 import com.project.hangmani.dto.UserDTO.ResponseUserDTO;
@@ -22,10 +23,10 @@ public class UserService {
     private ConvertData convertData;
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository, AES aes) {
+    public UserService(UserRepository userRepository, AES aes, PropertiesValues propertiesValues) {
         this.aes = aes;
         this.userRepository = userRepository;
-        this.convertData = new ConvertData();
+        this.convertData = new ConvertData(propertiesValues);
     }
 
     @Transactional

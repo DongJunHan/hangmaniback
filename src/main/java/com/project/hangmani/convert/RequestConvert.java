@@ -1,5 +1,6 @@
 package com.project.hangmani.convert;
 
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.domain.Board;
 import com.project.hangmani.domain.Store;
 import com.project.hangmani.domain.StoreAttachment;
@@ -16,8 +17,8 @@ import java.util.Map;
 
 public class RequestConvert {
     private final ConvertData convertData;
-    public RequestConvert() {
-        this.convertData = new ConvertData();
+    public RequestConvert(PropertiesValues propertiesValues) {
+        this.convertData = new ConvertData(propertiesValues);
     }
     /**
      * boardInsert

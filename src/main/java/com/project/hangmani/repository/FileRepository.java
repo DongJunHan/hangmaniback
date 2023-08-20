@@ -1,5 +1,6 @@
 package com.project.hangmani.repository;
 
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.domain.StoreAttachment;
 import com.project.hangmani.dto.FileDTO.RequestStoreFileDTO;
 import com.project.hangmani.exception.FailInsertData;
@@ -24,16 +25,16 @@ import static com.project.hangmani.config.query.StoreQueryConst.insertStoreAttac
 @Repository
 @Slf4j
 public class FileRepository {
-    private final JdbcTemplate template;
-    private final ConvertData convertData;
-    private final Util util;
+    private JdbcTemplate template;
+    private ConvertData convertData;
+    private Util util;
     private final String sql = "select * from store_attachment where storeuuid=?";
 
-    public FileRepository(DataSource dataSource, Util util) {
+    public FileRepository(DataSource dataSource, PropertiesValues propertiesValues) {
         log.info("FileRepository={}", dataSource);
         this.template = new JdbcTemplate(dataSource);
-        this.convertData = new ConvertData();
-        this.util = util;
+        this.convertData = new ConvertData(propertiesValues);
+        this.util = new Util(propertiesValues);
     }
 
     public int insertAttachment(StoreAttachment requestDTO) {

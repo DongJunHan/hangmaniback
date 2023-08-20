@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class WinHistoryController {
     private final WinHistoryService winHistoryService;
-    private final ConvertData convertData;
 
     public WinHistoryController(WinHistoryService winHistoryService) {
-        this.convertData = new ConvertData();
         this.winHistoryService = winHistoryService;
     }
 
