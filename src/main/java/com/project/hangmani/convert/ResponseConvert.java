@@ -103,6 +103,8 @@ public class ResponseConvert {
                     .distance(storeInfo.getDistance())
                     .firstWinCount(storeInfo.getWin1stCount())
                     .secondWinCount(storeInfo.getWin2stCount())
+                    .storeLatitude(storeInfo.getStoreLatitude())
+                    .storeLongitude(storeInfo.getStoreLongitude())
                     .attachFileList(savedFileList)
                     .lottoTypes(lottoTypeList)
                     .build());

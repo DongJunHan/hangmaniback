@@ -143,6 +143,7 @@ public class StoreRepository {
         };
     }
     public List<Store> getStoreInfoWithWinRankByLatitudeLongitude(RequestStoreFilterDTO requestDTO) {
+        log.debug("storeinfo latitude logitude requestDTO: {}", requestDTO);
         return template.query(getStoreInfoWithWinHistoryDistance + whereLatitudeLongitude + orderByFirstDesc,
                 new Object[]{requestDTO.getUserLatitude(), requestDTO.getUserLongitude(),
                         requestDTO.getStartLatitude(), requestDTO.getEndLatitude(), requestDTO.getStartLongitude(),

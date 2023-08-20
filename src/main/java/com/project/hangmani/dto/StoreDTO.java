@@ -159,6 +159,8 @@ public class StoreDTO {
         private int secondWinCount;
         private List<String> attachFileList;
         private List<String> lottoTypes;
+        private Double storeLatitude;
+        private Double storeLongitude;
 
     }
 }
