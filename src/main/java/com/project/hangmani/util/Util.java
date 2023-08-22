@@ -30,8 +30,6 @@ public class Util {
 
     public Util(PropertiesValues propertiesValues) {
         this.propertiesValues = propertiesValues;
-        log.info("upload: {}", propertiesValues.getUploadDir());
-        log.info("domain: {}", propertiesValues.getDomain());
     }
 
     public PublicKey getPublicKeyFromFile() {
