@@ -1,5 +1,6 @@
 package com.project.hangmani.convert;
 
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.domain.Board;
 import com.project.hangmani.domain.Store;
 import com.project.hangmani.dto.BoardDTO.ResponseBoardDTO;
@@ -13,10 +14,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class ResponseConvert {
-    private final Util util;
+    private Util util;
 
-    public ResponseConvert(Util util) {
-        this.util = util;
+    public ResponseConvert(PropertiesValues propertiesValues) {
+        this.util = new Util(propertiesValues);
     }
 
     public ResponseDeleteDTO convertResponseDTO(int rowNum) {

@@ -8,14 +8,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
 public class CustomFunctionConfig {
     private final JdbcTemplate jdbcTemplate;
     private String dbName;
 
 
-    public CustomFunctionConfig(JdbcTemplate jdbcTemplate, @Value(value = "${spring.datasource.driver-class-name}") String dbName) {
-        this.dbName = dbName;
+    public CustomFunctionConfig(JdbcTemplate jdbcTemplate, PropertiesValues propertiesValues) {
+        this.dbName = propertiesValues.getDBName();
         this.jdbcTemplate = jdbcTemplate;
     }
     @PostConstruct

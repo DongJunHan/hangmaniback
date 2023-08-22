@@ -1,45 +1,64 @@
 package com.project.hangmani.repository;
 
 import com.project.hangmani.config.DatabaseInit;
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.domain.Store;
 import com.project.hangmani.dto.StoreDTO;
 import com.project.hangmani.dto.StoreDTO.RequestStoreFilterDTO;
-import com.project.hangmani.util.Util;
+import com.project.hangmani.security.AES;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.sql.DataSource;
 import java.util.List;
+
 @Slf4j
+@TestPropertySource(locations = {
+        "file:../hangmani_config/application-local.properties"
+})
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(
+        initializers = {ConfigDataApplicationContextInitializer.class},
+        classes = {AES.class, PropertiesValues.class}
+)
 class StoreRepositoryTest {
     private StoreRepository storeRepository;
-    private DataSource dataSource;
-    private Util utilMock;
-    private JdbcTemplate template;
-    private String testStoreUuid= "8c354eaa-ac2c-11ed-9b15-12ebd169e012";
-    private String failStoreUuid = "c31ad72-ac2c-11ed-9b15-12ebd169e012";
+    private static DataSource dataSource;
+    private static JdbcTemplate template;
+    private static DatabaseInit dbInit;
+    @Autowired
+    private PropertiesValues propertiesValues;
+    private final String testStoreUuid = "8c354eaa-ac2c-11ed-9b15-12ebd169e012";
+    private final String failStoreUuid = "c31ad72-ac2c-11ed-9b15-12ebd169e012";
+    @BeforeAll
+    static void initOnce() {
+        dbInit = new DatabaseInit();
+        dataSource = dbInit.loadDataSource();
+        template = dbInit.loadJdbcTemplate(dataSource);
+    }
     @BeforeEach
     void TestConfig() {
-        DatabaseInit dbInit = new DatabaseInit();
-        dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE", "sa", "");
-        template = dbInit.loadJdbcTemplate(dataSource);
         dbInit.loadScript(template);
-
-        utilMock = new Util();//Mockito.mock(Util.class);
-        storeRepository = new StoreRepository(dataSource, utilMock);
+//        Util utilMock = new Util(propertiesValues);//Mockito.mock(Util.class);
+        storeRepository = new StoreRepository(dataSource, propertiesValues);
     }
-    @AfterEach
-    void afterDB() {
 
-    }
+
+
     @Test
     void getStoreInfoByLatitudeLongitude() {
     }
+
     @Test
     void testGetTableLists() {
         List<List<String>> tableList = storeRepository.getTableList();
@@ -54,6 +73,7 @@ class StoreRepositoryTest {
         Assertions.assertThat(tableList.size()).isPositive();
 
     }
+
     @Test
     void getStoreInfoByUuid() {
         //given
@@ -62,6 +82,7 @@ class StoreRepositoryTest {
         //then
         Assertions.assertThat(testStoreUuid).isEqualTo(stores.get(0).getStoreUuid());
     }
+
     @Test
     void notExistStoreInfoByUuid() {
         List<Store> stores = storeRepository.getStoreInfoByUuid(failStoreUuid);
@@ -86,7 +107,7 @@ class StoreRepositoryTest {
         List<Store> storeInfoTest = storeRepository.getStoreInfoWithWinRankBySidoSigugun(requestDTO);
 //        log.info("result: {}", storeInfoTest);
         //then
-       Assertions.assertThat(storeInfoTest.size()).isPositive();
+        Assertions.assertThat(storeInfoTest.size()).isPositive();
     }
 
     @Test
@@ -169,7 +190,6 @@ class StoreRepositoryTest {
     }
 
     @Test
-    @Transactional
     void successInsertStoreInfo() {
         //given
         StoreDTO.RequestStoreInsertDTO requestDTO = StoreDTO.RequestStoreInsertDTO.builder()
@@ -185,6 +205,7 @@ class StoreRepositoryTest {
         //then
         Assertions.assertThat(storeUuid).isEqualTo(stores.get(0).getStoreUuid());
     }
+
     @Test
     void failInsertStoreInfo() {
         //given

@@ -1,5 +1,6 @@
 package com.project.hangmani.repository;
 
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.convert.RequestConvert;
 import com.project.hangmani.domain.LottoType;
 import com.project.hangmani.domain.Store;
@@ -25,16 +26,15 @@ public class StoreRepository {
     private JdbcTemplate template;
     private RequestConvert requestConvert;
     private ConvertData convertData;
-
-    private final Map<String, String> sidoMap;
     private Util util;
+    private final Map<String, String> sidoMap;
 
-    public StoreRepository(DataSource dataSource, Util util) {
+    public StoreRepository(DataSource dataSource, PropertiesValues propertiesValues) {
         log.info("StoreRepository={}", dataSource);
         this.template = new JdbcTemplate(dataSource);
-        this.convertData = new ConvertData();
-        this.requestConvert = new RequestConvert();
-        this.util = util;
+        this.convertData = new ConvertData(propertiesValues);
+        this.requestConvert = new RequestConvert(propertiesValues);
+        this.util = new Util(propertiesValues);
         this.sidoMap = new HashMap<>();
         sidoMap.put("경기도", "경기");
         sidoMap.put("서울특별시", "서울");

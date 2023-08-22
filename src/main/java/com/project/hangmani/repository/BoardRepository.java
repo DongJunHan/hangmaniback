@@ -1,6 +1,7 @@
 package com.project.hangmani.repository;
 
 import com.project.hangmani.config.CustomFunctionConfig;
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.domain.Board;
 import com.project.hangmani.dto.BoardDTO.RequestBoardDTO;
 import com.project.hangmani.util.Util;
@@ -29,10 +30,10 @@ public class BoardRepository {
     private JdbcTemplate template;
     private Util util;
     private CustomFunctionConfig customFunctionConfig;
-    public BoardRepository(DataSource dataSource) {
-        this.util = new Util();
+    public BoardRepository(DataSource dataSource, PropertiesValues propertiesValues) {
+        this.util = new Util(propertiesValues);
         this.template = new JdbcTemplate(dataSource);
-        this.customFunctionConfig = new CustomFunctionConfig(this.template, "");
+        this.customFunctionConfig = new CustomFunctionConfig(this.template, propertiesValues);
     }
 
     public Optional<Board> findByNo(int no, int offset, int limit) {

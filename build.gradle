@@ -20,6 +20,7 @@ repositories {
 }
 
 dependencies {
+	//implementation:A라는 모듈의 경우, A를 직접 의존하는 C만 재빌드한다.
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -51,7 +52,7 @@ tasks.named('test') {
 bootJar {
 	duplicatesStrategy = 'exclude'
 }
-
+//[]-plain.jar 파일 안나오게 하는 방법
 jar {
 	enabled = false
 }

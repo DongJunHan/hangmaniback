@@ -1,5 +1,6 @@
 package com.project.hangmani.security;
 
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.exception.IO;
 import com.project.hangmani.exception.InvalidKeySpec;
 import com.project.hangmani.exception.NoSuchAlgorithm;
@@ -26,9 +27,11 @@ public class AES implements TwoWayEncryptionInterface {
     private static byte[] key;
     private Cipher encrpytCipher;
     private Cipher decryptCipher;
-    Util util;
-    public AES(Util util){
-        this.util = util;
+    private Util util;
+    private ConvertData convertData;
+    public AES(PropertiesValues propertiesValues){
+        this.util = new Util(propertiesValues);
+        this.convertData = new ConvertData(propertiesValues);
         init();
     }
     @Override
@@ -58,7 +61,6 @@ public class AES implements TwoWayEncryptionInterface {
     public byte[] encryptData(String text, Charset encode) {
         if (this.encrpytCipher == null)
             throw new InvalidKeySpec();
-        ConvertData convertData = new ConvertData();
         // Encrypt plaintext®
         try {
             return this.encrpytCipher.doFinal(convertData.stringToByte(text, encode));

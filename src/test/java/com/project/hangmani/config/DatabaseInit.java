@@ -23,8 +23,10 @@ public class DatabaseInit {
         }
     }
 
-    public DataSource loadDataSource(String url, String user, String password) {
-        return new DriverManagerDataSource(url,user,password);
+    public DataSource loadDataSource() {
+        return new DriverManagerDataSource(
+                "jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1",
+                "sa", "");
     }
 
     public JdbcTemplate loadJdbcTemplate(DataSource dataSource) {

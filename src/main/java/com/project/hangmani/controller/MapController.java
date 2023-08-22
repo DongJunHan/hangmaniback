@@ -1,5 +1,6 @@
 package com.project.hangmani.controller;
 
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.service.MapService;
 import com.project.hangmani.util.ConvertData;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,8 +12,8 @@ public class MapController {
     private final MapService mapService;
     private final ConvertData convertData;
 
-    public MapController(MapService mapService) {
+    public MapController(MapService mapService, PropertiesValues propertiesValues) {
         this.mapService = mapService;
-        this.convertData = new ConvertData();
+        this.convertData = new ConvertData(propertiesValues);
     }
 }

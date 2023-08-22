@@ -1,5 +1,6 @@
 package com.project.hangmani.repository;
 
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.domain.User;
 import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
 import com.project.hangmani.exception.FailDeleteData;
@@ -24,13 +25,13 @@ import static com.project.hangmani.config.query.UserQueryConst.*;
 public class UserRepository {
     private JdbcTemplate template;
     private Util util;
-    private AES aes;
+    private final AES aes;
     private ConvertData convertData;
-    public UserRepository(DataSource dataSource, Util util,AES aes) {
+    public UserRepository(DataSource dataSource, AES aes, PropertiesValues propertiesValues) {
         this.template = new JdbcTemplate(dataSource);
-        this.util = util;
+        this.util = new Util(propertiesValues);
         this.aes = aes;
-        this.convertData = new ConvertData();
+        this.convertData = new ConvertData(propertiesValues);
     }
 
     public Optional<User> findByoAuthId(String oAuthId) {

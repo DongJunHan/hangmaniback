@@ -1,41 +1,60 @@
 package com.project.hangmani.service;
 
 import com.project.hangmani.config.DatabaseInit;
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.dto.UserDTO;
 import com.project.hangmani.dto.UserDTO.ResponseUserDTO;
 import com.project.hangmani.repository.UserRepository;
 import com.project.hangmani.security.AES;
 import com.project.hangmani.util.ConvertData;
-import com.project.hangmani.util.Util;
+import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
+@ExtendWith(SpringExtension.class)
+@TestPropertySource(locations = {
+        "file:../hangmani_config/application-local.properties"
+})
+@ContextConfiguration(
+        initializers = {ConfigDataApplicationContextInitializer.class},
+        classes = {AES.class, PropertiesValues.class}
+)
 public class UserServiceTest {
     private static UserService userService;
-    private final ConvertData convertData = new ConvertData();
+    private ConvertData convertData;
+    @Autowired
     private AES aes;
+    @Autowired
+    private PropertiesValues propertiesValues;
+    private static DataSource dataSource;
+    private static JdbcTemplate template;
+    private static DatabaseInit dbInit;
+
+    @SneakyThrows
+    @BeforeAll
+    static void initOnce() {
+        dbInit = new DatabaseInit();
+        dataSource = dbInit.loadDataSource();
+        template = dbInit.loadJdbcTemplate(dataSource);
+    }
     @BeforeEach
     void TestConfig() {
-        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
-        ac.register(Util.class);
-        ac.register(AES.class);
-        ac.refresh();
-
-        Util util = ac.getBean(Util.class);
-        aes = ac.getBean(AES.class);
-        DatabaseInit dbInit = new DatabaseInit();
-        DataSource dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE", "sa", "");
-        JdbcTemplate template = dbInit.loadJdbcTemplate(dataSource);
+        convertData = new ConvertData(propertiesValues);
         dbInit.loadScript(template);
-
-        UserRepository userRepository = new UserRepository(dataSource, util, aes);
-        userService = new UserService(userRepository, aes);
+        UserRepository userRepository = new UserRepository(dataSource, aes, propertiesValues);
+        userService = new UserService(userRepository, aes, propertiesValues);
 //        String packageName = Util.class.getPackage().getName();
 //        String className = Util.class.getSimpleName();
 //        String qualifiedClassName = packageName + "." + className;

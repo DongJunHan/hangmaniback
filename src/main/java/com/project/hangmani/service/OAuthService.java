@@ -1,5 +1,6 @@
 package com.project.hangmani.service;
 
+import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.exception.KO310Exception;
 import com.project.hangmani.exception.KakaoAuthException;
 import com.project.hangmani.security.AES;
@@ -19,17 +20,17 @@ import static com.project.hangmani.config.OAuthConst.*;
 @Service
 @Slf4j
 public class OAuthService implements OAuthInterface{
-    private WebClient webClient;
+    private final WebClient webClient;
     private ConvertData convertData;
     private Util util;
-    private AES aes;
+    private final AES aes;
 
 
-    public OAuthService(WebClient webClient, Util util, AES aes) {
+    public OAuthService(WebClient webClient, AES aes, PropertiesValues propertiesValues) {
         this.webClient = webClient;
-        this.convertData = new ConvertData();
-        this.util = util;
         this.aes = aes;
+        this.convertData = new ConvertData(propertiesValues);
+        this.util = new Util(propertiesValues);
     }
 
     @Override
