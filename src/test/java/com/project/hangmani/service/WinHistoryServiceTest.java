@@ -3,30 +3,31 @@ package com.project.hangmani.service;
 import com.project.hangmani.config.DatabaseInit;
 import com.project.hangmani.domain.WinHistory;
 import com.project.hangmani.repository.WinHistoryRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 
 import java.util.List;
-
 class WinHistoryServiceTest {
     private final String sido = "인천";
     private final String sigugun = "부평구";
     private WinHistoryService winHistoryService;
-    private DataSource dataSource;
-    private JdbcTemplate template;
+    private static DataSource dataSource;
+    private static JdbcTemplate template;
+    private static DatabaseInit dbInit;
+    @BeforeAll
+    static void initOnce() {
+        dbInit = new DatabaseInit();
+        dataSource = dbInit.loadDataSource();
+        template = dbInit.loadJdbcTemplate(dataSource);
+    }
     @BeforeEach
     void TestConfig() {
-        DatabaseInit dbInit = new DatabaseInit();
-        dataSource = dbInit.loadDataSource("jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE", "sa", "");
-        template = dbInit.loadJdbcTemplate(dataSource);
         dbInit.loadScript(template);
         WinHistoryRepository winHistoryRepository = new WinHistoryRepository(dataSource);
         winHistoryService = new WinHistoryService(winHistoryRepository);

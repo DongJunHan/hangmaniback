@@ -21,8 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Import({PropertiesValues.class, Util.class})
 @TestPropertySource(locations = {
-        "file:/Users/handongjun/workspace/team_project/hangmani_config/application-local.properties",
-        "classpath:application.properties"
+        "file:../hangmani_config/application-local.properties",
 })
 class UtilTest {
     private Util util;
@@ -35,7 +34,6 @@ class UtilTest {
     @Test
     void savedAttachmentFile() {
         String url = util.generateFileUrl("src/test/resources/attachment/HTTP.pngs");
-        System.out.println("@@url = " + url);
         Path path = Paths.get("src/test/resources/attachment/HTTP.png");
         byte[] bytes;
         try {

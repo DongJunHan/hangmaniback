@@ -3,11 +3,15 @@ package com.project.hangmani.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @WebMvcTest(BoardController.class)
+@TestPropertySource(locations = {
+        "file:../hangmani_config/application-local.properties",
+})
 class BoardControllerTest {
     private String boardTitle;
     private String boardContent;

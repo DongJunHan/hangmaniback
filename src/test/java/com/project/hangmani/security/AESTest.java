@@ -3,25 +3,33 @@ package com.project.hangmani.security;
 import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.util.ConvertData;
 import org.junit.jupiter.api.*;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.extractProperty;
 
+@TestPropertySource(locations = {
+        "file:../hangmani_config/application-local.properties"
+})
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(
+        initializers = {ConfigDataApplicationContextInitializer.class},
+        classes = {AES.class, PropertiesValues.class}
+)
 class AESTest {
+    @Autowired
     private AES aes;
+    @Autowired
+    private PropertiesValues propertiesValues;
     private ConvertData convertData;
-
     @BeforeEach
     void beforeEach() {
-        AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext();
-        ac.register(PropertiesValues.class);
-        ac.register(AES.class);
-        ac.refresh();
-        PropertiesValues propertiesValues = ac.getBean(PropertiesValues.class);
-        aes = ac.getBean(AES.class);
         convertData = new ConvertData(propertiesValues);
     }
     @Test
