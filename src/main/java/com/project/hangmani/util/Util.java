@@ -6,8 +6,6 @@ import com.project.hangmani.exception.IO;
 import com.project.hangmani.exception.InvalidKeySpec;
 import com.project.hangmani.exception.NoSuchAlgorithm;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.nio.file.*;
