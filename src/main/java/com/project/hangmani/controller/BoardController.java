@@ -1,15 +1,16 @@
 package com.project.hangmani.controller;
 
-import com.project.hangmani.dto.BoardDTO;
 import com.project.hangmani.dto.BoardDTO.*;
 import com.project.hangmani.dto.ResponseDTO;
 import com.project.hangmani.service.BoardService;
 import jakarta.validation.Valid;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -18,8 +19,11 @@ import java.util.List;
 @Slf4j
 public class BoardController {
     private final BoardService boardService;
-    public BoardController(BoardService boardService) {
+    private Environment env;
+
+    public BoardController(BoardService boardService, Environment env) {
         this.boardService = boardService;
+        this.env = env;
     }
     @PostMapping
     @ResponseBody
@@ -64,5 +68,8 @@ public class BoardController {
                 .message(HttpStatus.OK.name())
                 .build();
     }
-
+    @GetMapping("/profile")
+    public String getProfiles() {
+        return Arrays.stream(env.getActiveProfiles()).findFirst().orElse("");
+    }
 }
