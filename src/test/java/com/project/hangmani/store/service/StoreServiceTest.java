@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Slf4j
 @TestPropertySource(locations = {
         "file:../hangmani_config/application-local.properties",
-        "classpath:/application.properties"
+        "classpath:/application-test.properties"
 })
 @SpringBootTest
 @Sql(scripts = {"classpath:drop.sql", "classpath:schema.sql", "classpath:data.sql"},

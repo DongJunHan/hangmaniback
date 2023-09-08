@@ -7,10 +7,12 @@ import com.project.hangmani.exception.NotFoundUser;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,11 +21,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Slf4j
 @TestPropertySource(locations = {
         "file:../hangmani_config/application-local.properties",
-        "classpath:application.properties"
+        "classpath:/application-test.properties"
 })
 @SpringBootTest
 @Sql(value = {"classpath:drop.sql", "classpath:schema.sql", "classpath:data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Transactional
 class BoardServiceTest {
     @Autowired
     private BoardService boardService;

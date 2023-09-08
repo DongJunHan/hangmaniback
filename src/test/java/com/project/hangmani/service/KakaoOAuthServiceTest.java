@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @TestPropertySource(locations = {
         "file:../hangmani_config/application-local.properties",
-        "classpath:application.properties"
+        "classpath:/application-test.properties"
 })
 @SpringBootTest
 @Sql(value = {"classpath:drop.sql", "classpath:schema.sql", "classpath:data.sql"},

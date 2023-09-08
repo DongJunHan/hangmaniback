@@ -7,7 +7,7 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest
 @TestPropertySource(locations = {
 		"file:../hangmani_config/application-local.properties",
-		"classpath:application.properties"
+		"classpath:/application-test.properties"
 })
 class HangmaniApplicationTests {
 

@@ -14,7 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.List;
 @TestPropertySource(locations = {
         "file:../hangmani_config/application-local.properties",
-        "classpath:application.properties"
+        "classpath:/application-test.properties"
 })
 @SpringBootTest
 @Sql(value = {"classpath:drop.sql", "classpath:schema.sql", "classpath:data.sql"},
