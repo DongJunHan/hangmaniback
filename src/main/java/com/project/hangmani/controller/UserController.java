@@ -1,43 +1,47 @@
 package com.project.hangmani.controller;
 
 import com.project.hangmani.config.PropertiesValues;
-import com.project.hangmani.convert.RequestConvert;
-import com.project.hangmani.dto.UserDTO.RequestInsertUserDTO;
-import com.project.hangmani.dto.UserDTO.ResponseUserDTO;
-import com.project.hangmani.service.OAuthInterface;
-import com.project.hangmani.service.OAuthService;
-import com.project.hangmani.service.UserService;
+import com.project.hangmani.oauth.service.OAuth;
+import com.project.hangmani.oauth.service.KakaoOAuthService;
+import com.project.hangmani.oauth.service.OAuthFactory;
+import com.project.hangmani.user.model.dto.RequestInsertDTO;
+import com.project.hangmani.user.model.dto.ResponseDTO;
+import com.project.hangmani.user.service.UserService;
+import com.project.hangmani.util.ConvertData;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import static com.project.hangmani.config.OAuthConst.KAKAO_SCOPE;
-import static com.project.hangmani.config.OAuthConst.KAUTH_HOST;
+import static com.project.hangmani.config.OAuthConst.KAKAO_TYPE;
 
 
 @Controller
 @RequestMapping("/user")
 @Slf4j
 public class UserController {
-    private Map<String, OAuthInterface> oauthMap;
-    private final RequestConvert requestConvert;
-    private final UserService userService;
+//    private Map<String, OAuth> oauthMap;
+    private UserService userService;
+    private ConvertData convertData;
     private String oauthType;
+    private OAuthFactory oAuthFactory;
+    private static Map<String, OAuth> userMap = new ConcurrentHashMap<>();
 
-    public UserController(OAuthService oAuthService, UserService userService, PropertiesValues propertiesValues) {
-        this.requestConvert = new RequestConvert(propertiesValues);
+    public UserController(UserService userService, PropertiesValues propertiesValues) {
         this.userService = userService;
-        oauthMap = new HashMap<>();
-        oauthMap.put("kakao", oAuthService);
+        this.convertData = new ConvertData(propertiesValues);
+//        oauthMap.put(KAKAO_TYPE, oAuthService);
+//        OAuth instance = oAuthFactory.getInstance(oAuthService.getType());
     }
     @GetMapping("/{oauth_type}")
     public String login(@PathVariable("oauth_type") String oauth_type) {
         this.oauthType = oauth_type;
-        return "redirect:" + oauthMap.get(oauth_type).getAuthorizationUrl();
+        return "redirect:" + oAuthFactory.getInstance(oauth_type).getAuthorizationUrl();
     }
 
     @GetMapping
@@ -50,11 +54,11 @@ public class UserController {
         log.info("state={}", state);
         log.info("error={}", error);
         log.info("errorDescription={}", errorDescription);
-        Map<String, Object> respTable = oauthMap.get(this.oauthType).getAccessTokenByCode(code);
-        Map<String, Object> kakaoUserInfo = oauthMap.get(this.oauthType).getUserInfo(respTable);
+        Map<String, Object> respTable = oAuthFactory.getInstance(this.oauthType).getAccessTokenByCode(code);
+        Map<String, Object> kakaoUserInfo = oAuthFactory.getInstance(this.oauthType).getUserInfo(respTable);
 
-        RequestInsertUserDTO userDTO = requestConvert.convertDTO(respTable, kakaoUserInfo, this.oauthType);
-        ResponseUserDTO responseUserDTO = userService.InsertUser(userDTO);
+        RequestInsertDTO userDTO = new RequestInsertDTO(convertData).convertToDTO(respTable, kakaoUserInfo, this.oauthType);
+        ResponseDTO responseUserDTO = userService.InsertUser(userDTO);
 
         session.setAttribute("userDTO", responseUserDTO);
         return "redirect:/";
@@ -67,12 +71,12 @@ public class UserController {
     }
 
     @DeleteMapping("/withdraw")
-    public String linkOut(@SessionAttribute("userDTO") ResponseUserDTO userDTO,
+    public String linkOut(@SessionAttribute("userDTO") ResponseDTO userDTO,
                           HttpSession session) {
         //logout
-        String accessToken = oauthMap.get(this.oauthType).getAccessTokenByRefreshToken(userDTO.getRefreshToken());
+        String accessToken = oAuthFactory.getInstance(this.oauthType).getAccessTokenByRefreshToken(userDTO.getRefreshToken());
         userService.deleteUser(userDTO.getId());
-        oauthMap.get(this.oauthType).unlinkUserInfo(accessToken);
+        oAuthFactory.getInstance(this.oauthType).unlinkUserInfo(accessToken);
         session.removeAttribute("userDTO");
         return "redirect:/";
     }

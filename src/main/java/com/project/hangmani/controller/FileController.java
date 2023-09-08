@@ -1,6 +1,6 @@
 package com.project.hangmani.controller;
 
-import com.project.hangmani.service.FileService;
+import com.project.hangmani.file.service.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;

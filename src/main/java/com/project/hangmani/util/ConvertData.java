@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
+@Component
 public class ConvertData {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private Util util;

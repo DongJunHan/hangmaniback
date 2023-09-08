@@ -2,7 +2,7 @@ package com.project.hangmani.config;
 
 import org.springframework.beans.factory.annotation.Value;
 
-public class OAuthConst {
+public abstract class OAuthConst {
     public static final String CLIENT_ID = "eec30559b1482179d83dd69beb47a816";
     private static final String LOGIN_REDIRECT_URI = "http://localhost:9090/user";
     public static final String URI = "/oauth/token";
@@ -18,5 +18,6 @@ public class OAuthConst {
     public static final String MARKER_API_URL = "naveropenapi.apigw.ntruss.com";
     public static final String MARKER_API_URI = "/map-static/v2/raster";
 
+    public static final String KAKAO_TYPE = "kakao";
 
 }

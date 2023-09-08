@@ -1,11 +1,9 @@
 package com.project.hangmani.controller;
 
-import com.project.hangmani.dto.ReportDTO;
-import com.project.hangmani.dto.ReportDTO.RequestReportDTO;
-import com.project.hangmani.dto.ReportDTO.ResponseReportDTO;
-import com.project.hangmani.dto.ReportDTO.ResponseReportDetailDTO;
-import com.project.hangmani.dto.ResponseDTO;
-import com.project.hangmani.service.ReportService;
+import com.project.hangmani.common.dto.Response;
+import com.project.hangmani.report.model.dto.RequestInsertDTO;
+import com.project.hangmani.report.model.dto.ResponseDTO;
+import com.project.hangmani.report.service.ReportService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,24 +19,24 @@ public class ReportController {
     }
 
     @PostMapping
-    public ResponseDTO<ResponseReportDTO> reportClosure(@ModelAttribute @Valid RequestReportDTO reportDTO) {
-        return ResponseDTO.<ResponseReportDTO>builder()
+    public Response<ResponseDTO> reportClosure(@ModelAttribute @Valid RequestInsertDTO reportDTO) {
+        return Response.<ResponseDTO>builder()
                 .data(reportService.reportClosure(reportDTO))
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .build();
     }
     @GetMapping({"userId"})
-    public ResponseDTO<List<ResponseReportDetailDTO>> reportByUserId(@PathVariable String userId) {
-        return ResponseDTO.<List<ResponseReportDetailDTO>>builder()
+    public Response<List<ResponseDTO>> reportByUserId(@PathVariable String userId) {
+        return Response.<List<ResponseDTO>>builder()
                 .data(reportService.reportByUserId(userId))
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .build();
     }
     @GetMapping("{reportNo}")
-    public ResponseDTO<ResponseReportDetailDTO> reportDetail(@PathVariable int reportNo){
-        return ResponseDTO.<ResponseReportDetailDTO>builder()
+    public Response<ResponseDTO> reportDetail(@PathVariable int reportNo){
+        return Response.<ResponseDTO>builder()
                 .data(reportService.reportByNo(reportNo))
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())

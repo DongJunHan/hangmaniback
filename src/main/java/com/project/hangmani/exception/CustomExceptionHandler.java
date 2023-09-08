@@ -1,6 +1,6 @@
 package com.project.hangmani.exception;
 
-import com.project.hangmani.dto.ResponseDTO;
+import com.project.hangmani.common.dto.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class CustomExceptionHandler {
     @ExceptionHandler(NotFoundUser.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseDTO NotFoundUserException(RuntimeException e) {
+    public Response NotFoundUserException(RuntimeException e) {
         log.error("Error", e);
-        return ResponseDTO.builder()
+        return Response.builder()
                 .data(null)
                 .status(HttpStatus.NOT_FOUND.value())
                 .message(e.getMessage())
@@ -24,9 +24,9 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(FailDeleteData.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseDTO FailDeleteDataException(RuntimeException e) {
+    public Response FailDeleteDataException(RuntimeException e) {
         log.error("error",e);
-        return ResponseDTO.builder()
+        return Response.builder()
                 .data("data:{\"rowNum\" : 0}")
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .message(e.getMessage())
@@ -35,9 +35,9 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(NotFoundStore.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseDTO NotFoundStoreException(RuntimeException e) {
+    public Response NotFoundStoreException(RuntimeException e) {
         log.error("NotFoundStore", e);
-        return ResponseDTO.builder()
+        return Response.builder()
                 .data(null)
                 .status(HttpStatus.NOT_FOUND.value())
                 .message(e.getMessage())
@@ -46,9 +46,9 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(NotFoundAttachment.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseDTO NotFoundAttachmentException(RuntimeException e) {
+    public Response NotFoundAttachmentException(RuntimeException e) {
         log.error("NotFoundAttachment", e);
-        return ResponseDTO.builder()
+        return Response.builder()
                 .data(null)
                 .status(HttpStatus.NOT_FOUND.value())
                 .message(e.getMessage())
@@ -57,9 +57,9 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(FailInsertData.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseDTO InsertException(RuntimeException e) {
+    public Response InsertException(RuntimeException e) {
         log.error("InsertFail", e);
-        return ResponseDTO.builder()
+        return Response.builder()
                 .data(null)
                 .status(HttpStatus.NOT_FOUND.value())
                 .message(e.getMessage())
@@ -68,9 +68,9 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(StringToJsonException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseDTO StringToJsonException(RuntimeException e) {
+    public Response StringToJsonException(RuntimeException e) {
         log.error("StringToJson", e);
-        return ResponseDTO.builder()
+        return Response.builder()
                 .data(null)
                 .status(HttpStatus.NOT_FOUND.value())
                 .message(e.getMessage())
@@ -79,9 +79,9 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(KO310Exception.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseDTO KO310Exception(RuntimeException e) {
+    public Response KO310Exception(RuntimeException e) {
         log.error("KO310Exception", e);
-        return ResponseDTO.builder()
+        return Response.builder()
                 .data(null)
                 .status(HttpStatus.NOT_FOUND.value())
                 .message(e.getMessage())
@@ -90,9 +90,9 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(KOE303Exception.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseDTO KOE303Exception(RuntimeException e) {
+    public Response KOE303Exception(RuntimeException e) {
         log.error("KOE303Exception", e);
-        return ResponseDTO.builder()
+        return Response.builder()
                 .data(null)
                 .status(HttpStatus.NOT_FOUND.value())
                 .message(e.getMessage())

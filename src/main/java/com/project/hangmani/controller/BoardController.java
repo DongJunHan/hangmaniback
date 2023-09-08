@@ -1,8 +1,8 @@
 package com.project.hangmani.controller;
 
-import com.project.hangmani.dto.BoardDTO.*;
-import com.project.hangmani.dto.ResponseDTO;
-import com.project.hangmani.service.BoardService;
+import com.project.hangmani.board.model.dto.*;
+import com.project.hangmani.common.dto.Response;
+import com.project.hangmani.board.service.BoardService;
 import jakarta.validation.Valid;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +27,10 @@ public class BoardController {
     }
     @PostMapping
     @ResponseBody
-    public ResponseDTO<ResponseBoardDTO> createBoard(@RequestBody @Valid RequestBoardInsertDTO boardDTO) {
-        ResponseBoardDTO responseBoardDTO = boardService.createBoard(boardDTO);
+    public Response<ResponseGetDTO> add(@RequestBody @Valid RequestInsertDTO boardDTO) {
+        ResponseGetDTO responseBoardDTO = boardService.add(boardDTO);
 
-        return ResponseDTO.<ResponseBoardDTO>builder()
+        return Response.<ResponseGetDTO>builder()
                 .data(responseBoardDTO)
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
@@ -39,10 +39,10 @@ public class BoardController {
 
     @DeleteMapping
     @ResponseBody
-    public ResponseDTO<ResponseDeleteDTO> deleteBoard(@RequestBody @Valid RequestDeleteDTO boardDTO) {
-        ResponseDeleteDTO responseDeleteDTO = boardService.deleteBoard(boardDTO);
+    public Response<ResponseDTO> deleteBoard(@RequestBody @Valid RequestDeleteDTO boardDTO) {
+        ResponseDTO responseDeleteDTO = boardService.delete(boardDTO);
 
-        return ResponseDTO.<ResponseDeleteDTO>builder()
+        return Response.<ResponseDTO>builder()
                 .data(responseDeleteDTO)
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
@@ -51,9 +51,9 @@ public class BoardController {
 
     @GetMapping
     @ResponseBody
-    public ResponseDTO<List<ResponseBoardDTO>> getBoards(@ModelAttribute RequestBoardDTO boardDTO) {
-        return ResponseDTO.<List<ResponseBoardDTO>>builder()
-                .data(boardService.getBoards(boardDTO))
+    public Response<List<ResponseGetDTO>> getBoards(@ModelAttribute RequestRangeDTO boardDTO) {
+        return Response.<List<ResponseGetDTO>>builder()
+                .data(boardService.getList(boardDTO))
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .build();
@@ -61,9 +61,9 @@ public class BoardController {
     }
     @GetMapping("/writer")
     @ResponseBody
-    public ResponseDTO<List<ResponseBoardDTO>> getBoardsByWriter(@ModelAttribute RequestBoardDTO boardDTO) {
-        return ResponseDTO.<List<ResponseBoardDTO>>builder()
-                .data(boardService.getBoardsByWriter(boardDTO))
+    public Response<List<ResponseGetDTO>> getBoardsByWriter(@ModelAttribute RequestWriterDTO boardDTO) {
+        return Response.<List<ResponseGetDTO>>builder()
+                .data(boardService.getByWriter(boardDTO))
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .build();

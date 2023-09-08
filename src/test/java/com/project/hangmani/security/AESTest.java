@@ -1,37 +1,26 @@
 package com.project.hangmani.security;
 
-import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.util.ConvertData;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @TestPropertySource(locations = {
-        "file:../hangmani_config/application-local.properties"
+        "file:../hangmani_config/application-local.properties",
+        "classpath:application.properties"
 })
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(
-        initializers = {ConfigDataApplicationContextInitializer.class},
-        classes = {AES.class, PropertiesValues.class}
-)
+@SpringBootTest
 class AESTest {
     @Autowired
     private AES aes;
     @Autowired
-    private PropertiesValues propertiesValues;
     private ConvertData convertData;
-    @BeforeEach
-    void beforeEach() {
-        convertData = new ConvertData(propertiesValues);
-    }
+
     @Test
     @DisplayName("Decrypt to Encrypt")
     void encryptData(TestReporter testReporter) {

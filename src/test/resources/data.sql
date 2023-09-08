@@ -45,4 +45,4 @@ INSERT INTO BOARD VALUES
 (2, 'string', 'string', 'id1', DATE '2023-03-05', DATE '2023-03-05', TRUE),
 (3, 'string', 'string', 'id1', DATE '2023-03-05', DATE '2023-03-05', NULL),
 (4, 'string', 'string11', 'id1', DATE '2023-03-05', DATE '2023-03-05', NULL);
-CREATE ALIAS get_distance FOR "com.project.hangmani.util.Util.getDistance";
+ CREATE ALIAS IF NOT EXISTS get_distance FOR "com.project.hangmani.util.Util.getDistance";
