@@ -1,4 +1,4 @@
-package com.project.hangmani.service;
+package com.project.hangmani.user.service;
 
 import com.project.hangmani.user.model.dto.RequestInsertDTO;
 import com.project.hangmani.user.model.dto.ResponseDTO;
@@ -13,10 +13,10 @@ import org.springframework.test.context.jdbc.Sql;
 
 @TestPropertySource(locations = {
         "file:../hangmani_config/application-local.properties",
-        "classpath:/application-test.properties"
+        "/application-test.properties"
 })
 @SpringBootTest
-@Sql(value = {"classpath:drop.sql", "classpath:schema.sql", "classpath:data.sql"},
+@Sql(value = {"/drop.sql", "/schema.sql", "/data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class UserServiceTest {
     @Autowired

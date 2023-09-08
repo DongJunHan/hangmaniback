@@ -18,10 +18,10 @@ import static org.assertj.core.api.Assertions.*;
 @Slf4j
 @TestPropertySource(locations = {
         "file:../hangmani_config/application-local.properties",
-        "classpath:/application-test.properties"
+        "/application-test.properties"
 })
 @SpringBootTest
-@Sql(value = {"classpath:drop.sql","classpath:schema.sql","classpath:data.sql"},
+@Sql(value = {"/drop.sql","/schema.sql","/data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class StoreRepositoryTest {
     @Autowired

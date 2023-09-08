@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestPropertySource(locations = {
         "file:../hangmani_config/application-local.properties",
-        "classpath:/application-test.properties"
+        "/application-test.properties"
 })
 @SpringBootTest
 class StoreFilterFactoryTest {

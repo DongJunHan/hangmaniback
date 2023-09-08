@@ -1,4 +1,4 @@
-package com.project.hangmani.service;
+package com.project.hangmani.oauth.service;
 
 import com.project.hangmani.oauth.service.OAuth;
 import com.project.hangmani.util.ConvertData;
@@ -17,10 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @TestPropertySource(locations = {
         "file:../hangmani_config/application-local.properties",
-        "classpath:/application-test.properties"
+        "/application-test.properties"
 })
 @SpringBootTest
-@Sql(value = {"classpath:drop.sql", "classpath:schema.sql", "classpath:data.sql"},
+@Sql(value = {"/drop.sql", "/schema.sql", "/data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class OAuthServiceTest {
     @Autowired

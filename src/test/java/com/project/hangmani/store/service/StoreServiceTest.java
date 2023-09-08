@@ -20,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Slf4j
 @TestPropertySource(locations = {
         "file:../hangmani_config/application-local.properties",
-        "classpath:/application-test.properties"
+        "/application-test.properties"
 })
 @SpringBootTest
-@Sql(scripts = {"classpath:drop.sql", "classpath:schema.sql", "classpath:data.sql"},
+@Sql(scripts = {"/drop.sql", "/schema.sql", "/data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class StoreServiceTest {
     @Autowired

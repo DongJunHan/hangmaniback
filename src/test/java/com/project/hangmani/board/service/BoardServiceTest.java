@@ -1,4 +1,4 @@
-package com.project.hangmani.service;
+package com.project.hangmani.board.service;
 
 import com.project.hangmani.board.model.dto.RequestInsertDTO;
 import com.project.hangmani.board.model.dto.ResponseGetDTO;
@@ -21,10 +21,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Slf4j
 @TestPropertySource(locations = {
         "file:../hangmani_config/application-local.properties",
-        "classpath:/application-test.properties"
+        "/application-test.properties"
 })
 @SpringBootTest
-@Sql(value = {"classpath:drop.sql", "classpath:schema.sql", "classpath:data.sql"},
+@Sql(value = {"/drop.sql", "/schema.sql", "/data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional

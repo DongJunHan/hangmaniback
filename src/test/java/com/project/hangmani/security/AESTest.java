@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @TestPropertySource(locations = {
         "file:../hangmani_config/application-local.properties",
-        "classpath:/application-test.properties"
+        "/application-test.properties"
 })
 @SpringBootTest
 class AESTest {
