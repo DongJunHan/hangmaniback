@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Slf4j
 @TestPropertySource(locations = {
         "file:../hangmani_config/application-local.properties",
-        "/application-test.properties"
+        "classpath:/application-test.properties"
 })
 @SpringBootTest
 @Sql(scripts = {"/drop.sql", "/schema.sql", "/data.sql"},
@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class StoreServiceTest {
     @Autowired
     private StoreService storeService;
+    private final String existUuid = "8c354eaa-ac2c-11ed-9b15-12ebd169e012";
 
     @Test
     @DisplayName("시도/시구군 당첨내역 상점 정보 성공")
@@ -115,7 +116,7 @@ class StoreServiceTest {
         List<ResponseFilterDTO> result = storeService.getStoreInfo(requestDTO);
 
         //then
-        Assertions.assertThat(result.size()).isZero();
+        assertThat(result.size()).isZero();
     }
 
     @Test
@@ -152,6 +153,25 @@ class StoreServiceTest {
                 .build();
         assertThatThrownBy(() -> storeService.add(request))
                 .isInstanceOf(AlreadyExistStore.class);
+    }
+
+    @Test
+    @DisplayName("상점 삭제 성공")
+    void deleteStoreSuccess() {
+        //given
+        RequestDeleteDTO request = RequestDeleteDTO.builder().storeUuid(existUuid).build();
+        //when
+        int ret = storeService.delete(request);
+        //then
+        assertThat(ret).isEqualTo(1);
+    }
+    @Test
+    @DisplayName("없는 상점 삭제")
+    void notExistDeleteStore() {
+        //given
+        RequestDeleteDTO request = RequestDeleteDTO.builder().storeUuid("not-exist").build();
+        //when, then
+        assertThatThrownBy(() -> storeService.delete(request)).isInstanceOf(NotFoundStore.class);
     }
 
     @Test

@@ -57,7 +57,7 @@ public class FileService {
     }
     @Transactional
     public void insertAttachment(RequestAttachmentDTO requestDTO) {
-        if (requestDTO.getFilesData().size() == 0)
+        if (null == requestDTO.getFilesData() || requestDTO.getFilesData().size() == 0)
             return;
         for(MultipartFile file: requestDTO.getFilesData()){
             //generate upload time

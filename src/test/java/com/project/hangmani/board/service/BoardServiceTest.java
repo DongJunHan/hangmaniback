@@ -26,8 +26,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 @Sql(value = {"/drop.sql", "/schema.sql", "/data.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Transactional
 class BoardServiceTest {
     @Autowired
     private BoardService boardService;

@@ -147,16 +147,17 @@ order by l.lottoname, win1stcount, win2stcount desc;
         return getStoreInfoExecute(requestDTO);
     }
 
+    /**
+     * TODO
+     * 당첨내역을 가지고 와서 당첨횟수를 세지말고
+     * 처음부터 DB에 당첨횟수를 저장 해보자.
+     * 스프링 배치를 돌려가면서 로또 당첨 횟수 스크래핑하고, DB업데이트
+     */
     private List<ResponseFilterDTO> getStoreInfoExecute(RequestFilterDTO requestDTO) {
-        /**
-         * 분기처리를 해야할거같음
-         * 당첨횟수로 해보자. 배치
-         */
         storeFilter = storeFilterFactory.getInstance(requestDTO.getRequestType());
 
         requestDTO = validFilterParam(requestDTO);
         List<StoreDTO> storeInfos;
-        //분기
         storeInfos = storeFilter.getWithWinHistory(requestDTO);
         storeInfos = postProcessFilterData(storeInfos);
         List<LottoTypeDTO> lottoTypes = storeFilter.getLottoName(requestDTO);

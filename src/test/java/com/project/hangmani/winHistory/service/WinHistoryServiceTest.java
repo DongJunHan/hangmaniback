@@ -38,7 +38,7 @@ class WinHistoryServiceTest {
     @Test
     @DisplayName("설정 우선순위")
     void properties() {
-        Assertions.assertThat(environment.getProperty("file.upload-dir")).isEqualTo("my_mom");
+        Assertions.assertThat(environment.getProperty("file.upload-dir")).isEqualTo("/home/uploads/store/");
 
     }
 }
