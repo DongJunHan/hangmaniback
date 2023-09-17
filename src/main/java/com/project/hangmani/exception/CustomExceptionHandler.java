@@ -44,6 +44,17 @@ public class CustomExceptionHandler {
                 .build();
     }
 
+    @ExceptionHandler(AlreadyExistStore.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Response AlreadyExistStoreException(RuntimeException e) {
+        log.error("AlreadyExistStoreException", e);
+        return Response.builder()
+                .data(null)
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message(e.getMessage())
+                .build();
+    }
+
     @ExceptionHandler(NotFoundAttachment.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Response NotFoundAttachmentException(RuntimeException e) {
