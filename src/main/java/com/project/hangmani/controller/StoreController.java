@@ -6,6 +6,7 @@ import com.project.hangmani.store.service.StoreService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,9 +32,9 @@ public class StoreController {
                 .build();
 
     }
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response<List<ResponseFilterDTO>> getStoreInfoByFilter(@ModelAttribute @Valid RequestFilterDTO requestDTO) {
+    public Response<List<ResponseFilterDTO>> getStoreInfoByFilter(@RequestBody @Valid RequestFilterDTO requestDTO) {
         log.info("Store Controller filter");
         List<ResponseFilterDTO> storeInfoList = storeService.getStoreInfo(requestDTO);
         return Response.<List<ResponseFilterDTO>>builder()
@@ -54,7 +55,7 @@ public class StoreController {
 //                .build();
 //    }
 
-    @PutMapping("/{storeUuid}")
+    @PutMapping(path = "/{storeUuid}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response<ResponseDTO> updateStore(@PathVariable("storeUuid") String storeUuid,
                                                   @RequestBody @Valid RequestUpdateDTO requestStoreUpdateDTO) {
@@ -65,13 +66,13 @@ public class StoreController {
                 .build();
     }
 
-    @PostMapping
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response<ResponseDTO> insertStore(@ModelAttribute @Valid RequestInsertDTO requestStoreDTO) {
+    public Response<ResponseDTO> insertStore(@RequestBody @Valid RequestInsertDTO requestStoreDTO) {
         return Response.<ResponseDTO>builder()
                 .data(storeService.add(requestStoreDTO))
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.name())
+                .status(HttpStatus.CREATED.value())
+                .message(HttpStatus.CREATED.name())
                 .build();
     }
 }

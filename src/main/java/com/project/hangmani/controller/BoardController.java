@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -25,19 +26,19 @@ public class BoardController {
         this.boardService = boardService;
         this.env = env;
     }
-    @PostMapping
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response<ResponseGetDTO> add(@RequestBody @Valid RequestInsertDTO boardDTO) {
         ResponseGetDTO responseBoardDTO = boardService.add(boardDTO);
 
         return Response.<ResponseGetDTO>builder()
                 .data(responseBoardDTO)
-                .status(HttpStatus.OK.value())
-                .message(HttpStatus.OK.name())
+                .status(HttpStatus.CREATED.value())
+                .message(HttpStatus.CREATED.name())
                 .build();
     }
 
-    @DeleteMapping
+    @DeleteMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response<ResponseDTO> deleteBoard(@RequestBody @Valid RequestDeleteDTO boardDTO) {
         ResponseDTO responseDeleteDTO = boardService.delete(boardDTO);
@@ -49,7 +50,7 @@ public class BoardController {
                 .build();
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response<List<ResponseGetDTO>> getBoards(@ModelAttribute RequestRangeDTO boardDTO) {
         return Response.<List<ResponseGetDTO>>builder()
@@ -59,7 +60,7 @@ public class BoardController {
                 .build();
 
     }
-    @GetMapping("/writer")
+    @GetMapping(path = "/writer", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response<List<ResponseGetDTO>> getBoardsByWriter(@ModelAttribute RequestWriterDTO boardDTO) {
         return Response.<List<ResponseGetDTO>>builder()
@@ -68,7 +69,7 @@ public class BoardController {
                 .message(HttpStatus.OK.name())
                 .build();
     }
-    @GetMapping("/profile")
+    @GetMapping(path = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getProfiles() {
         return Arrays.stream(env.getActiveProfiles()).findFirst().orElse("");
     }

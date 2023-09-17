@@ -2,50 +2,45 @@ package com.project.hangmani.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.project.hangmani.board.model.dto.ResponseDTO;
 import com.project.hangmani.board.model.dto.ResponseGetDTO;
-import com.project.hangmani.board.service.BoardService;
+import com.project.hangmani.common.Common;
 import com.project.hangmani.common.dto.Response;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import javax.sql.DataSource;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@WebMvcTest(BoardController.class)
 @TestPropertySource(locations = {
         "file:../hangmani_config/application-local.properties",
+        "/application-test.properties"
 })
 @SpringBootTest
 @AutoConfigureMockMvc
-@AutoConfigureTestDatabase
+@Sql(value = {"/drop.sql","/schema.sql","/data.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class BoardControllerTest {
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    private BoardService boardService;
-    @Autowired
-    DataSource dataSource;
     private static Map<String, Class> classMap;
+    private final Common common = new Common();
     public BoardControllerTest() {
         classMap = new HashMap<>();
         classMap.put("get", ResponseGetDTO.class);
@@ -53,30 +48,6 @@ class BoardControllerTest {
         classMap.put("boardList", List.class);
         classMap.put("int", Integer.class);
         classMap.put("error", ResponseDTO.class);
-    }
-    @AfterEach
-    void init() {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-
-        ClassPathResource drop = new ClassPathResource("drop.sql");
-        try {
-            ScriptUtils.executeSqlScript(jdbcTemplate.getDataSource().getConnection(), drop);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        ClassPathResource schema = new ClassPathResource("schema.sql");
-        try {
-            ScriptUtils.executeSqlScript(jdbcTemplate.getDataSource().getConnection(), schema);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        ClassPathResource data = new ClassPathResource("data.sql");
-        try {
-            ScriptUtils.executeSqlScript(jdbcTemplate.getDataSource().getConnection(), data);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Test
@@ -87,17 +58,19 @@ class BoardControllerTest {
         String content = "내용 </lt>!#";
         String writer = "id1";
         Map<String, String> paramMap = new HashMap<>();
-        paramMap.put("memberID", writer);
-        paramMap.put("title", title);
-        paramMap.put("content", content);
-        String json = convertMapToJson(paramMap);
+        paramMap.put("boardWriter", writer);
+        paramMap.put("boardTitle", title);
+        paramMap.put("boardContent", content);
+        String json = common.convertMapToJson(paramMap);
         //when
         MvcResult mvcResult;
         try {
             mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                    .post("/api/v1/board")
-                    .content(json))
+                            .post("/api/v1/board")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(json))
                     .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value(HttpStatus.CREATED.value()))
                     .andReturn();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -130,16 +103,5 @@ class BoardControllerTest {
         } else {
             return data;
         }
-    }
-    private String convertMapToJson(Map param) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        String json;
-        try {
-            json = objectMapper.writeValueAsString(param);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        return json;
     }
 }
