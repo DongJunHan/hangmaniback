@@ -69,7 +69,7 @@ class BoardControllerTest {
                             .post("/api/v1/board")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(json))
-                    .andExpect(status().isOk())
+                    .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.status").value(HttpStatus.CREATED.value()))
                     .andReturn();
         } catch (Exception e) {

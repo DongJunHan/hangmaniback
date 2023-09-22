@@ -28,6 +28,7 @@ public class BoardController {
     }
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
+    @ResponseStatus(HttpStatus.CREATED)
     public Response<ResponseGetDTO> add(@RequestBody @Valid RequestInsertDTO boardDTO) {
         ResponseGetDTO responseBoardDTO = boardService.add(boardDTO);
 
