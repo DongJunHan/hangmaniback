@@ -1,6 +1,7 @@
 package com.project.hangmani.board.model.dto;
 
 import com.project.hangmani.board.model.entity.Board;
+import com.project.hangmani.file.model.dto.AttachmentDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +22,7 @@ public class ResponseGetDTO {
     private String boardWriter;
     private Date createAt;
     private Date updateAt;
+    private List<AttachmentDTO> files;
 
     public ResponseGetDTO convertToDTO(Board board) {
         return ResponseGetDTO.builder()
@@ -41,6 +43,7 @@ public class ResponseGetDTO {
                 .boardWriter(dto.getBoardWriter())
                 .createAt(dto.getCreateAt())
                 .updateAt(dto.getUpdateAt())
+                .files(dto.getFiles())
                 .build();
     }
 

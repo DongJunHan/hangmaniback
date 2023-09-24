@@ -7,13 +7,14 @@ import com.project.hangmani.exception.NotFoundUser;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -31,12 +32,12 @@ class BoardServiceTest {
     private BoardService boardService;
     @Test
     @DisplayName("게시물 삽입 성공")
-    void BoardInsertTestSuccess() {
+    void BoardInsertTestSuccess() throws IOException {
         //given
         RequestInsertDTO request = new RequestInsertDTO("공지사항12",
-                "안녕하십니까 공지사항입니다^& </li>", "id1");
+                "안녕하십니까 공지사항입니다^& </li>", "id1", new ArrayList<>());
         //when
-        ResponseGetDTO response = boardService.add(request);
+        ResponseGetDTO response = boardService.insert(request);
         //then
         assertThat(response.getBoardContent()).isEqualTo(response.getBoardContent());
     }
@@ -46,9 +47,9 @@ class BoardServiceTest {
     void BoardInsertTestFail() {
         //given
         RequestInsertDTO requestBoardDTO = new RequestInsertDTO(
-                "공지사항12", "안녕하십니까 공지사항입니다^& </li>", "string");
+                "공지사항12", "안녕하십니까 공지사항입니다^& </li>", "string",new ArrayList<>());
         //then
-        assertThatThrownBy(() -> boardService.add(requestBoardDTO))
+        assertThatThrownBy(() -> boardService.insert(requestBoardDTO))
                 .isInstanceOf(NotFoundUser.class);
     }
 

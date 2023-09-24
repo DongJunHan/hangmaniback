@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,8 +30,8 @@ public class BoardController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public Response<ResponseGetDTO> add(@RequestBody @Valid RequestInsertDTO boardDTO) {
-        ResponseGetDTO responseBoardDTO = boardService.add(boardDTO);
+    public Response<ResponseGetDTO> add(@RequestBody @Valid RequestInsertDTO boardDTO) throws IOException {
+        ResponseGetDTO responseBoardDTO = boardService.insert(boardDTO);
 
         return Response.<ResponseGetDTO>builder()
                 .data(responseBoardDTO)

@@ -31,7 +31,7 @@ public class RequestInsertDTO {
     private String storeMobileNum;
     private String storeOpenTime;
     private String storeCloseTime;
-    private List<MultipartFile> filesData;
+    private List<MultipartFile> attachFiles;
 
     public Store convertToEntity() {
         return Store.builder()
@@ -53,7 +53,7 @@ public class RequestInsertDTO {
 
     public RequestAttachmentDTO convertToAttachment(String storeUuid) {
         return RequestAttachmentDTO.builder()
-                .filesData(this.getFilesData())
+                .attachFiles(this.getAttachFiles())
                 .storeUuid(storeUuid)
                 .build();
     }

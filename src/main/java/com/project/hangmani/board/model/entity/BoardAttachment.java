@@ -2,8 +2,6 @@ package com.project.hangmani.board.model.entity;
 
 import lombok.*;
 
-import java.sql.Date;
-
 @Getter
 @Setter
 @ToString
@@ -14,8 +12,4 @@ public class BoardAttachment {
     private int attachmentNo;
     private String originalFileName;
     private String savedFileName;
-    private long fileSize;
-    private Date uploadDate;
-    private Byte[] fileData;
-
 }

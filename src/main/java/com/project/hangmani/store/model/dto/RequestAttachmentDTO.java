@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestAttachmentDTO {
-    private List<MultipartFile> filesData;
+    private List<MultipartFile> attachFiles;
     private String storeUuid;
     private List<String> savedFileNames;
     private Double storeLatitude;

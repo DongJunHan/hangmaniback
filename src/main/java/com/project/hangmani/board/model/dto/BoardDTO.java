@@ -1,8 +1,10 @@
 package com.project.hangmani.board.model.dto;
 
+import com.project.hangmani.file.model.dto.AttachmentDTO;
 import lombok.*;
 
 import java.sql.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -17,4 +19,5 @@ public class BoardDTO {
     private Date createAt;
     private Date updateAt;
     private Boolean isDelete;
+    private List<AttachmentDTO> files;
 }

@@ -3,37 +3,31 @@ package com.project.hangmani.board.service;
 import com.project.hangmani.board.model.dto.*;
 import com.project.hangmani.board.model.entity.Board;
 import com.project.hangmani.config.PropertiesValues;
-import com.project.hangmani.convert.ResponseConvert;
 import com.project.hangmani.exception.FailDeleteData;
 import com.project.hangmani.exception.NotFoundException;
 import com.project.hangmani.exception.NotFoundUser;
 import com.project.hangmani.board.repository.BoardRepository;
+import com.project.hangmani.file.model.dto.AttachmentDTO;
+import com.project.hangmani.file.service.FileService;
 import com.project.hangmani.user.repository.UserRepository;
-import com.project.hangmani.util.Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
-    private ResponseConvert responseConvert;
-    private final Util util;
-    @Autowired
-    public BoardService(BoardRepository boardRepository, UserRepository userRepository, PropertiesValues propertiesValues) {
-        this.userRepository = userRepository;
-        this.boardRepository = boardRepository;
-        this.util = new Util(propertiesValues);
-        this.responseConvert = new ResponseConvert(propertiesValues);
-    }
+    private final FileService fileService;
+    private final PropertiesValues propertiesValues;
 
     /**
      *
@@ -41,14 +35,26 @@ public class BoardService {
      * @return ResponseBoardDTO
      */
     @Transactional
-    public ResponseGetDTO add(RequestInsertDTO boardDTO) {
+    public ResponseGetDTO insert(RequestInsertDTO boardDTO) throws IOException {
         //check id
         checkID(boardDTO.getBoardWriter());
 
-        Board board = boardDTO.convertToEntity(boardDTO);
-        int no = boardRepository.add(board);
+        Board board = boardDTO.convertToEntity();
+        int no = boardRepository.insert(board);
         BoardDTO resultBoard = boardRepository.getByNo(no, 0, 1).get();
-
+        //attachFiles save
+        List<AttachmentDTO> attachFiles = fileService.saveAttachment(boardDTO.convertToDTO());
+        //attachFile insert
+        boardRepository.insertAttachFiles(attachFiles);
+        String uploadDir = propertiesValues.getUploadDir();
+        resultBoard.setFiles(
+                attachFiles.stream()
+                        .map(elem -> {
+                            elem.setOriginalFileName(uploadDir + elem.getOriginalFileName());
+                            elem.setSavedFileName(uploadDir + elem.getSavedFileName());
+                            return elem;})
+                        .toList()
+        );
         return new ResponseGetDTO().convertToDTO(resultBoard);
 
     }

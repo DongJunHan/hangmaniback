@@ -7,6 +7,7 @@ import com.project.hangmani.board.model.dto.RequestWriterDTO;
 import com.project.hangmani.board.model.entity.Board;
 import com.project.hangmani.config.CustomFunctionConfig;
 import com.project.hangmani.config.PropertiesValues;
+import com.project.hangmani.file.model.dto.AttachmentDTO;
 import com.project.hangmani.util.Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,7 @@ public class BoardRepositoryImpl implements BoardRepository{
     public int delete(int boardNo) {
         return template.update(deleteByNo,boardNo);
     }
-    public int add(Board board) {
+    public int insert(Board board) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(template);
         Date createAt = util.getSqlDate();
         MapSqlParameterSource params = new MapSqlParameterSource()
@@ -70,6 +71,15 @@ public class BoardRepositoryImpl implements BoardRepository{
                 .withoutTableColumnMetaDataAccess()
                 .executeAndReturnKeyHolder(params);
         return key.getKey().intValue();
+    }
+
+    public int insertAttachFiles(List<AttachmentDTO> attachFiles) {
+        String sql = "insert into board_attachment(original_file_name, saved_file_name) ";
+        for (AttachmentDTO attachFile : attachFiles) {
+            sql += "values('" + attachFile.getOriginalFileName() + "','" + attachFile.getSavedFileName()+"'),";
+        }
+        sql += ";";
+        return template.update(sql);
     }
     private RowMapper<BoardDTO> boardRowMapper() {
         return (rs, rowNum) -> {
