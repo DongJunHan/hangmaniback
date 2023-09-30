@@ -63,6 +63,29 @@ public class FileService {
         return files;
     }
 
+    public List<com.project.hangmani.store.model.dto.AttachmentDTO> saveAttachment(String storeUuid, RequestSaveDTO saveDTO) throws IOException {
+        if (saveDTO.getAttachFiles() == null) {
+            return null;
+        }
+        List<com.project.hangmani.store.model.dto.AttachmentDTO> files = new ArrayList<>();
+        //save extension
+        for (MultipartFile attachFile : saveDTO.getAttachFiles()) {
+            if (!attachFile.isEmpty()) {
+                AttachmentDTO save = save(attachFile);
+                files.add(
+                        com.project.hangmani.store.model.dto.AttachmentDTO
+                                .builder()
+                                .storeUuid(storeUuid)
+                                .savedFileName(save.getSavedFileName())
+                                .originalFileName(save.getOriginalFileName())
+                                .build()
+                );
+            }
+        }
+        return files;
+    }
+
+
     private AttachmentDTO save(MultipartFile attachFile) throws IOException {
         //get extension
         String savedFileName = createStoreFileName(attachFile.getOriginalFilename());

@@ -1,5 +1,6 @@
 package com.project.hangmani.store.model.dto;
 
+import com.project.hangmani.file.model.dto.AttachmentDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +27,7 @@ public class ResponseDTO {
     private Boolean storeIsActivity;
     private String storeSido;
     private String storeSigugun;
-    private List<String> fileUrlList;
+    private List<AttachmentDTO> fileUrlList;
     private List<String> lottoTypes;
     private Map<Integer, int[]> winCounts;
 

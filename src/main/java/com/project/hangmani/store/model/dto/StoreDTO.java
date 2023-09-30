@@ -1,5 +1,6 @@
 package com.project.hangmani.store.model.dto;
 
+import com.project.hangmani.file.model.dto.AttachmentDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -31,9 +32,9 @@ public class StoreDTO {
     private Integer winRank;
     private Integer winRound;
     private String lottoTypes;
-    private String savedFileNames;
+    private List<AttachmentDTO> savedFileNames;
     private Integer lottoId;
-    private String lottoNames;
+    private List<String> lottoNames;
     private Integer win1stCount;
     private Integer win2stCount;
 
@@ -67,21 +68,21 @@ public class StoreDTO {
 //            Collections.addAll(lottoType, split);
 //        }
         return ResponseDTO.builder()
-                .storeUuid(this.getStoreUuid())
-                .storeName(this.getStoreName())
-                .storeAddress(this.getStoreAddress())
-                .storeLatitude(this.getStoreLatitude())
-                .storeLongitude(this.getStoreLongitude())
-                .storeBizNo(this.getStoreBizNo())
-                .storeTelNum(this.getStoreTelNum())
-                .storeMobileNum(this.getStoreMobileNum())
-                .storeOpenTime(this.getStoreOpenTime())
-                .storeCloseTime(this.getStoreCloseTime())
-                .storeIsActivity(this.getStoreIsActivity())
-                .storeSido(this.getStoreSido())
-                .storeSigugun(this.getStoreSigugun())
-//                .fileUrlList(this.get)
-//                .lottoTypes(this.getLottoTypes())
+                .storeUuid(storeUuid)
+                .storeName(storeName)
+                .storeAddress(storeAddress)
+                .storeLatitude(storeLatitude)
+                .storeLongitude(storeLongitude)
+                .storeBizNo(storeBizNo)
+                .storeTelNum(storeTelNum)
+                .storeMobileNum(storeMobileNum)
+                .storeOpenTime(storeOpenTime)
+                .storeCloseTime(storeCloseTime)
+                .storeIsActivity(storeIsActivity)
+                .storeSido(storeSido)
+                .storeSigugun(storeSigugun)
+                .fileUrlList(savedFileNames)
+                .lottoTypes(lottoNames)
 //                .winCounts(this.getWinCounts())
                 .build();
     }

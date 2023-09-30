@@ -1,5 +1,6 @@
 package com.project.hangmani.store.model.dto;
 
+import com.project.hangmani.file.model.dto.RequestSaveDTO;
 import com.project.hangmani.store.model.entity.Store;
 import com.project.hangmani.store.model.entity.StoreAttachment;
 import jakarta.validation.constraints.NotBlank;
@@ -46,9 +47,8 @@ public class RequestInsertDTO {
                 .build();
     }
 
-    public List<StoreAttachment> convertAttachment(RequestAttachmentDTO dto) {
-        List<StoreAttachment> attachments = new ArrayList<>();
-        return attachments;
+    public RequestSaveDTO convertSaveDTO() {
+        return RequestSaveDTO.builder().attachFiles(attachFiles).build();
     }
 
     public RequestAttachmentDTO convertToAttachment(String storeUuid) {

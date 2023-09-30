@@ -14,7 +14,5 @@ public class StoreAttachment {
     private int attachmentNo;
     private String originalFileName;
     private String savedFileName;
-    private long fileSize;
-    private Date uploadDate;
     private String storeUuid;
 }

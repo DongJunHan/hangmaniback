@@ -2,9 +2,13 @@ package com.project.hangmani.store.repository;
 
 import com.project.hangmani.config.PropertiesValues;
 import com.project.hangmani.exception.FailInsertData;
+//import com.project.hangmani.file.model.dto.AttachmentDTO;
 import com.project.hangmani.lottoType.model.dto.LottoTypeDTO;
-import com.project.hangmani.store.model.dto.*;
+import com.project.hangmani.store.model.dto.AttachmentDTO;
+import com.project.hangmani.store.model.dto.RequestFilterDTO;
+import com.project.hangmani.store.model.dto.StoreDTO;
 import com.project.hangmani.store.model.entity.Store;
+import com.project.hangmani.store.model.entity.StoreAttachment;
 import com.project.hangmani.winHistory.model.entity.WinHistory;
 import com.project.hangmani.util.ConvertData;
 import com.project.hangmani.util.Util;
@@ -157,8 +161,9 @@ public class StoreRepositoryImpl implements StoreRepository{
     private RowMapper<AttachmentDTO> storeAttachmentRowMapper() {
         return (rs, rowNum) -> {
             AttachmentDTO s = new AttachmentDTO();
-            s.setStoreUuid(rs.getString("storeuuid"));
-            s.setSavedFileName((rs.getString("saved_file_name")));
+            s.setStoreUuid(rs.getString("storeUuid"));
+            s.setSavedFileName(rs.getString("saved_file_name"));
+            s.setOriginalFileName(rs.getString("original_file_name"));
             return s;
         };
     }
@@ -179,10 +184,10 @@ public class StoreRepositoryImpl implements StoreRepository{
                 store.getStoreSigugun(), StoreUuid};
         return template.update(updateStoreInfoByUuid, objects);
     }
-//    public StoreDTO getStoreByNameCoordinates(RequestFilterDTO requestStoreDTO) {
-//        String storeName = requestStoreDTO.getStoreName();
-//        Double storeLatitude = convertPoint(requestStoreDTO.getStoreLatitude());
-//        Double storeLongitude = convertPoint(requestStoreDTO.getStoreLongitude());
+//    public StoreDTO getStoreByNameCoordinates(RequestFilterDTO store) {
+//        String storeName = store.getStoreName();
+//        Double storeLatitude = convertPoint(store.getStoreLatitude());
+//        Double storeLongitude = convertPoint(store.getStoreLongitude());
 //
 //        List<StoreDTO> query = template.query(getStoreInfoByName,
 //                new Object[]{storeName, storeLatitude, storeLongitude},
@@ -204,23 +209,27 @@ public class StoreRepositoryImpl implements StoreRepository{
 //                requestStoreDeleteDTO.getLongitude()});
 //    }
     /**
-     * @param requestStoreDTO
+     * @param store
      * @return
      */
-    public String add(RequestInsertDTO requestStoreDTO) {
+    public String insert(Store store) {
         //make store uuid
         UUID uuid = this.util.getUUID();
-        String[] sidoSigugun = extractSidoSigugunByAddress(requestStoreDTO.getStoreAddress());
+        String[] sidoSigugun = extractSidoSigugunByAddress(store.getStoreAddress());
         if (sidoSigugun[0] == null)
             return null;
-        int ret =  template.update(add, new Object[]{uuid.toString(), requestStoreDTO.getStoreName(),
-                requestStoreDTO.getStoreAddress(), requestStoreDTO.getStoreLatitude().toString(), requestStoreDTO.getStoreLongitude().toString(),
-                requestStoreDTO.getStoreBizNo(), requestStoreDTO.getStoreTelNum(), requestStoreDTO.getStoreMobileNum(),
-                requestStoreDTO.getStoreOpenTime(), requestStoreDTO.getStoreCloseTime(), sidoSigugun[0], sidoSigugun[1]});
+        int ret =  template.update(add, new Object[]{uuid.toString(), store.getStoreName(),
+                store.getStoreAddress(), store.getStoreLatitude().toString(), store.getStoreLongitude().toString(),
+                store.getStoreBizNo(), store.getStoreTelNum(), store.getStoreMobileNum(),
+                store.getStoreOpenTime(), store.getStoreCloseTime(), sidoSigugun[0], sidoSigugun[1]});
         if (ret == 0){
             throw new FailInsertData();
         }
         return uuid.toString();
+    }
+
+    public int insertAttachFiles(List<StoreAttachment> attachFiles) {
+        return 0;
     }
 
     private String[] extractSidoSigugunByAddress(String address) {

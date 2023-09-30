@@ -12,10 +12,10 @@ import com.project.hangmani.store.repository.StoreRepository;
 import com.project.hangmani.util.Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,22 +48,7 @@ public class StoreService {
         if (stores.isEmpty())
             throw new NotFoundStore("상점정보를 찾을 수 없습니다.");
         store = stores.get(0);
-        if (store.getSavedFileNames().indexOf(storeUuid) == -1) {
-            log.info("there is no map marker");
-            ResponseAttachmentDTO urls = fileService.getMapAttachmentUrls(
-                    RequestAttachmentDTO.builder()
-                            .savedFileNames(null)
-                            .storeUuid(storeUuid)
-                            .storeLatitude(store.getStoreLatitude())
-                            .storeLongitude(store.getStoreLongitude())
-                            .build());
-            if (null != urls){
-                for (String url :
-                        urls.getDomainUrls()) {
-                    store.setSavedFileNames(store.getSavedFileNames() + "," + url);
-                }
-            }
-        }
+
         return store.convertResponseDTO();
     }
     @Transactional
@@ -85,19 +70,16 @@ public class StoreService {
         return store.convertResponseDTO();
     }
     @Transactional
-    public ResponseDTO add(RequestInsertDTO requestStoreDTO) {
-
+    public ResponseDTO insert(RequestInsertDTO requestStoreDTO) throws IOException {
         //check already exist
         List<StoreDTO> findStore = storeRepository.getByStoreNameAndCoordinates(requestStoreDTO.convertToEntity());
         if (findStore.size() > 0) {
             throw new AlreadyExistStore();
         }
 
-        String storeUuid = storeRepository.add(requestStoreDTO);
-        fileService.insertAttachment(requestStoreDTO.convertToAttachment(storeUuid));
-
-
-
+        String storeUuid = storeRepository.insert(requestStoreDTO.convertToEntity());
+        List<AttachmentDTO> attachFiles = fileService.saveAttachment(storeUuid, requestStoreDTO.convertSaveDTO());
+        storeRepository.insertAttachFiles(attachFiles.stream().map(e->e.toEntity()).toList());
         //get store info
         List<StoreDTO> stores = storeRepository.getByUuid(storeUuid);
         StoreDTO storeDTO = stores.get(0);
@@ -189,34 +171,35 @@ order by l.lottoname, win1stcount, win2stcount desc;
 //    }
 
     /**
-     * 함수가 정상적으로 실행되려면 uuid를 기준으로 정렬이 필요함
+     * 함수가 정상적으로 실행되려면 uuid를 기준으로 정렬이 되어 있어야 함
      * @param storeAttachments
      * @param store
      * @return
      */
     private List<StoreDTO> postProcessAttachmentData(List<AttachmentDTO> storeAttachments, List<StoreDTO> store) {
-        Map<String, String> storeAttachment = new HashMap<>();
+        Map<String, List<com.project.hangmani.file.model.dto.AttachmentDTO>> storeAttachment = new HashMap<>();
+        List<com.project.hangmani.file.model.dto.AttachmentDTO> list = null;
         String storeUuid = null;
         for (int i = 0; i < storeAttachments.size(); i++) {
-            if (null == storeUuid) {
+            if(null == storeUuid || !storeUuid.equals(storeAttachments.get(i).getStoreUuid())) {
                 storeUuid = storeAttachments.get(i).getStoreUuid();
-                if (null == storeAttachments.get(i).getSavedFileName())
-                    storeAttachments.get(i).setSavedFileName("");
-                storeAttachment.put(storeUuid, storeAttachments.get(i).getSavedFileName());
-            } else if(!storeUuid.equals(storeAttachments.get(i).getStoreUuid())) {
-                storeUuid = storeAttachments.get(i).getStoreUuid();
-                if (null == storeAttachments.get(i).getSavedFileName())
-                    storeAttachments.get(i).setSavedFileName("");
-                storeAttachment.put(storeUuid, storeAttachments.get(i).getSavedFileName());
+                if (null == storeAttachments.get(i).getSavedFileName()) {
+                    continue;
+                }
+                list = new ArrayList<>();
+                list.add(new com.project.hangmani.file.model.dto.AttachmentDTO(
+                        fileService.getFullPath(storeAttachments.get(i).getOriginalFileName()),
+                        fileService.getFullPath(storeAttachments.get(i).getSavedFileName())));
+                storeAttachment.put(storeUuid, list);
             } else if (storeUuid.equals(storeAttachments.get(i).getStoreUuid())){
-                String savedFileNames = storeAttachment.get(storeUuid);
-                savedFileNames = savedFileNames + "," + storeAttachments.get(i).getSavedFileName();
-                storeAttachment.put(storeUuid, savedFileNames);
+                list.add(new com.project.hangmani.file.model.dto.AttachmentDTO(
+                        fileService.getFullPath(storeAttachments.get(i).getOriginalFileName()),
+                        fileService.getFullPath(storeAttachments.get(i).getSavedFileName())));
+                storeAttachment.put(storeUuid, list);
             }
         }
         for (int i = 0; i < store.size(); i++) {
-            String savedFileNames = storeAttachment.get(store.get(i).getStoreUuid());
-            store.get(i).setSavedFileNames(savedFileNames);
+            store.get(i).setSavedFileNames(storeAttachment.get(store.get(i).getStoreUuid()));
         }
         return store;
     }
@@ -228,24 +211,22 @@ order by l.lottoname, win1stcount, win2stcount desc;
      * @return
      */
     private List<StoreDTO> postProcessFilterData(List<LottoTypeDTO> lottoTypes, List<StoreDTO> store) {
-        Map<String, String> lottoType = new HashMap<>();
+        Map<String, List<String>> lottoType = new HashMap<>();
         String storeUuid = null;
+        List<String> types = null;
         for (int i = 0; i < lottoTypes.size(); i++) {
-            if (null == storeUuid) {
+            if(null == storeUuid || !storeUuid.equals(lottoTypes.get(i).getStoreUuid())) {
+                types = new ArrayList<>();
+                types.add(lottoTypes.get(i).getLottoName());
                 storeUuid = lottoTypes.get(i).getStoreUuid();
-                lottoType.put(storeUuid, lottoTypes.get(i).getLottoName());
-            } else if(!storeUuid.equals(lottoTypes.get(i).getStoreUuid())) {
-                storeUuid = lottoTypes.get(i).getStoreUuid();
-                lottoType.put(storeUuid, lottoTypes.get(i).getLottoName());
+                lottoType.put(storeUuid, types);
             } else if (storeUuid.equals(lottoTypes.get(i).getStoreUuid())){
-                String lottoName = lottoType.get(storeUuid);
-                lottoName =lottoName + "," + lottoTypes.get(i).getLottoName();
-                lottoType.put(storeUuid, lottoName);
+                types.add(lottoTypes.get(i).getLottoName());
+                lottoType.put(storeUuid, types);
             }
         }
         for (int i = 0; i < store.size(); i++) {
-            String lottoName = lottoType.get(store.get(i).getStoreUuid());
-            store.get(i).setLottoNames(lottoName);
+            store.get(i).setLottoNames(lottoType.get(store.get(i).getStoreUuid()));
         }
         return store;
     }
@@ -256,8 +237,9 @@ order by l.lottoname, win1stcount, win2stcount desc;
      * @return
      */
     private List<StoreDTO> postProcessFilterData(List<StoreDTO> store) {
+        //TODO 각 로또별 당첨 횟수를 분리하도록 로직을 구현해야한다.
         List<StoreDTO> storeList = new ArrayList<>();
-        String storeUuid = null;
+        String storeUuid;
         int win1Count;
         int win2Count;
         int j = 0;
@@ -276,8 +258,6 @@ order by l.lottoname, win1stcount, win2stcount desc;
                     .distance(store.get(i).getDistance())
                     .win1stCount(win1Count)
                     .win2stCount(win2Count)
-                    .savedFileNames("")
-                    .lottoNames("")
                     .build());
 
             for (j = i; j < store.size(); j++) {

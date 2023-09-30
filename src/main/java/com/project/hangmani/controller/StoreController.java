@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -43,18 +44,6 @@ public class StoreController {
                 .message(HttpStatus.OK.name())
                 .build();
     }
-//    @GetMapping
-//    @ResponseBody
-//    public Response<List<ResponseFilterDTO>> getStoreInfoByFilter(@ModelAttribute @Valid RequestFilterAreaDTO requestDTO) {
-//        log.info("Store Controller Area");
-//        List<ResponseFilterDTO> storeInfoList = storeService.getStoreInfo(requestDTO);
-//        return Response.<List<ResponseFilterDTO>>builder()
-//                .data(storeInfoList)
-//                .status(HttpStatus.OK.value())
-//                .message(HttpStatus.OK.name())
-//                .build();
-//    }
-
     @PutMapping(path = "/{storeUuid}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response<ResponseDTO> updateStore(@PathVariable("storeUuid") String storeUuid,
@@ -68,9 +57,9 @@ public class StoreController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response<ResponseDTO> insertStore(@RequestBody @Valid RequestInsertDTO requestStoreDTO) {
+    public Response<ResponseDTO> insertStore(@RequestBody @Valid RequestInsertDTO requestStoreDTO) throws IOException {
         return Response.<ResponseDTO>builder()
-                .data(storeService.add(requestStoreDTO))
+                .data(storeService.insert(requestStoreDTO))
                 .status(HttpStatus.CREATED.value())
                 .message(HttpStatus.CREATED.name())
                 .build();

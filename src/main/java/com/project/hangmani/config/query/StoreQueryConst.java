@@ -39,7 +39,7 @@ public class StoreQueryConst {
     public static final String orderByFirst = "ORDER BY s.storeUuid; ";
     public static final String getLottoName = "SELECT s.storeuuid, l.lottoname, l.lottoid " +
             "FROM store s LEFT JOIN lotto_type_handle lh ON s.storeuuid=lh.storeuuid JOIN lotto_type l ON lh.lottoid=l.lottoid \n";
-    public static final String getStoreAttachment =  "SELECT s.storeuuid, sa.saved_file_name " +
+    public static final String getStoreAttachment =  "SELECT sa.storeuuid, sa.saved_file_name, sa.original_file_name " +
             "FROM store s LEFT JOIN store_attachment sa ON s.storeuuid=sa.storeuuid ";
     public static final String getStoreInfoWithWinCountByLatitudeLongitude =
             "SELECT s.storeUuid, s.storeName, s.storeaddress, " +
