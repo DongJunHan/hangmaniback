@@ -49,7 +49,7 @@ public class StoreController {
     public Response<ResponseDTO> updateStore(@PathVariable("storeUuid") String storeUuid,
                                                   @RequestBody @Valid RequestUpdateDTO requestStoreUpdateDTO) {
         return Response.<ResponseDTO>builder()
-                .data(storeService.updateStoreInfo(storeUuid, requestStoreUpdateDTO))
+                .data(storeService.update(storeUuid, requestStoreUpdateDTO))
                 .status(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .build();

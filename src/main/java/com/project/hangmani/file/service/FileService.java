@@ -45,7 +45,7 @@ import static com.project.hangmani.config.OAuthConst.*;
 public class FileService {
     private final WebClientConfig webClient;
     private final PropertiesValues propertiesValues;
-    private Util util = new Util(propertiesValues);
+//    private Util util = new Util(propertiesValues);
     private int height = 300;
     private int width = 288;
 
@@ -65,7 +65,7 @@ public class FileService {
 
     public List<com.project.hangmani.store.model.dto.AttachmentDTO> saveAttachment(String storeUuid, RequestSaveDTO saveDTO) throws IOException {
         if (saveDTO.getAttachFiles() == null) {
-            return null;
+            return new ArrayList<>();
         }
         List<com.project.hangmani.store.model.dto.AttachmentDTO> files = new ArrayList<>();
         //save extension

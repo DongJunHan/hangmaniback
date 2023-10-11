@@ -37,11 +37,11 @@ INSERT INTO LOTTO_TYPE_HANDLE(lottoid,storeuuid) VALUES
     storeuuid=VALUES(storeuuid),lottoid = VALUES(lottoid);
 
 -- 11 +/- SELECT COUNT(*) FROM PUBLIC.STORE_ATTACHMENT;
-INSERT INTO STORE_ATTACHMENT(attachment_no,original_file_name,saved_file_name,file_size,upload_time,storeuuid) VALUES
-(1, '인천_부평구_세븐일레븐_부평애니점_로고', '로고', 99352, TIMESTAMP '2023-04-18 16:00:40.065358', '8c354eaa-ac2c-11ed-9b15-12ebd169e012'),
-(2, '인천_부평구_세븐일레븐 부평애니점_176462497257574', '176462497257574_0', 541778, TIMESTAMP '2023-04-18 16:00:43.191943', '8c354eaa-ac2c-11ed-9b15-12ebd169e012')
- ON DUPLICATE KEY UPDATE original_file_name=VALUES(original_file_name),saved_file_name = VALUES(saved_file_name),
-     file_size = VALUES(file_size),upload_time = VALUES(upload_time), storeuuid=VALUES(storeuuid);
+INSERT INTO STORE_ATTACHMENT(attachment_no,original_file_name,saved_file_name,storeuuid) VALUES
+(1, '인천_부평구_세븐일레븐_부평애니점_로고', '로고', '8c354eaa-ac2c-11ed-9b15-12ebd169e012'),
+(2, '인천_부평구_세븐일레븐 부평애니점_176462497257574', '176462497257574_0', '8c354eaa-ac2c-11ed-9b15-12ebd169e012')
+ ON DUPLICATE KEY UPDATE original_file_name=VALUES(original_file_name),
+    saved_file_name = VALUES(saved_file_name), storeuuid=VALUES(storeuuid);
 -- insert REPORT_TYPE
 INSERT INTO REPORT_TYPE VALUES
 (1, 'closure'),

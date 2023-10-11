@@ -5,14 +5,14 @@
             <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>TRACE</level>
+            <level>DEBUG</level>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
         <prudent>true</prudent>
     </appender>
 
-    <root level="TRACE">
+    <root level="DEBUG">
         <appender-ref ref="consoleAppend" />
     </root>
 

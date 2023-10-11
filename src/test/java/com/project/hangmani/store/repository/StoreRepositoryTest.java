@@ -65,7 +65,7 @@ class StoreRepositoryTest {
     }
 
     @Test
-    @DisplayName("uuid로 상점 데이터 가져오기")
+    @DisplayName("uuid로 한 개의 상점 데이터 가져오기")
     void getStoreInfoByUuidSuccess() {
         //given
         //when
@@ -244,7 +244,7 @@ class StoreRepositoryTest {
                 .build();
 
         //when
-        String storeUuid = storeRepository.add(requestDTO);
+        String storeUuid = storeRepository.insert(requestDTO.of());
         List<StoreDTO> stores = storeRepository.getByUuid(storeUuid);
         //then
         assertThat(storeUuid).isEqualTo(stores.get(0).getStoreUuid());
@@ -261,7 +261,7 @@ class StoreRepositoryTest {
                 .storeLongitude(127.0443)
                 .build();
         //when
-        String storeUuid = storeRepository.add(requestDTO);
+        String storeUuid = storeRepository.insert(requestDTO.of());
         //then
         assertThat(storeUuid).isNull();
     }

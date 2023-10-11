@@ -3,15 +3,12 @@ package com.project.hangmani.store.model.dto;
 import com.project.hangmani.store.model.entity.Store;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestUpdateDTO {
     @NotBlank
     private String storeName;
@@ -28,26 +25,44 @@ public class RequestUpdateDTO {
     @NotBlank
     private String storeMobileNum;
 
-    private String storeOpenTime;
-    private String storeCloseTime;
+    private LocalDateTime storeOpenTime;
+    private LocalDateTime storeCloseTime;
     private Boolean storeIsActivity;
     private String storeSido;
     private  String storeSigugun;
+    @Builder
+    private RequestUpdateDTO(String storeName, String storeAddress, Double storeLatitude,
+                             Double storeLongitude, String storeBizNo, String storeTelNum,
+                             String storeMobileNum, LocalDateTime storeOpenTime, LocalDateTime storeCloseTime,
+                             Boolean storeIsActivity, String storeSido, String storeSigugun) {
+        this.storeName = storeName;
+        this.storeAddress = storeAddress;
+        this.storeLatitude = storeLatitude;
+        this.storeLongitude = storeLongitude;
+        this.storeBizNo = storeBizNo;
+        this.storeTelNum = storeTelNum;
+        this.storeMobileNum = storeMobileNum;
+        this.storeOpenTime = storeOpenTime;
+        this.storeCloseTime = storeCloseTime;
+        this.storeIsActivity = storeIsActivity;
+        this.storeSido = storeSido;
+        this.storeSigugun = storeSigugun;
+    }
 
     public Store of() {
         return Store.builder()
-                .storeName(this.getStoreName())
-                .storeAddress(this.getStoreAddress())
-                .storeLatitude(this.getStoreLatitude())
-                .storeLongitude(this.getStoreLongitude())
-                .storeBizNo(this.getStoreBizNo())
-                .storeTelNum(this.getStoreTelNum())
-                .storeMobileNum(this.getStoreMobileNum())
-                .storeOpenTime(this.getStoreOpenTime())
-                .storeCloseTime(this.getStoreCloseTime())
-                .storeIsActivity(this.getStoreIsActivity())
-                .storeSido(this.getStoreSido())
-                .storeSigugun(this.getStoreSigugun())
+                .storeName(storeName)
+                .storeAddress(storeAddress)
+                .storeLatitude(storeLatitude)
+                .storeLongitude(storeLongitude)
+                .storeBizNo(storeBizNo)
+                .storeTelNum(storeTelNum)
+                .storeMobileNum(storeMobileNum)
+                .storeOpenTime(storeOpenTime)
+                .storeCloseTime(storeCloseTime)
+                .storeIsActivity(storeIsActivity)
+                .storeSido(storeSido)
+                .storeSigugun(storeSigugun)
                 .build();
     }
 }

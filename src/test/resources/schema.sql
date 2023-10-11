@@ -8,8 +8,8 @@ storeLongitude varchar(20),
 storeBizNo      varchar(30),
 storeTelNum   varchar(20),
 storeMobileNum varchar(20),
-storeOpenTime    varchar(30),
-storeCloseTime   varchar(30),
+storeOpenTime  DATETIME default CURRENT_TIMESTAMP,
+storeCloseTime DATETIME default  CURRENT_TIMESTAMP,
 storeisActivity    INT default 0,
 storesido   varchar(50),
 storesigugun  varchar(50),
@@ -58,8 +58,6 @@ create table IF NOT EXISTS STORE_ATTACHMENT (
     attachment_no INT AUTO_INCREMENT PRIMARY KEY,
     original_file_name VARCHAR(100),
     saved_file_name VARCHAR(100),
-    file_size BIGINT,
-    upload_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     storeuuid varchar(50),
     foreign key (storeuuid) references STORE(storeuuid)
 );
@@ -68,8 +66,6 @@ CREATE TABLE IF NOT EXISTS BOARD_ATTACHMENT (
     attachment_no INT AUTO_INCREMENT PRIMARY KEY,
     original_file_name VARCHAR(100),
     saved_file_name VARCHAR(100),
-    file_size BIGINT,
-    upload_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     boardno int,
     foreign key (boardno) references BOARD(boardno)
 );

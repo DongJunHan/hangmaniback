@@ -44,17 +44,20 @@ public class BoardService {
         BoardDTO resultBoard = boardRepository.getByNo(no, 0, 1).get();
         //attachFiles save
         List<AttachmentDTO> attachFiles = fileService.saveAttachment(boardDTO.convertToDTO());
-        //attachFile insert
-        boardRepository.insertAttachFiles(attachFiles);
-        String uploadDir = propertiesValues.getUploadDir();
-        resultBoard.setFiles(
-                attachFiles.stream()
-                        .map(elem -> {
-                            elem.setOriginalFileName(uploadDir + elem.getOriginalFileName());
-                            elem.setSavedFileName(uploadDir + elem.getSavedFileName());
-                            return elem;})
-                        .toList()
-        );
+        //attachFile db insert
+        int ret = boardRepository.insertAttachFiles(attachFiles);
+        if (ret > 0) {
+            String uploadDir = propertiesValues.getUploadDir();
+            resultBoard.setFiles(
+                    attachFiles.stream()
+                            .map(elem -> {
+                                elem.setOriginalFileName(uploadDir + elem.getOriginalFileName());
+                                elem.setSavedFileName(uploadDir + elem.getSavedFileName());
+                                return elem;
+                            })
+                            .toList()
+            );
+        }
         return new ResponseGetDTO().convertToDTO(resultBoard);
 
     }

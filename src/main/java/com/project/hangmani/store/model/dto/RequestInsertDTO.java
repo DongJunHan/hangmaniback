@@ -5,19 +5,16 @@ import com.project.hangmani.store.model.entity.Store;
 import com.project.hangmani.store.model.entity.StoreAttachment;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.cglib.core.Local;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestInsertDTO {
     @NotBlank
     private String storeName;
@@ -30,20 +27,36 @@ public class RequestInsertDTO {
     private String storeBizNo;
     private String storeTelNum;
     private String storeMobileNum;
-    private String storeOpenTime;
-    private String storeCloseTime;
+    private LocalDateTime storeOpenTime;
+    private LocalDateTime storeCloseTime;
     private List<MultipartFile> attachFiles;
+    @Builder
+    private RequestInsertDTO(String storeName, String storeAddress, Double storeLatitude,
+                             Double storeLongitude, String storeBizNo, String storeTelNum,
+                             String storeMobileNum, LocalDateTime storeOpenTime,
+                             LocalDateTime storeCloseTime, List<MultipartFile> attachFiles) {
+        this.storeName = storeName;
+        this.storeAddress = storeAddress;
+        this.storeLatitude = storeLatitude;
+        this.storeLongitude = storeLongitude;
+        this.storeBizNo = storeBizNo;
+        this.storeTelNum = storeTelNum;
+        this.storeMobileNum = storeMobileNum;
+        this.storeOpenTime = storeOpenTime;
+        this.storeCloseTime = storeCloseTime;
+        this.attachFiles = attachFiles;
+    }
 
-    public Store convertToEntity() {
+    public Store of() {
         return Store.builder()
-                .storeName(this.getStoreName())
-                .storeAddress(this.getStoreAddress())
-                .storeLatitude(this.getStoreLatitude())
-                .storeLongitude(this.getStoreLongitude())
-                .storeBizNo(this.getStoreBizNo())
-                .storeTelNum(this.getStoreTelNum())
-                .storeCloseTime(this.getStoreCloseTime())
-                .storeOpenTime(this.getStoreOpenTime())
+                .storeName(storeName)
+                .storeAddress(storeAddress)
+                .storeLatitude(storeLatitude)
+                .storeLongitude(storeLongitude)
+                .storeBizNo(storeBizNo)
+                .storeTelNum(storeTelNum)
+                .storeCloseTime(storeCloseTime)
+                .storeOpenTime(storeOpenTime)
                 .build();
     }
 

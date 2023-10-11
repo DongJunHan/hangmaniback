@@ -48,23 +48,23 @@ public class ResponseConvert {
         List<ResponseFilterDTO> result = new ArrayList<>();
         for (StoreDTO storeInfo:storeInfos) {
             //split saved file name
-            List<String> savedFileList = new ArrayList<>();
-            String[] savedFiles = {};
+//            List<String> savedFileList = new ArrayList<>();
+//            String[] savedFiles = {};
             //store attachment null check
-            if (null != storeInfo.getSavedFileNames())
-                savedFiles  = storeInfo.getSavedFileNames().split(",");
-            for(String s: savedFiles){
-                savedFileList.add(s.trim());
-            }
-            //split lotto type
-            List<String> lottoTypeList = new ArrayList<>();
-            String[] lottoTypes = {};
-            //lotto type null check
-            if (null != storeInfo.getLottoNames())
-                lottoTypes = storeInfo.getLottoNames().split(",");
-            for(String l: lottoTypes){
-                lottoTypeList.add(l.trim());
-            }
+//            if (null != storeInfo.getSavedFileNames())
+//                savedFiles  = storeInfo.getSavedFileNames().split(",");
+//            for(String s: savedFiles){
+//                savedFileList.add(s.trim());
+//            }
+//            //split lotto type
+//            List<String> lottoTypeList = new ArrayList<>();
+//            String[] lottoTypes = {};
+//            //lotto type null check
+//            if (null != storeInfo.getLottoNames())
+//                lottoTypes = storeInfo.getLottoNames().split(",");
+//            for(String l: lottoTypes){
+//                lottoTypeList.add(l.trim());
+//            }
             result.add(ResponseFilterDTO.builder()
                     .storeUuid(storeInfo.getStoreUuid())
                     .storeName(storeInfo.getStoreName())
@@ -72,8 +72,8 @@ public class ResponseConvert {
                     .distance(storeInfo.getDistance())
                     .storeLatitude(storeInfo.getStoreLatitude())
                     .storeLongitude(storeInfo.getStoreLongitude())
-                    .attachFileList(savedFileList)
-                    .lottoTypes(lottoTypeList)
+                    .attachFileList(storeInfo.getSavedFileNames())
+                    .lottoTypes(storeInfo.getLottoNames())
                     .build());
         }
         return result;

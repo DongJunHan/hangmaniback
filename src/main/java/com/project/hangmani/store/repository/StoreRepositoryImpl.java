@@ -19,6 +19,8 @@ import org.springframework.stereotype.Repository;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -265,17 +267,17 @@ public class StoreRepositoryImpl implements StoreRepository{
     }
     private RowMapper<StoreDTO> storeFilterRowMapper() {
         return (rs, rowNum) -> {
-            StoreDTO store = new StoreDTO();
-            store.setStoreUuid(rs.getString("storeUuid"));
-            store.setStoreName(rs.getString("storeName"));
-            store.setStoreAddress(rs.getString("storeAddress"));
-            store.setStoreLatitude(rs.getDouble("storeLatitude"));
-            store.setStoreLongitude(rs.getDouble("storeLongitude"));
-            store.setDistance(rs.getDouble("distance"));
-            store.setStoreIsActivity(rs.getBoolean("storeIsActivity"));
-            store.setWinRank(rs.getInt("winRank"));
-            store.setWinRound(rs.getInt("winRound"));
-            return store;
+            return StoreDTO.builder()
+                    .storeUuid(rs.getString("storeUuid"))
+                    .storeName(rs.getString("storeName"))
+                    .storeAddress(rs.getString("storeAddress"))
+                    .storeLatitude(rs.getDouble("storeLatitude"))
+                    .storeLongitude(rs.getDouble("storeLongitude"))
+                    .distance(rs.getDouble("distance"))
+                    .storeIsActivity(rs.getBoolean("storeIsActivity"))
+                    .winRank(rs.getInt("winRank"))
+                    .winRound(rs.getInt("winRound"))
+                    .build();
         };
     }
     private RowMapper<WinHistory> winHistoryRowMapper() {
@@ -290,88 +292,94 @@ public class StoreRepositoryImpl implements StoreRepository{
     }
     private RowMapper<StoreDTO> storeRowMapper() {
         return (rs, rowNum) -> {
-            StoreDTO store = new StoreDTO();
-            store.setStoreUuid(rs.getString("storeuuid"));
-            store.setStoreName(rs.getString("storename"));
-            store.setStoreAddress(rs.getString("storeaddress"));
-            store.setStoreLatitude(rs.getDouble("storelatitude"));
-            store.setStoreLongitude(rs.getDouble("storelongitude"));
-            store.setStoreBizNo(rs.getString("storebizno"));
-            store.setStoreTelNum(rs.getString("storetelnum"));
-            store.setStoreMobileNum(rs.getString("storemobilenum"));
-            store.setStoreOpenTime(rs.getString("storeopentime"));
-            store.setStoreCloseTime(rs.getString("storeclosetime"));
-            store.setStoreIsActivity(rs.getBoolean("storeisactivity"));
-            store.setStoreSido(rs.getString("storesido"));
-            store.setStoreSigugun(rs.getString("storesigugun"));
-            store.setLottoNames(rs.getString("lottonames"));
-            store.setWin1stCount(rs.getInt("win1stCount"));
-            store.setWin2stCount(rs.getInt("win2stCount"));
-            store.setSavedFileNames(rs.getString("saved_file_names"));
-            return store;
+            String lottoNames = rs.getString("lottonames");
+            return StoreDTO.builder()
+                    .storeUuid(rs.getString("storeUuid"))
+                    .storeName(rs.getString("storeName"))
+                    .storeAddress(rs.getString("storeAddress"))
+                    .storeLatitude(rs.getDouble("storeLatitude"))
+                    .storeLongitude(rs.getDouble("storeLongitude"))
+                    .storeBizNo(rs.getString("storebizno"))
+                    .storeTelNum(rs.getString("storetelnum"))
+                    .storeMobileNum(rs.getString("storemobilenum"))
+                    .storeOpenTime(LocalDateTime.from(rs.getTimestamp("storeopentime").toLocalDateTime()))
+                    .storeCloseTime(LocalDateTime.from(rs.getTimestamp("storeclosetime").toLocalDateTime()))
+                    .storeIsActivity(rs.getBoolean("storeIsActivity"))
+                    .storeSido(rs.getString("storesido"))
+                    .storeSigugun(rs.getString("storesigugun"))
+                    .lottoNames(Arrays.asList(lottoNames.split(",")))
+                    .distance(rs.getDouble("distance"))
+                    .winRank(rs.getInt("winRank"))
+                    .winRound(rs.getInt("winRound"))
+                    .build();
         };
     }
 
 
     private RowMapper<StoreDTO> storesRowMapper(){
         return (rs, rowNum) -> {
-            StoreDTO store = new StoreDTO();
-            store.setStoreUuid(rs.getString("storeuuid"));
-            store.setStoreName(rs.getString("storename"));
-            store.setStoreAddress(rs.getString("storeaddress"));
-            store.setStoreLatitude(rs.getDouble("storelatitude"));
-            store.setStoreLongitude(rs.getDouble("storelongitude"));
-            store.setStoreBizNo(rs.getString("storebizno"));
-            store.setStoreTelNum(rs.getString("storetelnum"));
-            store.setStoreMobileNum(rs.getString("storemobilenum"));
-            store.setStoreOpenTime(rs.getString("storeopentime"));
-            store.setStoreCloseTime(rs.getString("storeclosetime"));
-            store.setStoreIsActivity(rs.getBoolean("storeisactivity"));
-            store.setStoreSido(rs.getString("storesido"));
-            store.setStoreSigugun(rs.getString("storesigugun"));
-            store.setSavedFileNames(rs.getString("saved_file_names"));
-            return store;
+            String savedFileNames = rs.getString("saved_file_names");
+//            Arrays.asList(savedFileNames.split(",")).stream().map(attachDTO->attachDTO.)
+//            store.setSavedFileNames(Arrays.asList(savedFileNames.split(",")));
+            return StoreDTO.builder()
+                    .storeUuid(rs.getString("storeUuid"))
+                    .storeName(rs.getString("storeName"))
+                    .storeAddress(rs.getString("storeAddress"))
+                    .storeLatitude(rs.getDouble("storeLatitude"))
+                    .storeLongitude(rs.getDouble("storeLongitude"))
+                    .storeBizNo(rs.getString("storebizno"))
+                    .storeTelNum(rs.getString("storetelnum"))
+                    .storeMobileNum(rs.getString("storemobilenum"))
+                    .storeOpenTime(LocalDateTime.from(rs.getTimestamp("storeopentime").toLocalDateTime()))
+                    .storeCloseTime(LocalDateTime.from(rs.getTimestamp("storeclosetime").toLocalDateTime()))
+                    .storeIsActivity(rs.getBoolean("storeIsActivity"))
+                    .storeSido(rs.getString("storesido"))
+                    .storeSigugun(rs.getString("storesigugun"))
+                    .build();
         };
     }
     private RowMapper<StoreDTO> storeWinHistoryRowMapper(){
         return (rs, rowNum) -> {
-            StoreDTO store = new StoreDTO();
-            store.setStoreUuid(rs.getString("storeuuid"));
-            store.setStoreName(rs.getString("storename"));
-            store.setStoreAddress(rs.getString("storeaddress"));
-            store.setStoreLatitude(rs.getDouble("storelatitude"));
-            store.setStoreLongitude(rs.getDouble("storelongitude"));
-            store.setStoreBizNo(rs.getString("storebizno"));
-            store.setStoreTelNum(rs.getString("storetelnum"));
-            store.setStoreMobileNum(rs.getString("storemobilenum"));
-            store.setStoreOpenTime(rs.getString("storeopentime"));
-            store.setStoreCloseTime(rs.getString("storeclosetime"));
-            store.setStoreIsActivity(rs.getBoolean("storeisactivity"));
-            store.setStoreSido(rs.getString("storesido"));
-            store.setStoreSigugun(rs.getString("storesigugun"));
-            store.setWinRank(rs.getInt("winRank"));
-            store.setWinRound(rs.getInt("winRound"));
-            return store;
+            Timestamp storeOpenTime = rs.getTimestamp("storeOpenTime");
+            Timestamp storeCloseTime = rs.getTimestamp("storeCloseTime");
+
+            return StoreDTO.builder()
+                    .storeUuid(rs.getString("storeUuid"))
+                    .storeName(rs.getString("storeName"))
+                    .storeAddress(rs.getString("storeAddress"))
+                    .storeLatitude(rs.getDouble("storeLatitude"))
+                    .storeLongitude(rs.getDouble("storeLongitude"))
+                    .storeBizNo(rs.getString("storebizno"))
+                    .storeTelNum(rs.getString("storetelnum"))
+                    .storeMobileNum(rs.getString("storemobilenum"))
+                    .storeOpenTime(LocalDateTime.from(storeOpenTime==null?LocalDateTime.MIN:storeOpenTime.toLocalDateTime()))
+                    .storeCloseTime(LocalDateTime.from(storeCloseTime==null?LocalDateTime.MIN:storeCloseTime.toLocalDateTime()))
+                    .storeIsActivity(rs.getBoolean("storeIsActivity"))
+                    .storeSido(rs.getString("storesido"))
+                    .storeSigugun(rs.getString("storesigugun"))
+                    .winRank(rs.getInt("winRank"))
+                    .winRound(rs.getInt("winRound"))
+                    .build();
         };
     }
 
     private RowMapper<StoreDTO> storeTableMapper() {
         return (rs, rowNum) -> {
-            StoreDTO store = new StoreDTO();
-            store.setStoreUuid(rs.getString("storeuuid"));
-            store.setStoreName(rs.getString("storename"));
-            store.setStoreAddress(rs.getString("storeaddress"));
-            store.setStoreLatitude(rs.getDouble("storelatitude"));
-            store.setStoreLongitude(rs.getDouble("storelongitude"));
-            store.setStoreBizNo(rs.getString("storebizno"));
-            store.setStoreTelNum(rs.getString("storetelnum"));
-            store.setStoreMobileNum(rs.getString("storemobilenum"));
-            store.setStoreOpenTime(rs.getString("storeopentime"));
-            store.setStoreCloseTime(rs.getString("storeclosetime"));
-            store.setStoreIsActivity(rs.getBoolean("storeisactivity"));
-            store.setStoreSido(rs.getString("storesido"));
-            store.setStoreSigugun(rs.getString("storesigugun"));
-            return store;
+            return StoreDTO.builder()
+                    .storeUuid(rs.getString("storeUuid"))
+                    .storeName(rs.getString("storeName"))
+                    .storeAddress(rs.getString("storeAddress"))
+                    .storeLatitude(rs.getDouble("storeLatitude"))
+                    .storeLongitude(rs.getDouble("storeLongitude"))
+                    .storeBizNo(rs.getString("storebizno"))
+                    .storeTelNum(rs.getString("storetelnum"))
+                    .storeMobileNum(rs.getString("storemobilenum"))
+                    .storeOpenTime(LocalDateTime.from(rs.getTimestamp("storeopentime").toLocalDateTime()))
+                    .storeCloseTime(LocalDateTime.from(rs.getTimestamp("storeclosetime").toLocalDateTime()))
+                    .storeIsActivity(rs.getBoolean("storeIsActivity"))
+                    .storeSido(rs.getString("storesido"))
+                    .storeSigugun(rs.getString("storesigugun"))
+                    .build();
         };
     }
 }

@@ -1,18 +1,13 @@
 package com.project.hangmani.store.model.dto;
 
-import com.project.hangmani.file.model.dto.AttachmentDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ResponseDTO {
     private String storeUuid;
     private String storeName;
@@ -22,14 +17,36 @@ public class ResponseDTO {
     private String storeBizNo;
     private String storeTelNum;
     private String storeMobileNum;
-    private String storeOpenTime;
-    private String storeCloseTime;
+    private LocalDateTime storeOpenTime;
+    private LocalDateTime storeCloseTime;
     private Boolean storeIsActivity;
     private String storeSido;
     private String storeSigugun;
     private List<AttachmentDTO> fileUrlList;
     private List<String> lottoTypes;
     private Map<Integer, int[]> winCounts;
-
-
+    @Builder
+    private ResponseDTO(String storeUuid, String storeName, String storeAddress,
+                        Double storeLatitude, Double storeLongitude, String storeBizNo,
+                        String storeTelNum, String storeMobileNum, LocalDateTime storeOpenTime,
+                        LocalDateTime storeCloseTime, Boolean storeIsActivity, String storeSido,
+                        String storeSigugun, List<AttachmentDTO> fileUrlList, List<String> lottoTypes,
+                        Map<Integer, int[]> winCounts) {
+        this.storeUuid = storeUuid;
+        this.storeName = storeName;
+        this.storeAddress = storeAddress;
+        this.storeLatitude = storeLatitude;
+        this.storeLongitude = storeLongitude;
+        this.storeBizNo = storeBizNo;
+        this.storeTelNum = storeTelNum;
+        this.storeMobileNum = storeMobileNum;
+        this.storeOpenTime = storeOpenTime;
+        this.storeCloseTime = storeCloseTime;
+        this.storeIsActivity = storeIsActivity;
+        this.storeSido = storeSido;
+        this.storeSigugun = storeSigugun;
+        this.fileUrlList = fileUrlList;
+        this.lottoTypes = lottoTypes;
+        this.winCounts = winCounts;
+    }
 }

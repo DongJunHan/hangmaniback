@@ -24,15 +24,11 @@ import static com.project.hangmani.config.query.StoreQueryConst.insertStoreAttac
 @Slf4j
 public class FileRepository {
     private JdbcTemplate template;
-    private ConvertData convertData;
-    private Util util;
     private final String sql = "select * from store_attachment where storeuuid=?";
 
-    public FileRepository(DataSource dataSource, PropertiesValues propertiesValues) {
+    public FileRepository(DataSource dataSource) {
         log.info("FileRepository={}", dataSource);
         this.template = new JdbcTemplate(dataSource);
-        this.convertData = new ConvertData(propertiesValues);
-        this.util = new Util(propertiesValues);
     }
 
     public int insertAttachment(AttachmentDTO requestDTO) {
@@ -42,7 +38,6 @@ public class FileRepository {
             PreparedStatement pstmt = con.prepareStatement(insertStoreAttachment, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, requestDTO.getOriginalFileName());
             pstmt.setString(2, requestDTO.getSavedFileName());
-            pstmt.setLong(3, requestDTO.getFileSize());
             pstmt.setString(4, requestDTO.getStoreUuid());
             return pstmt;
         }, keyHolder);
@@ -62,13 +57,12 @@ public class FileRepository {
     }
     private RowMapper<AttachmentDTO> attachmentMapper() {
         return (rs, rowNum) -> {
-            AttachmentDTO storeAttachment = new AttachmentDTO();
-            storeAttachment.setStoreUuid(rs.getString("storeuuid"));
-            storeAttachment.setFileSize(rs.getLong("file_size"));
-            storeAttachment.setOriginalFileName(rs.getString("original_file_name"));
-            storeAttachment.setSavedFileName(rs.getString("saved_file_name"));
-            storeAttachment.setUploadDate(rs.getDate("upload_time"));
-            return storeAttachment;
+            return AttachmentDTO.builder()
+                    .storeUuid(rs.getString("storeuuid"))
+                    .originalFileName(rs.getString("original_file_name"))
+                    .savedFileName(rs.getString("saved_file_name"))
+                    .attachmentNo(rs.getInt("attachmentno"))
+                    .build();
         };
     }
 }

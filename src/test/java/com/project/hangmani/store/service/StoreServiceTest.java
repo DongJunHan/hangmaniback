@@ -151,7 +151,7 @@ class StoreServiceTest {
                 .storeLongitude(126.708757)
                 .storeName("찬스센타백운점")
                 .build();
-        assertThatThrownBy(() -> storeService.add(request))
+        assertThatThrownBy(() -> storeService.insert(request))
                 .isInstanceOf(AlreadyExistStore.class);
     }
 

@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -153,7 +154,7 @@ public class StoreControllerTest {
     }
 
     @Test
-    @DisplayName("UUID를 가지고 하나의 상점 데이터 확인")
+    @DisplayName("UUID를 가지고 하나의 상점 데이터 가져온다")
     void storeInfoTest() throws Exception {
         //when, then
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/store/{storeUuid}", existUuid))
@@ -241,8 +242,11 @@ public class StoreControllerTest {
         paramMap.put("storeBizNo", changeStoreBizNo);
         paramMap.put("storeTelNum", "032-523-4188");
         paramMap.put("storeMobileNum", "01033138977");
-        paramMap.put("storeOpenTime", null);
-        paramMap.put("storeCloseTime", null);
+        paramMap.put("storeOpenTime", LocalDateTime.now());
+        paramMap.put("storeCloseTime", LocalDateTime.now());
+        paramMap.put("storeIsActivity", true);
+        paramMap.put("storeSido", "인천");
+        paramMap.put("storeSigugun", "부평구");
         String json = common.convertMapToJson(paramMap);
         //when, then
         mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/store/{storeUuid}", existUuid)
@@ -268,8 +272,8 @@ public class StoreControllerTest {
         paramMap.put("storeBizNo", changeStoreBizNo);
         paramMap.put("storeTelNum", "032-523-4188");
         paramMap.put("storeMobileNum", "01033138977");
-        paramMap.put("storeOpenTime", null);
-        paramMap.put("storeCloseTime", null);
+        paramMap.put("storeOpenTime", LocalDateTime.now());
+        paramMap.put("storeCloseTime", LocalDateTime.now());
         String json = common.convertMapToJson(paramMap);
         //when, then
         mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/store/{storeUuid}", "8c354eaa-ac2c-11ed-9b15-12ebd169e011")

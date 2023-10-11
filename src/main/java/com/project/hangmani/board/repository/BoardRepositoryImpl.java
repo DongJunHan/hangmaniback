@@ -75,6 +75,10 @@ public class BoardRepositoryImpl implements BoardRepository{
 
     public int insertAttachFiles(List<AttachmentDTO> attachFiles) {
         String sql = "insert into board_attachment(original_file_name, saved_file_name) ";
+        if (attachFiles== null || attachFiles.isEmpty()) {
+            return 0;
+        }
+
         for (AttachmentDTO attachFile : attachFiles) {
             sql += "values('" + attachFile.getOriginalFileName() + "','" + attachFile.getSavedFileName()+"'),";
         }

@@ -2,17 +2,19 @@ package com.project.hangmani.store.model.entity;
 
 import lombok.*;
 
-import java.sql.Date;
 @Getter
-@Setter
 @ToString
-@Builder
-@EqualsAndHashCode
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StoreAttachment {
     private int attachmentNo;
     private String originalFileName;
     private String savedFileName;
     private String storeUuid;
+    @Builder
+    private StoreAttachment(int attachmentNo, String originalFileName, String savedFileName, String storeUuid) {
+        this.attachmentNo = attachmentNo;
+        this.originalFileName = originalFileName;
+        this.savedFileName = savedFileName;
+        this.storeUuid = storeUuid;
+    }
 }

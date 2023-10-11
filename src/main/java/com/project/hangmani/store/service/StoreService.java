@@ -49,10 +49,10 @@ public class StoreService {
             throw new NotFoundStore("상점정보를 찾을 수 없습니다.");
         store = stores.get(0);
 
-        return store.convertResponseDTO();
+        return store.of();
     }
     @Transactional
-    public ResponseDTO updateStoreInfo(String storeUuid, RequestUpdateDTO requestUpdateDTO) {
+    public ResponseDTO update(String storeUuid, RequestUpdateDTO requestUpdateDTO) {
         List<StoreDTO> stores = null;
         StoreDTO store = null;
         //check store exist
@@ -67,23 +67,23 @@ public class StoreService {
         stores = storeRepository.getByUuid(storeUuid);
         store = stores.get(0);
 
-        return store.convertResponseDTO();
+        return store.of();
     }
     @Transactional
     public ResponseDTO insert(RequestInsertDTO requestStoreDTO) throws IOException {
         //check already exist
-        List<StoreDTO> findStore = storeRepository.getByStoreNameAndCoordinates(requestStoreDTO.convertToEntity());
+        List<StoreDTO> findStore = storeRepository.getByStoreNameAndCoordinates(requestStoreDTO.of());
         if (findStore.size() > 0) {
             throw new AlreadyExistStore();
         }
 
-        String storeUuid = storeRepository.insert(requestStoreDTO.convertToEntity());
+        String storeUuid = storeRepository.insert(requestStoreDTO.of());
         List<AttachmentDTO> attachFiles = fileService.saveAttachment(storeUuid, requestStoreDTO.convertSaveDTO());
         storeRepository.insertAttachFiles(attachFiles.stream().map(e->e.toEntity()).toList());
         //get store info
         List<StoreDTO> stores = storeRepository.getByUuid(storeUuid);
         StoreDTO storeDTO = stores.get(0);
-        return storeDTO.convertResponseDTO();
+        return storeDTO.of();
     }
     @Transactional
     public int delete(RequestDeleteDTO requestDTO) {
@@ -198,9 +198,7 @@ order by l.lottoname, win1stcount, win2stcount desc;
                 storeAttachment.put(storeUuid, list);
             }
         }
-        for (int i = 0; i < store.size(); i++) {
-            store.get(i).setSavedFileNames(storeAttachment.get(store.get(i).getStoreUuid()));
-        }
+        //TODO. store attachment url add
         return store;
     }
 
@@ -224,9 +222,6 @@ order by l.lottoname, win1stcount, win2stcount desc;
                 types.add(lottoTypes.get(i).getLottoName());
                 lottoType.put(storeUuid, types);
             }
-        }
-        for (int i = 0; i < store.size(); i++) {
-            store.get(i).setLottoNames(lottoType.get(store.get(i).getStoreUuid()));
         }
         return store;
     }
@@ -270,8 +265,8 @@ order by l.lottoname, win1stcount, win2stcount desc;
                     break;
                 }
             }
-            storeList.get(storeList.size() - 1).setWin1stCount(win1Count);
-            storeList.get(storeList.size() - 1).setWin2stCount(win2Count);
+//            storeList.get(storeList.size() - 1).setWin1stCount(win1Count);
+//            storeList.get(storeList.size() - 1).setWin2stCount(win2Count);
             if (j >= store.size())
                 break;
         }
@@ -298,13 +293,14 @@ order by l.lottoname, win1stcount, win2stcount desc;
 //        return requestDTO;
 //    }
 
-    private List<StoreDTO> calculateDistance(Double userLatitude, Double userLongitude, List<StoreDTO> stores) {
-        for(int i=0; i < stores.size(); i++){
-            stores.get(i).setDistance(Util.getDistance(userLatitude, userLongitude,
-                    stores.get(i).getStoreLatitude(), stores.get(i).getStoreLongitude()));
-        }
-        return stores;
-    }
+//    private List<StoreDTO> calculateDistance(Double userLatitude, Double userLongitude, List<StoreDTO> stores) {
+//
+//        for(int i=0; i < stores.size(); i++){
+//            stores.get(i).setDistance(Util.getDistance(userLatitude, userLongitude,
+//                    stores.get(i).getStoreLatitude(), stores.get(i).getStoreLongitude()));
+//        }
+//        return stores;
+//    }
 
     private List<StoreDTO> removeClosedStore(List<StoreDTO> stores) {
         for(int i = 0; i < stores.size(); i++) {
