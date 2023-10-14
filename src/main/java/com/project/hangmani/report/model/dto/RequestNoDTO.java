@@ -3,10 +3,11 @@ package com.project.hangmani.report.model.dto;
 import lombok.*;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestNoDTO {
     private Integer reportID;
+    @Builder
+    private RequestNoDTO(Integer reportID) {
+        this.reportID = reportID;
+    }
 }

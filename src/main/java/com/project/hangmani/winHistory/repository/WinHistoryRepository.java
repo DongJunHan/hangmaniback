@@ -20,17 +20,16 @@ public class WinHistoryRepository {
     }
 
     public List<WinHistory> findWinHistoryByArea(String sido, String sigugun) {
-        List<WinHistory> list = template.query(findByAreaSql,new Object[]{sido, sigugun}, winHistoryRowMapper());
-        return list;
+        return template.query(findByAreaSql,new Object[]{sido, sigugun}, winHistoryRowMapper());
     }
     private RowMapper<WinHistory> winHistoryRowMapper(){
         return (rs, rowNum) -> {
-            WinHistory winHistory = new WinHistory();
-            winHistory.setWinRank(rs.getInt("winrank"));
-            winHistory.setStoreUuid(rs.getString("storeuuid"));
-            winHistory.setWinRound(rs.getInt("winround"));
-            winHistory.setLottoId(rs.getInt("lottoid"));
-            return winHistory;
+            return WinHistory.builder()
+                    .storeUuid(rs.getString("storeuuid"))
+                    .winRank(rs.getInt("winRank"))
+                    .winRound(rs.getInt("winRound"))
+                    .lottoId(rs.getInt("lottoId"))
+                    .build();
         };
     }
 }

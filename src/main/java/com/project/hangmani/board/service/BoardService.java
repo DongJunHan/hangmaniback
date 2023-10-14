@@ -48,17 +48,18 @@ public class BoardService {
         int ret = boardRepository.insertAttachFiles(attachFiles);
         if (ret > 0) {
             String uploadDir = propertiesValues.getUploadDir();
-            resultBoard.setFiles(
-                    attachFiles.stream()
-                            .map(elem -> {
-                                elem.setOriginalFileName(uploadDir + elem.getOriginalFileName());
-                                elem.setSavedFileName(uploadDir + elem.getSavedFileName());
-                                return elem;
-                            })
-                            .toList()
-            );
+            //TODO setter 없으니 builder로 빌드해야하는데 따로 만들어서 ResponseGetDTO변환 과정을 거쳐야할듯
+//            resultBoard.setFiles(
+//                    attachFiles.stream()
+//                            .map(elem -> {
+//                                elem.setOriginalFileName(uploadDir + elem.getOriginalFileName());
+//                                elem.setSavedFileName(uploadDir + elem.getSavedFileName());
+//                                return elem;
+//                            })
+//                            .toList()
+//            );
         }
-        return new ResponseGetDTO().convertToDTO(resultBoard);
+        return ResponseGetDTO.builder().build();
 
     }
 
@@ -68,7 +69,7 @@ public class BoardService {
         if (boards.size() == 0)
             throw new NotFoundException();
 
-        return new ResponseGetDTO().convertToList(boards);
+        return List.of(ResponseGetDTO.builder().build());//new ResponseGetDTO().convertToList(boards);
     }
 
     public List<ResponseGetDTO> getByWriter(RequestWriterDTO boardDTO) {
@@ -79,8 +80,8 @@ public class BoardService {
                 .build());
         if (boards.size() == 0)
             throw new NotFoundException();
-
-        return new ResponseGetDTO().convertToList(boards);
+        //TODO 변경해야함
+        return List.of(ResponseGetDTO.builder().build());
     }
 
     /**

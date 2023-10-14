@@ -4,11 +4,8 @@ import lombok.*;
 
 import java.sql.Date;
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-@Builder
 public class ReportDTO {
     private Integer reportNo;
     private Date reportDate;
@@ -16,6 +13,16 @@ public class ReportDTO {
     private String id;
     private Integer reportID;
     private String reportType;
+    @Builder
+    private ReportDTO(Integer reportNo, Date reportDate, String reportContent,
+                      String id, Integer reportID, String reportType) {
+        this.reportNo = reportNo;
+        this.reportDate = reportDate;
+        this.reportContent = reportContent;
+        this.id = id;
+        this.reportID = reportID;
+        this.reportType = reportType;
+    }
 
     public ResponseDTO convertToResponse() {
         return ResponseDTO.builder()

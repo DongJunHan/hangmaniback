@@ -1,16 +1,17 @@
 package com.project.hangmani.user.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ResponseDTO {
     private String id;
     private String oAuthType;
     private String refreshToken;
+    @Builder
+    private ResponseDTO(String id, String oAuthType, String refreshToken) {
+        this.id = id;
+        this.oAuthType = oAuthType;
+        this.refreshToken = refreshToken;
+    }
 }

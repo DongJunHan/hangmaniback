@@ -4,11 +4,12 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestDeleteDTO {
     @NotBlank
     private String storeUuid;
+    @Builder
+    private RequestDeleteDTO(String storeUuid) {
+        this.storeUuid = storeUuid;
+    }
 }

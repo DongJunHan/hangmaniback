@@ -8,10 +8,7 @@ import java.sql.Date;
 import java.util.Map;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RequestInsertDTO {
     private String id;
     private String refreshToken;
@@ -22,18 +19,33 @@ public class RequestInsertDTO {
     private String oAuthType;
     private String oAuthID;
     private ConvertData convertData;
+    @Builder
+    private RequestInsertDTO(String id, String refreshToken, Date refreshTokenExpire,
+                             String email, String age, String gender, String oAuthType,
+                             String oAuthID, ConvertData convertData) {
+        this.id = id;
+        this.refreshToken = refreshToken;
+        this.refreshTokenExpire = refreshTokenExpire;
+        this.email = email;
+        this.age = age;
+        this.gender = gender;
+        this.oAuthType = oAuthType;
+        this.oAuthID = oAuthID;
+        this.convertData = convertData;
+    }
+
     public RequestInsertDTO(ConvertData convertData) {
         this.convertData = convertData;
     }
 
     public User convertToEntity() {
         return User.builder()
-                .age(this.getAge())
-                .email(this.getEmail())
-                .refreshToken(this.getRefreshToken())
-                .gender(this.getGender())
-                .oAuthID(this.getOAuthID())
-                .oAuthType(this.getOAuthType())
+                .age(age)
+                .email(email)
+                .refreshToken(refreshToken)
+                .gender(gender)
+                .oAuthID(oAuthID)
+                .oAuthType(oAuthType)
                 .build();
     }
     public RequestInsertDTO convertToDTO(Map<String, Object> tokenInput,

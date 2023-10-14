@@ -5,11 +5,8 @@ import lombok.*;
 import java.sql.Date;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-@Builder
 public class Report {
     private int reportNo;
     private Date reportDate;
@@ -17,4 +14,14 @@ public class Report {
     private String id;
     private int reportID;
     private String reportType;
+    @Builder
+    private Report(int reportNo, Date reportDate, String reportContent,
+                   String id, int reportID, String reportType) {
+        this.reportNo = reportNo;
+        this.reportDate = reportDate;
+        this.reportContent = reportContent;
+        this.id = id;
+        this.reportID = reportID;
+        this.reportType = reportType;
+    }
 }

@@ -16,7 +16,7 @@ import java.util.List;
 
 @Repository
 public class ReportRepositoryImpl implements ReportRepository{
-    private JdbcTemplate template;
+    private final JdbcTemplate template;
     private static final String INSERT_QUERY = "insert into REPORT(report_content, id, report_id) values(?,?,?)";
     private static final String SELECT_QUERY_NO =
             "select * from REPORT JOIN REPORT_TYPE ON REPORT.report_id=REPORT_TYPE.report_id where REPORT.report_no=?";
@@ -54,14 +54,13 @@ public class ReportRepositoryImpl implements ReportRepository{
 
     private RowMapper<ReportDTO> reportRowMapper() {
         return (rs, rsNum) -> {
-            ReportDTO report = new ReportDTO();
-            report.setReportContent(rs.getString("report_content"));
-            report.setReportID(rs.getInt("report_id"));
-            report.setReportNo(rs.getInt("report_no"));
-            report.setReportType(rs.getString("report_type"));
-            report.setId(rs.getString("id"));
-            report.setReportDate(rs.getDate("report_date"));
-            return report;
+            return ReportDTO.builder()
+                    .reportID(rs.getInt("report_id"))
+                    .reportNo(rs.getInt("report_no"))
+                    .reportType(rs.getString("report_type"))
+                    .reportContent(rs.getString("report_content"))
+                    .reportDate(rs.getDate("report_date"))
+                    .build();
         };
     }
 

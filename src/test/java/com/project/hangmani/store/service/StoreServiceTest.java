@@ -4,7 +4,6 @@ import com.project.hangmani.exception.AlreadyExistStore;
 import com.project.hangmani.exception.NotFoundStore;
 import com.project.hangmani.store.model.dto.*;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,9 +35,10 @@ class StoreServiceTest {
         //given
         Double userLatitude = 37.3914817;
         Double userLongitude = 127.0777273;
+
         //when
         List<ResponseFilterDTO> storeInfo =
-                storeService.getStoreInfo(new RequestFilterDTO().builder()
+                storeService.getStoreInfo(RequestFilterDTO.builder()
                         .filter("1st")
                         .userLatitude(userLatitude)
                         .userLongitude(userLongitude)
@@ -59,7 +59,7 @@ class StoreServiceTest {
         Double userLongitude = 127.0777273;
         //when
         List<ResponseFilterDTO> storeInfo =
-                storeService.getStoreInfo(new RequestFilterDTO().builder()
+                storeService.getStoreInfo(RequestFilterDTO.builder()
                         .filter("1st")
                         .userLatitude(userLatitude)
                         .userLongitude(userLongitude)
@@ -82,7 +82,8 @@ class StoreServiceTest {
 
         Double userLatitude = 37.3914817;
         Double userLongitude = 127.0777273;
-        RequestFilterDTO requestStoreDTO = new RequestFilterDTO().builder()
+
+        RequestFilterDTO requestStoreDTO = RequestFilterDTO.builder()
                 .startLatitude(startLatitude)
                 .endLatitude(endLatitude)
                 .startLongitude(startLongitude)

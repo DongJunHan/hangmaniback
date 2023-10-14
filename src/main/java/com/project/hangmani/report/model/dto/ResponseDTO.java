@@ -1,18 +1,12 @@
 package com.project.hangmani.report.model.dto;
 
-import com.project.hangmani.report.model.entity.Report;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class ResponseDTO {
     private Integer reportNo;
@@ -20,6 +14,16 @@ public class ResponseDTO {
     private String reportType;
     private String id;
     private Date reportDate;
+    @Builder
+    private ResponseDTO(Integer reportNo, String reportContent,
+                        String reportType, String id, Date reportDate) {
+        this.reportNo = reportNo;
+        this.reportContent = reportContent;
+        this.reportType = reportType;
+        this.id = id;
+        this.reportDate = reportDate;
+    }
+
     public List<ResponseDTO> convertToDTOs(List<ReportDTO> reports) {
         List<ResponseDTO> ret = new ArrayList<>();
         for (ReportDTO report:

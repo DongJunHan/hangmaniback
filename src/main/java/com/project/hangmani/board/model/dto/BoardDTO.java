@@ -6,11 +6,8 @@ import lombok.*;
 import java.sql.Date;
 import java.util.List;
 
-@Setter
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BoardDTO {
     private Integer boardNo;
     private String boardTitle;
@@ -20,4 +17,17 @@ public class BoardDTO {
     private Date updateAt;
     private Boolean isDelete;
     private List<AttachmentDTO> files;
+    @Builder
+    private BoardDTO(Integer boardNo, String boardTitle, String boardContent,
+                     String boardWriter, Date createAt, Date updateAt, Boolean isDelete,
+                     List<AttachmentDTO> files) {
+        this.boardNo = boardNo;
+        this.boardTitle = boardTitle;
+        this.boardContent = boardContent;
+        this.boardWriter = boardWriter;
+        this.createAt = createAt;
+        this.updateAt = updateAt;
+        this.isDelete = isDelete;
+        this.files = files;
+    }
 }

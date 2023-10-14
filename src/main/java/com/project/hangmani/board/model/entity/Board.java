@@ -5,12 +5,9 @@ import lombok.*;
 import java.sql.Date;
 
 
-@Setter
 @Getter
-@Builder
 @ToString
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode
 public class Board {
     private int boardNo;
@@ -20,5 +17,15 @@ public class Board {
     private Date createAt;
     private Date updateAt;
     private boolean isDelete;
-
+    @Builder
+    private Board(int boardNo, String boardTitle, String boardContent,
+                  String boardWriter, Date createAt, Date updateAt, boolean isDelete) {
+        this.boardNo = boardNo;
+        this.boardTitle = boardTitle;
+        this.boardContent = boardContent;
+        this.boardWriter = boardWriter;
+        this.createAt = createAt;
+        this.updateAt = updateAt;
+        this.isDelete = isDelete;
+    }
 }

@@ -2,19 +2,14 @@ package com.project.hangmani.board.model.dto;
 
 import com.project.hangmani.board.model.entity.Board;
 import com.project.hangmani.file.model.dto.AttachmentDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ResponseGetDTO {
     private Integer boardNo;
     private String boardTitle;
@@ -23,6 +18,17 @@ public class ResponseGetDTO {
     private Date createAt;
     private Date updateAt;
     private List<AttachmentDTO> files;
+    @Builder
+    private ResponseGetDTO(Integer boardNo, String boardTitle, String boardContent,
+                           String boardWriter, Date createAt, Date updateAt, List<AttachmentDTO> files) {
+        this.boardNo = boardNo;
+        this.boardTitle = boardTitle;
+        this.boardContent = boardContent;
+        this.boardWriter = boardWriter;
+        this.createAt = createAt;
+        this.updateAt = updateAt;
+        this.files = files;
+    }
 
     public ResponseGetDTO convertToDTO(Board board) {
         return ResponseGetDTO.builder()

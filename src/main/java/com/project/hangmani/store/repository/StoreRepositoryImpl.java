@@ -30,13 +30,11 @@ import static com.project.hangmani.config.query.StoreQueryConst.*;
 @Slf4j
 public class StoreRepositoryImpl implements StoreRepository{
     private final JdbcTemplate template;
-    private ConvertData convertData;
     private Util util;
     private Map<String, String> sidoMap;
     @Autowired
     public StoreRepositoryImpl(DataSource dataSource, PropertiesValues propertiesValues) {
         this.template = new JdbcTemplate(dataSource);
-        this.convertData = new ConvertData(propertiesValues);
         this.util = new Util(propertiesValues);
         this.sidoMap = new ConcurrentHashMap<>();
         sidoMap.put("경기도", "경기");
@@ -131,11 +129,11 @@ public class StoreRepositoryImpl implements StoreRepository{
     }
     private RowMapper<LottoTypeDTO> lottoTypeRowMapper() {
         return (rs, rowNum) -> {
-            LottoTypeDTO l = new LottoTypeDTO();
-            l.setLottoId(rs.getInt("lottoid"));
-            l.setStoreUuid(rs.getString("storeuuid"));
-            l.setLottoName(rs.getString("lottoname"));
-            return l;
+            return LottoTypeDTO.builder()
+                    .lottoId(rs.getInt("lottoid"))
+                    .storeUuid(rs.getString("storeuuid"))
+                    .lottoName(rs.getString("lottoname"))
+                    .build();
         };
     }
 
@@ -162,11 +160,11 @@ public class StoreRepositoryImpl implements StoreRepository{
     }
     private RowMapper<AttachmentDTO> storeAttachmentRowMapper() {
         return (rs, rowNum) -> {
-            AttachmentDTO s = new AttachmentDTO();
-            s.setStoreUuid(rs.getString("storeUuid"));
-            s.setSavedFileName(rs.getString("saved_file_name"));
-            s.setOriginalFileName(rs.getString("original_file_name"));
-            return s;
+            return AttachmentDTO.builder()
+                    .storeUuid(rs.getString("storeuuid"))
+                    .savedFileName(rs.getString("saved_file_name"))
+                    .originalFileName(rs.getString("original_file_name"))
+                    .build();
         };
     }
     public List<StoreDTO> getWithWinHistoryByCoordinates(RequestFilterDTO requestDTO) {
@@ -282,12 +280,12 @@ public class StoreRepositoryImpl implements StoreRepository{
     }
     private RowMapper<WinHistory> winHistoryRowMapper() {
         return (rs, rowNum) -> {
-            WinHistory w = new WinHistory();
-            w.setStoreUuid(rs.getString("storeuuid"));
-            w.setWinRank(rs.getInt("winRank"));
-            w.setWinRound(rs.getInt("winRound"));
-            w.setLottoId(rs.getInt("lottoId"));
-            return w;
+            return WinHistory.builder()
+                    .storeUuid(rs.getString("storeuuid"))
+                    .winRank(rs.getInt("winRank"))
+                    .winRound(rs.getInt("winRound"))
+                    .lottoId(rs.getInt("lottoId"))
+                    .build();
         };
     }
     private RowMapper<StoreDTO> storeRowMapper() {

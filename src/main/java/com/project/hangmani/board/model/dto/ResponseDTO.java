@@ -1,14 +1,13 @@
 package com.project.hangmani.board.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ResponseDTO {
     private Integer rowNum;
-
+    @Builder
+    private ResponseDTO(Integer rowNum) {
+        this.rowNum = rowNum;
+    }
 }
